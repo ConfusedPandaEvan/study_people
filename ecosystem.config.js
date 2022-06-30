@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'onvi',
+      name: 'study_people',
       script: 'npm',
       args: 'start',
     },
