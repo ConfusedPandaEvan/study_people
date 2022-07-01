@@ -12,6 +12,7 @@ export class SocialloginController {
     }
 
     @Redirect('http://localhost:3000/', 301)
+    // @Redirect('http://stupy.co.kr/', 301)
     @Get('main')
     kakaoLoginMain(@Query() query: string) {
         // const { code } = paginationQuery;
