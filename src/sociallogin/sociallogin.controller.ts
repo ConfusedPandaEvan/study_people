@@ -11,14 +11,23 @@ export class SocialloginController {
         return this.SocialloginService.kakaoLogin();
     }
 
-    @Redirect('http://localhost:3000/', 301)
+    
     // @Redirect('http://stupy.co.kr/', 301)
+    
     @Get('main')
-    kakaoLoginMain(@Query() query: string) {
+    @Redirect('http://stupy.co.kr/', 301)
+    async kakaoLoginMain(@Query() query: string) {
         // const { code } = paginationQuery;
         // console.log('controller code :', code);
-        return this.SocialloginService.kakaoLoginMain(query);
-
+        const { token } = await this.SocialloginService.kakaoLoginMain(query)
+        return {url: `http://stupy.co.kr/${token}`};
     }
 
+//     공식문서 참고 
+//     @Get('redirect/focs')
+//     @Redirect('https://docs.nestjs.com', 302)
+//     getDocs(@Query('version') version) {
+//         version = '5'
+//     return { url: `https://docs.nestjs.com/v${version}/` };
+//   }
 }

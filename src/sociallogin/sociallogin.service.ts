@@ -83,6 +83,7 @@ export class SocialloginService {
         const token = jwt.sign({ userId: loginUser.userId },'MyKey');
         console.log("jwtToken-->", token);
         console.log("User-->", token, userId, userNick);
+        
         return {
             token,
             userId,
