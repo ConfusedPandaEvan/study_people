@@ -1,4 +1,4 @@
-import { Injectable, Query } from '@nestjs/common';
+import { Injectable, Query, Redirect } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { UserDocument } from 'src/schemas/user.Schema';
@@ -12,8 +12,8 @@ export class SocialloginService {
     kakaoLogin() {
         const kakao = {
           clientid: '968fe442549959a4ab2bb530f508c889', //REST API
-          // redirectUri: 'http://localhost:3000/main',
-          redirectUri: 'https://stupy.co.kr/main',
+          redirectUri: 'http://localhost:3000/main',
+        //   redirectUri: 'https://stupy.co.kr/main',
         };
         // console.log('kakao Client_ID :', kakao.clientid) //undefined
         const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${kakao.clientid}&redirect_uri=${kakao.redirectUri}`;
@@ -23,8 +23,8 @@ export class SocialloginService {
     async kakaoLoginMain(@Query() query) {
         const kakao = {
             clientid: '968fe442549959a4ab2bb530f508c889', //REST API
-            // redirectUri: 'http://localhost:3000/main',
-            redirectUri: 'https://stupy.co.kr/main',
+            redirectUri: 'http://localhost:3000/main',
+            // redirectUri: 'https://stupy.co.kr/main',
         };
 
         const { code } = query;
@@ -44,6 +44,7 @@ export class SocialloginService {
             json: true,
         };
         const kakaotoken = await rp(options);
+        console.log('success')
         console.log('token', kakaotoken);
         const options1 = {
             url: 'https://kapi.kakao.com/v2/user/me',
@@ -54,8 +55,10 @@ export class SocialloginService {
             },
             json: true,
         };
+        
         const userInfo = await rp(options1);
         // console.log('userInfo->', userInfo);
+        console.log(userInfo)
         const userId = userInfo.id;
         const userNick = userInfo.kakao_account.profile.nickname;
         console.log('userId-->', userId);
@@ -77,9 +80,9 @@ export class SocialloginService {
 
         const loginUser = await this.userModel.findOne({ userId });
         console.log('loginUser-->', loginUser);
-        const token = jwt.sign({ userId: loginUser[0].userId },'MyKey');
-        // console.log("jwtToken-->", token);
-        // console.log("User-->", token, userId, userNick);
+        const token = jwt.sign({ userId: loginUser.userId },'MyKey');
+        console.log("jwtToken-->", token);
+        console.log("User-->", token, userId, userNick);
         return {
             token,
             userId,

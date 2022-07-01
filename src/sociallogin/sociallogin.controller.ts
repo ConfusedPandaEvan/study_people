@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Res } from '@nestjs/common';
+import { Controller, Get, Query, Redirect, Res } from '@nestjs/common';
 import { SocialloginService } from './sociallogin.service';
 
 @Controller('')
@@ -11,12 +11,13 @@ export class SocialloginController {
         return this.SocialloginService.kakaoLogin();
     }
 
+    @Redirect('http://localhost:3000/', 301)
     @Get('main')
     kakaoLoginMain(@Query() query: string) {
         // const { code } = paginationQuery;
         // console.log('controller code :', code);
         return this.SocialloginService.kakaoLoginMain(query);
-    }
 
+    }
 
 }
