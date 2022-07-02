@@ -8,27 +8,15 @@ import * as jwt from 'jsonwebtoken';
 @Injectable()
 export class SocialloginService {
     constructor(@InjectModel('User') private userModel: Model<UserDocument>){}
-
-    kakaoLogin() {
-        const kakao = {
-          clientid: '968fe442549959a4ab2bb530f508c889', //REST API
-          redirectUri: 'http://localhost:3000/main',
-        //   redirectUri: 'https://stupy.co.kr/main',
-        };
-        // console.log('kakao Client_ID :', kakao.clientid) //undefined
-        const kakaoAuthURL = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${kakao.clientid}&redirect_uri=${kakao.redirectUri}`;
-        return { url: kakaoAuthURL };
-      }
-    
     async kakaoLoginMain(@Query() query) {
         const kakao = {
-            clientid: '968fe442549959a4ab2bb530f508c889', //REST API
+            clientid: '968fe442549959a4ab2bb530f508c889',
             redirectUri: 'http://localhost:3000/main',
-            // redirectUri: 'https://stupy.co.kr/main',
+            // 수정 필요 redirectUri: '{ec2-ipv4}/main',
         };
 
         const { code } = query;
-        console.log('service code-->', code); //undefined
+        console.log('service code-->', code); 
         const options = {
             url: 'https://kauth.kakao.com/oauth/token',
             method: 'POST',
@@ -57,36 +45,26 @@ export class SocialloginService {
         };
         
         const userInfo = await rp(options1);
-        // console.log('userInfo->', userInfo);
-        console.log(userInfo)
-        const userId = userInfo.id;
+        const kakaouserId = userInfo.id;
         const userNick = userInfo.kakao_account.profile.nickname;
-        console.log('userId-->', userId);
-        console.log('userNick-->', userNick);
-        const existUser = await this.userModel.findOne({ userId });
-        console.log('existUser-->', existUser);
+        const existUser = await this.userModel.findOne({ kakaouserId });
 
         if (!existUser) {
-            const from = 'kakao';
-            const userWin = 0;
-            const userLose = 0;
+            // const from = 'kakao'; 나중에 네이버나 구글서비스 로그인 추가 할 거면 필요
             const user = new this.userModel({
-            userId,
+            kakaouserId,
             userNick,
             });
             console.log('user-->', user);
             await this.userModel.create(user);
         }
 
-        const loginUser = await this.userModel.findOne({ userId });
-        console.log('loginUser-->', loginUser);
-        const token = jwt.sign({ userId: loginUser.userId },'MyKey');
-        console.log("jwtToken-->", token);
-        console.log("User-->", token, userId, userNick);
+        const loginUser = await this.userModel.findOne({ kakaouserId });
+        const token = jwt.sign({ kakaouserId: loginUser.kakaouserId },'MyKey');
         
         return {
             token,
-            userId,
+            kakaouserId,
             userNick,
             msg: '카카오 로그인 완료.',
         };
