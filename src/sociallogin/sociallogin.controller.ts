@@ -15,12 +15,12 @@ export class SocialloginController {
     // @Redirect('http://stupy.co.kr/', 301)
     
     @Get('main')
-    @Redirect('http://stupy.co.kr/', 301)
+    @Redirect('http://stupy.co.kr/kakao/login', 301)
     async kakaoLoginMain(@Query() query: string) {
         // const { code } = paginationQuery;
         // console.log('controller code :', code);
         const { token } = await this.SocialloginService.kakaoLoginMain(query)
-        return {url: `http://stupy.co.kr/${token}`};
+        return {url: `http://stupy.co.kr/kakao/login?token=${token}`};
     }
 
 //     공식문서 참고 
