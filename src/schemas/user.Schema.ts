@@ -7,7 +7,7 @@ export type UserDocument = User & Document
 @Schema()
 export class User {
     @Prop()
-    userId: string;
+    kakaouserId: string;
 
     @Prop()
     userNick: string;

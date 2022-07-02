@@ -16,7 +16,6 @@ export class SocialloginService {
         };
 
         const { code } = query;
-        console.log('service code-->', code); 
         const options = {
             url: 'https://kauth.kakao.com/oauth/token',
             method: 'POST',
@@ -32,8 +31,7 @@ export class SocialloginService {
             json: true,
         };
         const kakaotoken = await rp(options);
-        console.log('success')
-        console.log('token', kakaotoken);
+
         const options1 = {
             url: 'https://kapi.kakao.com/v2/user/me',
             method: 'GET',
@@ -55,7 +53,7 @@ export class SocialloginService {
             kakaouserId,
             userNick,
             });
-            console.log('user-->', user);
+
             await this.userModel.create(user);
         }
 
