@@ -2,9 +2,7 @@ import {
   Contains,
   IsInt,
   IsNotEmpty,
-  IsNumber,
   IsString,
-  Length,
   Max,
   MaxLength,
   Min,
@@ -13,16 +11,18 @@ import {
 export class CreateRoomDto {
   @IsNotEmpty()
   @IsString()
-  @MaxLength(20)
+  @MaxLength(9)
   readonly title: string;
 
   @IsNotEmpty()
   @IsString()
-  @MaxLength(40)
+  @MaxLength(71)
   readonly content: string;
 
+  //this part may also change for 4digit number
   @IsNotEmpty()
   @IsString()
+  @MaxLength(5)
   readonly password: string;
 
   @IsString({ each: true })
@@ -34,7 +34,7 @@ export class CreateRoomDto {
   readonly openKakao: string;
 
   @IsNotEmpty()
-  // @IsNumber()
+  // @IsInt()
   // @Min(2)
   // @Max(5)
   readonly maxPeople: number;

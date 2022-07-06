@@ -24,6 +24,23 @@ export class RoomService {
   }
 
   //put res here
+  async leaveRoom(roomId) {
+    const userId = 'dopeDude';
+
+    const targetRoom = await this.findRoom(roomId);
+
+    //When leaving, if the person is the only one in the room, delete room. If not, just remove the user from room
+    if (targetRoom.users.length == 1) {
+      this.deleteRoom(roomId);
+    } else {
+      await this.roomModel.updateOne(
+        { _id: roomId },
+        { $pull: { users: userId } },
+      );
+    }
+  }
+
+  //put res here
   async createRoom(file, createRoomDto) {
     // const { userId } = res.locals.user;
 
@@ -99,17 +116,29 @@ export class RoomService {
     await this.roomModel.deleteOne({ _id: roomId }).exec();
 
     //delete image from local storage
-    await fs.unlink(
-      `./public/roomImages/${targetRoom.imageLocation}`,
-      (err) => {
-        if (err) {
-          console.error(err);
-          return err;
-        }
-      },
-    );
+    if (targetRoom.imageLocation != 'defaultImage.png') {
+      await fs.unlink(
+        `./public/roomImages/${targetRoom.imageLocation}`,
+        (err) => {
+          if (err) {
+            console.error(err);
+            return err;
+          }
+        },
+      );
+    }
 
     return null;
+  }
+
+  //put res here
+  //Need to think what can go wrong with this method. - ***CreatedAt has changed, If Image is not provided it will become default image
+  async updateRoom(file, roomId, createRoomDto) {
+    // const targetRoom = await this.findRoom(roomId);
+
+    this.deleteRoom(roomId);
+    const result = this.createRoom(file, createRoomDto);
+    return result;
   }
 
   private async findRoom(id: string): Promise<Room> {

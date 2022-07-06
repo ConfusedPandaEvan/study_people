@@ -29,7 +29,13 @@ export class RoomController {
     return rooms;
   }
 
-  //Create Room
+  // Need to get userId from Locals
+  @Get('/leave_room/:roomId')
+  async leaveRoom(@Param('roomId') roomId: string) {
+    await this.roomService.leaveRoom(roomId);
+    return null;
+  }
+
   // Need to get userId from Locals
   @Post()
   @UseInterceptors(
@@ -51,7 +57,14 @@ export class RoomController {
     return { id: generatedId };
   }
 
-  @Patch()
+  @Delete('/:roomId')
+  async deleteRoom(@Param('roomId') roomId: string) {
+    await this.roomService.deleteRoom(roomId);
+    return null;
+  }
+
+  // Need to get userId from Locals
+  @Patch('/:roomId')
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -61,14 +74,16 @@ export class RoomController {
       fileFilter: imageFileFilter,
     }),
   )
-  async updateRoom(@UploadedFile() file, @Body() updateRoomDto: UpdateRoomDto) {
-    const generatedId = await this.roomService.createRoom(file, updateRoomDto);
+  async updateRoom(
+    @UploadedFile() file,
+    @Param('roomId') roomId: string,
+    @Body() createRoomDto: CreateRoomDto,
+  ) {
+    const generatedId = await this.roomService.updateRoom(
+      file,
+      roomId,
+      createRoomDto,
+    );
     return { id: generatedId };
-  }
-
-  @Delete('/:roomId')
-  async deleteRoom(@Param('roomId') roomId: string) {
-    await this.roomService.deleteRoom(roomId);
-    return null;
   }
 }

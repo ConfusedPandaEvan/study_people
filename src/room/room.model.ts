@@ -17,7 +17,7 @@ export const RoomSchema = new mongoose.Schema({
 
 export interface Room extends mongoose.Document {
   id: string;
-  users: [User];
+  users: [string];
   title: string;
   content: string;
   password: string;
