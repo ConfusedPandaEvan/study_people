@@ -11,11 +11,13 @@ import { getOfferDto } from './dto/getoffer.dto';
 import { getAnserDto } from './dto/getanswer.dto';
 import { getCandidateDto } from './dto/getcandidate.dto';
 @WebSocketGateway({
-  transports: ['websocket'],
+  transports: ['websocket','polling'],
   cors:{
     origin:["http://localhost:3000","http://localhost:3001"],
+    methods: ["GET","POST"],
     credentials: true
   },
+  allowEIO3: true
 })
 export class MessageGateway {
 
@@ -31,16 +33,29 @@ export class MessageGateway {
 
   @SubscribeMessage('join_room')
   joinRoom(@MessageBody() data: joinroomDto, @ConnectedSocket() client: Socket){
-    if (this.users[data.room]) {
+    if(!this.users[data.room]){
+      this.users[data.room] = [{id: client.id, email: data.email}];
+    } else{
       const length = this.users[data.room].length;
       if (length === 4) {
           this.server.to(client.id).emit('room_full');
           return;
       }
-      this.users[data.room].push({id: client.id, email: data.email});
-  } else {
-      this.users[data.room] = [{id: client.id, email: data.email}];
-  }
+    }
+  
+  
+  //   if (this.users[data.room]) {
+  //     const length = this.users[data.room].length;
+  //     if (length === 4) {
+  //         this.server.to(client.id).emit('room_full');
+  //         return;
+  //     }
+  //     this.users[data.room].push({id: client.id, email: data.email});
+  // } else {
+  //     this.users[data.room] = [{id: client.id, email: data.email}];
+  // }
+
+
   this.socketToRoom[client.id] = data.room;
 
   client.join(data.room);
@@ -103,7 +118,7 @@ export class MessageGateway {
   }
 
 
-  
+
   @SubscribeMessage('findOneMessage')
   findOne(@MessageBody() id: number) {
     return this.messageService.findOne(id);
