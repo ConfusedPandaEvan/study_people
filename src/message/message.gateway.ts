@@ -13,7 +13,8 @@ import { getCandidateDto } from './dto/getcandidate.dto';
 @WebSocketGateway({
   transports: ['websocket'],
   cors:{
-    origin:'*'
+    origin:["http://localhost:3000","http://localhost:3001"],
+    credentials: true
   },
 })
 export class MessageGateway {
@@ -90,16 +91,19 @@ export class MessageGateway {
         console.log(this.users);
   }
 
+  //채팅보내기
   @SubscribeMessage('createMessage')
   create(@MessageBody() createMessageDto: CreateMessageDto) {
     return this.messageService.create(createMessageDto);
   }
-
+  // 채팅 내보내기
   @SubscribeMessage('findAllMessage')
   findAll() {
     return this.messageService.findAll();
   }
 
+
+  
   @SubscribeMessage('findOneMessage')
   findOne(@MessageBody() id: number) {
     return this.messageService.findOne(id);
