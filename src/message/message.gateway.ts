@@ -19,7 +19,8 @@ import { getCandidateDto } from './dto/getcandidate.dto';
 export class MessageGateway {
 
   users: Users;
-  socketToRoom: SockettoRoom[] = []
+  socketToRoom : {}
+  
 
 
   @WebSocketServer()
