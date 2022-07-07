@@ -8,6 +8,7 @@ import { SocialloginModule } from './sociallogin/sociallogin.module';
 import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
 import { RoomModule } from './room/room.module';
+import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { RoomModule } from './room/room.module';
     MulterModule.register({
       dest: './public',
     }),
+    MessageModule,
   ],
 
   controllers: [AppController],
