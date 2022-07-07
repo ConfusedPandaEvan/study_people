@@ -1,6 +1,6 @@
-import { SockettoEmail } from "./sockettoemail.entity";
+import { SockettoUserid } from "./sockettouserid.entity";
 export class Users {
     room: string;
-    user: SockettoEmail [];
+    user: SockettoUserid [];
 }
 

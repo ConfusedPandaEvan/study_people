@@ -1,7 +1,6 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket } from '@nestjs/websockets';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
 import { joinroomDto } from './dto/joinroom.dto';
 import { Server, Socket } from 'socket.io';
 
@@ -21,8 +20,8 @@ import { getCandidateDto } from './dto/getcandidate.dto';
 })
 export class MessageGateway {
 
-  users: {};
-  socketToRoom : {}
+  users = {'12345':['user1234']}
+  socketToRoom = {'123456':'123456'} 
   
 
 
@@ -33,27 +32,17 @@ export class MessageGateway {
 
   @SubscribeMessage('join_room')
   joinRoom(@MessageBody() data: joinroomDto, @ConnectedSocket() client: Socket){
-    if(!this.users[data.room]){
-      this.users[data.room] = [{id: client.id, email: data.email}];
-    } else{
+
+    if (this.users[data.room]) {
       const length = this.users[data.room].length;
       if (length === 4) {
           this.server.to(client.id).emit('room_full');
           return;
       }
-    }
-  
-  
-  //   if (this.users[data.room]) {
-  //     const length = this.users[data.room].length;
-  //     if (length === 4) {
-  //         this.server.to(client.id).emit('room_full');
-  //         return;
-  //     }
-  //     this.users[data.room].push({id: client.id, email: data.email});
-  // } else {
-  //     this.users[data.room] = [{id: client.id, email: data.email}];
-  // }
+      this.users[data.room].push({id: client.id, userid: data.userid});
+  } else {
+      this.users[data.room] = [{id: client.id, userid: data.userid}];
+  }
 
 
   this.socketToRoom[client.id] = data.room;
@@ -61,7 +50,7 @@ export class MessageGateway {
   client.join(data.room);
   console.log(`[${this.socketToRoom[client.id]}]: ${client.id} enter`);
 
-  const usersInThisRoom = this.users[data.room].filter(user => user.id !== client.id);
+  const usersInThisRoom = this.users[data.room].filter(user => user !== client.id);
 
   console.log(usersInThisRoom);
 
