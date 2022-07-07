@@ -20,7 +20,7 @@ import { getCandidateDto } from './dto/getcandidate.dto';
 })
 export class MessageGateway {
 
-  users = {'12345':['user1234']}
+  users = { '123456': [ { id: 'testsocketid', userid: 'test' }]}
   socketToRoom = {'123456':'123456'} 
   
 
@@ -50,13 +50,12 @@ export class MessageGateway {
   client.join(data.room);
   console.log(`[${this.socketToRoom[client.id]}]: ${client.id} enter`);
 
-  const usersInThisRoom = this.users[data.room].filter(user => user !== client.id);
+  const usersInThisRoom = this.users[data.room].filter(user => user.id !== client.id);
 
   console.log(usersInThisRoom);
 
-  this.server.to(client.id).emit('all_users', usersInThisRoom);
+  this.server.sockets.to(client.id).emit('all_users', usersInThisRoom);
 
-  return 
   }
 
   
@@ -84,14 +83,14 @@ export class MessageGateway {
         const roomID = this.socketToRoom[client.id];
         let room = this.users[roomID];
         if (room) {
-            room = room.filter(user => user !== client.id);
+            room = room.filter((user) => user.id !== client.id);
             this.users[roomID] = room;
             if (room.length === 0) {
                 delete this.users[roomID];
                 return;
             }
         }
-        client.to(roomID).emit('user_exit', {id: client.id});
+        this.server.to(roomID).emit('user_exit', {id: client.id});
         console.log(this.users);
   }
 
