@@ -84,7 +84,7 @@ export class MessageGateway {
         const roomID = this.socketToRoom[client.id];
         let room = this.users[roomID];
         if (room) {
-            room = room.filter(user => user.id !== client.id);
+            room = room.filter(user => user !== client.id);
             this.users[roomID] = room;
             if (room.length === 0) {
                 delete this.users[roomID];
