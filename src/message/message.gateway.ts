@@ -18,7 +18,7 @@ import { getCandidateDto } from './dto/getcandidate.dto';
 })
 export class MessageGateway {
 
-  users: Users;
+  users: {};
   socketToRoom : {}
   
 
