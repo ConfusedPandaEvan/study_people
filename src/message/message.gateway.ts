@@ -64,7 +64,7 @@ export class MessageGateway {
   
   @SubscribeMessage('offer')
   getoffer(@MessageBody() data: getOfferDto, @ConnectedSocket() client: Socket){
-    this.server.to(data.offerReceiveID).emit('getOffer', {sdp: data.sdp, offerSendID: data.offerSendID, offerSendEmail: data.offerSendEmail});
+    this.server.to(data.offerReceiveID).emit('getOffer', {sdp: data.sdp, offerSendID: data.offerSendID, offerSendUserId: data.offerSendUserId});
   }
 
   @SubscribeMessage('answer')
@@ -113,10 +113,6 @@ export class MessageGateway {
     return this.messageService.findOne(id);
   }
 
-  @SubscribeMessage('updateMessage')
-  update(@MessageBody() updateMessageDto: UpdateMessageDto) {
-    return this.messageService.update(updateMessageDto.id, updateMessageDto);
-  }
 
   @SubscribeMessage('removeMessage')
   remove(@MessageBody() id: number) {

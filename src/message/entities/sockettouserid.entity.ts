@@ -1,4 +1,4 @@
-export class SockettoEmail {
+export class SockettoUserid {
     id: string;
-    email: string;
+    userid: string;
 }

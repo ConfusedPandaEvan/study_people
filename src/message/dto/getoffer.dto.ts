@@ -1,6 +1,6 @@
 export class getOfferDto {
     sdp: string;
     offerSendID: string;
-    offerSendEmail: string;
+    offerSendUserId: string;
     offerReceiveID: string;
 }
