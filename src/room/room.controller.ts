@@ -84,6 +84,6 @@ export class RoomController {
       roomId,
       createRoomDto,
     );
-    return { id: generatedId };
+    return null;
   }
 }
