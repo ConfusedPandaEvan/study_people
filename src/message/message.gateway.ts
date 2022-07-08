@@ -33,9 +33,9 @@ export class MessageGateway {
 
   @SubscribeMessage('disconnect')
   
-  public handleConnection(client: Socket): void {
-    console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
-  }
+  // public handleConnection(client: Socket): void {
+  //   console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
+  // }
   public handleDisconnect(client: Socket): void {
     console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
     const roomID = this.socketToRoom[client.id];
