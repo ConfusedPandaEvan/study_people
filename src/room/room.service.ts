@@ -51,14 +51,14 @@ export class RoomService {
     }
 
     //change JSON string to Array Object
-    const hashtags = createRoomDto.hashtag.replace(/\[|\]/g, '').split(',');
+    // const hashtags = createRoomDto.hashtag.replace(/\[|\]/g, '').split(',');
 
     //Need to delete this part after putting res for res.locals.userid
     const userId = ['dopeDude'];
 
     const newRoom = new this.roomModel({
       ...createRoomDto,
-      hashtags,
+      // hashtags,
       users: userId,
       imageLocation: filename,
       createdAt: new Date(),
@@ -68,27 +68,27 @@ export class RoomService {
     const result = await newRoom.save();
 
     //create hashtags based on new room
-    for (let i = 0; i < newRoom.hashtags.length; i++) {
-      const tag = newRoom.hashtags[i];
-      const dbHashtag = await this.findHashtag(tag);
+    // for (let i = 0; i < newRoom.hashtags.length; i++) {
+    //   const tag = newRoom.hashtags[i];
+    //   const dbHashtag = await this.findHashtag(tag);
 
       //if no hashtag exists, create one
-      if (!dbHashtag) {
-        const newHashtag = new this.hashtagModel({
-          content: tag,
-          rooms: [result.id as string],
-        });
-        await newHashtag.save();
-      }
+      // if (!dbHashtag) {
+      //   const newHashtag = new this.hashtagModel({
+      //     content: tag,
+      //     rooms: [result.id as string],
+      //   });
+      //   await newHashtag.save();
+      // }
 
       //if it exists, add roomId
-      else {
-        await this.hashtagModel.updateOne(
-          { _id: dbHashtag._id },
-          { $push: { rooms: result.id } },
-        );
-      }
-    }
+    //   else {
+    //     await this.hashtagModel.updateOne(
+    //       { _id: dbHashtag._id },
+    //       { $push: { rooms: result.id } },
+    //     );
+    //   }
+    // }
 
     //return id of created room
     return result.id as string;

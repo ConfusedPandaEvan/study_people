@@ -20,20 +20,20 @@ export class CreateRoomDto {
   readonly content: string;
 
   //this part may also change for 4digit number
-  @IsNotEmpty()
-  @IsString()
-  @MaxLength(5)
+  // @IsNotEmpty()
+  // @IsString()
+  // @MaxLength(5)
   readonly password: string;
 
   @IsString({ each: true })
   readonly hashtag: string[] = [];
 
-  @IsNotEmpty()
-  @IsString()
-  @Contains('open.kakao.com')
+  // @IsNotEmpty()
+  // @IsString()
+  // @Contains('open.kakao.com')
   readonly openKakao: string;
 
-  @IsNotEmpty()
+  // @IsNotEmpty()
   // @IsInt()
   // @Min(2)
   // @Max(5)
