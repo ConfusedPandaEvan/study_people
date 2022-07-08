@@ -30,6 +30,27 @@ export class MessageGateway {
   
   constructor(private readonly messageService: MessageService) {}
 
+
+  @SubscribeMessage('disconnect')
+  
+  public handleConnection(client: Socket): void {
+    console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
+  }
+  public handleDisconnect(client: Socket): void {
+    console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
+    const roomID = this.socketToRoom[client.id];
+        let room = this.users[roomID];
+        if (room) {
+            room = room.filter((user) => user.id !== client.id);
+            this.users[roomID] = room;
+            if (room.length === 0) {
+                delete this.users[roomID];
+                return;
+            }
+        }
+        this.server.to(roomID).emit('user_exit', {id: client.id});
+        console.log(this.users);
+  }
   @SubscribeMessage('join_room')
   joinRoom(@MessageBody() data: joinroomDto, @ConnectedSocket() client: Socket){
 
@@ -77,22 +98,22 @@ export class MessageGateway {
   }
 
 
-  @SubscribeMessage('disconnect')
-  disconnect( @ConnectedSocket() client: Socket){
-    console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
-        const roomID = this.socketToRoom[client.id];
-        let room = this.users[roomID];
-        if (room) {
-            room = room.filter((user) => user.id !== client.id);
-            this.users[roomID] = room;
-            if (room.length === 0) {
-                delete this.users[roomID];
-                return;
-            }
-        }
-        this.server.to(roomID).emit('user_exit', {id: client.id});
-        console.log(this.users);
-  }
+  // @SubscribeMessage('disconnect')
+  // disconnect( @ConnectedSocket() client: Socket){
+  //   console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
+  //       const roomID = this.socketToRoom[client.id];
+  //       let room = this.users[roomID];
+  //       if (room) {
+  //           room = room.filter((user) => user.id !== client.id);
+  //           this.users[roomID] = room;
+  //           if (room.length === 0) {
+  //               delete this.users[roomID];
+  //               return;
+  //           }
+  //       }
+  //       this.server.to(roomID).emit('user_exit', {id: client.id});
+  //       console.log(this.users);
+  // }
 
   //채팅보내기
   @SubscribeMessage('createMessage')
