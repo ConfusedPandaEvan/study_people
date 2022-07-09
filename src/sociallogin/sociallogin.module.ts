@@ -7,6 +7,6 @@ import { UserSchema } from 'src/schemas/user.Schema';
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])],
   controllers: [SocialloginController],
-  providers: [SocialloginService]
+  providers: [SocialloginService],
 })
 export class SocialloginModule {}
