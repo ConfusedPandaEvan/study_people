@@ -15,6 +15,7 @@ export class TodoListService {
     @InjectModel('Todo') private readonly todoModel: Model<Todo>,
   ) {}
 
+  //Add getting todolist by userId
   async getAllTodoLists() {
     const todoLists = await this.todoListModel.find().exec();
     //add getting todos
@@ -26,22 +27,27 @@ export class TodoListService {
     }));
   }
 
-  //remove this and merge with getAllTodoLists
-  async getAllTodo() {
-    const todos = await this.todoModel.find().exec();
+  //Get all Todos of a TodoList
+  async getAllTodo(todoListId) {
+    const todos = await this.todoListModel.find({ _id: todoListId }).exec();
     return todos.map((todoL) => ({
-      todoId: todoL.id,
-      content: todoL.content,
-      createdAt: todoL.createdAt,
-      status: todoL.status,
+      todos: todoL.todos,
     }));
   }
 
-  async createTodoList(createTodoListDto: CreateTodoListDto) {
+  //Create Default TodoList with one Default Todo
+  async createTodoList() {
+    //delete this part and update with res.locals
+    const userId = 'somedopedude';
+
     const newTodoList = new this.todoListModel({
-      ...createTodoListDto,
+      userId,
+      title: 'default To-do List',
     });
     const result = await newTodoList.save();
+
+    await this.createTodo(result.id);
+
     return result.id as string;
   }
 
@@ -55,12 +61,12 @@ export class TodoListService {
     if (updateTodoListDto.title) {
       updated.title = updateTodoListDto.title;
     }
-    updated.save();
+    await updated.save();
   }
 
-  async createTodo(todoListId, createTodoDto: CreateTodoDto) {
+  async createTodo(todoListId) {
     const newTodo = new this.todoModel({
-      ...createTodoDto,
+      content: 'default To-do',
       status: false,
       createdAt: new Date(),
     });
@@ -71,7 +77,8 @@ export class TodoListService {
     );
 
     //return todoList's id in a JSON format
-    return JSON.parse(`{ "id": "${todoListId}" }`);
+    // return JSON.parse(`{ "id": "${todoListId}" }`);
+    return todoListId;
   }
 
   async deleteTodo(todoListId, todoId) {
