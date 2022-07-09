@@ -18,6 +18,7 @@ export class RoomService {
     //Need to Edit Room Mapping if needed
     return rooms.map((roomL) => ({
       title: roomL.title,
+      users: roomL.users,
       content: roomL.content,
       hashtags: roomL.hashtags,
     }));
