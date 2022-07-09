@@ -71,26 +71,33 @@ export class TodoListController {
   }
 
   //Delete Todo
-  @Delete('/todo/:TodoId')
-  async deleteTodo(@Param('TodoId') todoId: string) {
-    await this.todoListService.deleteTodoList(todoId);
+  @Delete('/:TodoListId/:TodoId')
+  async deleteTodo(
+    @Param('TodoListId') todoListId: string,
+    @Param('TodoId') todoId: string,
+  ) {
+    await this.todoListService.deleteTodo(todoListId, todoId);
     return null;
   }
 
   //Change Todo Content
-  @Patch('/todo/:TodoId')
+  @Patch('/:TodoListId/:TodoId')
   async updateTodo(
+    @Param('TodoListId') todoListId: string,
     @Param('TodoId') todoId: string,
     @Body() createTodoDto: CreateTodoDto,
   ) {
-    await this.todoListService.updateTodo(todoId, createTodoDto);
+    await this.todoListService.updateTodo(todoListId, todoId, createTodoDto);
     return null;
   }
 
   //Change Todo Status
-  @Get('/todo/:TodoId')
-  async statusTodo(@Param('TodoId') todoId: string) {
-    await this.todoListService.statusTodo(todoId);
+  @Get('/:TodoListId/:TodoId')
+  async statusTodo(
+    @Param('TodoListId') todoListId: string,
+    @Param('TodoId') todoId: string,
+  ) {
+    await this.todoListService.statusTodo(todoListId, todoId);
     return null;
   }
 }

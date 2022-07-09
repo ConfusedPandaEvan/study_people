@@ -22,6 +22,7 @@ export class TodoListService {
       todoListId: todoL.id,
       title: todoL.title,
       userId: todoL.userId,
+      todos: todoL.todos,
     }));
   }
 
@@ -31,7 +32,6 @@ export class TodoListService {
     return todos.map((todoL) => ({
       todoId: todoL.id,
       content: todoL.content,
-      todoListId: todoL.todoListId,
       createdAt: todoL.createdAt,
       status: todoL.status,
     }));
@@ -47,7 +47,6 @@ export class TodoListService {
 
   async deleteTodoList(todoListId: string) {
     await this.todoListModel.deleteOne({ _id: todoListId }).exec();
-    await this.todoModel.deleteMany({ todoListId: todoListId }).exec();
     return null;
   }
 
@@ -62,31 +61,53 @@ export class TodoListService {
   async createTodo(todoListId, createTodoDto: CreateTodoDto) {
     const newTodo = new this.todoModel({
       ...createTodoDto,
-      todoListId,
       status: false,
       createdAt: new Date(),
     });
-    const result = await newTodo.save();
-    return result.id as string;
+
+    await this.todoListModel.updateOne(
+      { _id: todoListId },
+      { $push: { todos: newTodo } },
+    );
+
+    //return todoList's id in a JSON format
+    return JSON.parse(`{ "id": "${todoListId}" }`);
   }
 
-  async deleteTodo(todoId) {
-    await this.todoModel.deleteOne({ _id: todoId }).exec();
+  async deleteTodo(todoListId, todoId) {
+    await this.todoListModel.updateOne(
+      { _id: todoListId },
+      { $pull: { todos: { _id: todoId } } },
+    );
+
     return null;
   }
 
-  async updateTodo(todoId, createTodoDto: CreateTodoDto) {
-    const updated = await this.findTodo(todoId);
+  async updateTodo(todoListId, todoId, createTodoDto: CreateTodoDto) {
     if (createTodoDto.content) {
-      updated.content = createTodoDto.content;
+      await this.todoListModel.updateOne(
+        { _id: todoListId },
+        { $set: { 'todos.$[elem].content': createTodoDto.content } },
+        { arrayFilters: [{ $and: [{ 'elem._id': todoId }] }] },
+      );
     }
-    updated.save();
+
+    return null;
   }
 
-  async statusTodo(todoId) {
-    const updated = await this.findTodo(todoId);
-    updated.status = !updated.status;
-    updated.save();
+  //Need to fix toggle status part
+  async statusTodo(todoListId, todoId) {
+    // const status = await this.todoListModel
+    //   .find({ _id: todoListId }, { todos: { $elemMatch: { _id: todoId } } })
+    //   .exec();
+
+    await this.todoListModel.updateOne(
+      { _id: todoListId },
+      { $set: { 'todos.$[elem].status': false } },
+      { arrayFilters: [{ $and: [{ 'elem._id': todoId }] }] },
+    );
+
+    return null;
   }
 
   private async findTodoList(id: string): Promise<TodoList> {
