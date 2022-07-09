@@ -25,26 +25,27 @@ export class TodoListController {
   }
 
   //merge with getAllTodoLists and delete this
-  @Get('/todos')
-  async getAllTodo() {
-    const todos = await this.todoListService.getAllTodo();
+  @Get('/todos/:TodoListId')
+  async getAllTodo(@Param('TodoListId') todoListId: string) {
+    const todos = await this.todoListService.getAllTodo(todoListId);
     return todos;
   }
 
-  //Create a Todo List
+  //Put Res.locals
+  //Create a default Todo List and return the whole todolist
   @Post()
-  async createTodoList(@Body() createTodoListDto: CreateTodoListDto) {
-    const generatedId = await this.todoListService.createTodoList(
-      createTodoListDto,
-    );
-    return { id: generatedId };
+  async createTodoList() {
+    await this.todoListService.createTodoList();
+    const todolists = await this.todoListService.getAllTodoLists();
+    return todolists;
   }
 
   //Delete Todo-List and corresponding Todos
   @Delete('/:TodoListId')
   async deleteTodoList(@Param('TodoListId') todoListId: string) {
     await this.todoListService.deleteTodoList(todoListId);
-    return null;
+    const todolists = this.getAllTodoLists();
+    return todolists;
   }
 
   //Change Todo-List Title
@@ -54,20 +55,16 @@ export class TodoListController {
     @Body() updateTodoListDto: UpdateTodoListDto,
   ) {
     await this.todoListService.updateTodoList(todoListId, updateTodoListDto);
-    return null;
+    const todolists = this.getAllTodoLists();
+    return todolists;
   }
 
   //Create Todo
   @Post('/:TodoListId')
-  async createTodo(
-    @Param('TodoListId') todoListId: string,
-    @Body() createTodoDto: CreateTodoDto,
-  ) {
-    const generatedId = await this.todoListService.createTodo(
-      todoListId,
-      createTodoDto,
-    );
-    return generatedId;
+  async createTodo(@Param('TodoListId') todoListId: string) {
+    await this.todoListService.createTodo(todoListId);
+    const todos = await this.todoListService.getAllTodo(todoListId);
+    return todos;
   }
 
   //Delete Todo
@@ -77,7 +74,8 @@ export class TodoListController {
     @Param('TodoId') todoId: string,
   ) {
     await this.todoListService.deleteTodo(todoListId, todoId);
-    return null;
+    const todos = await this.todoListService.getAllTodo(todoListId);
+    return todos;
   }
 
   //Change Todo Content
@@ -88,7 +86,8 @@ export class TodoListController {
     @Body() createTodoDto: CreateTodoDto,
   ) {
     await this.todoListService.updateTodo(todoListId, todoId, createTodoDto);
-    return null;
+    const todos = await this.todoListService.getAllTodo(todoListId);
+    return todos;
   }
 
   //Change Todo Status
