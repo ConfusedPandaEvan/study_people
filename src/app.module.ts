@@ -8,13 +8,12 @@ import { SocialloginModule } from './sociallogin/sociallogin.module';
 import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
 import { RoomModule } from './room/room.module';
-import { MessageModule } from './message/message.module';
 
 @Module({
   imports: [
     MongooseModule.forRoot(
-      'mongodb+srv://test:sparta@cluster0.ylhhbdq.mongodb.net/?retryWrites=true&w=majority',
-      
+      // 'mongodb+srv://test:sparta@cluster0.ylhhbdq.mongodb.net/?retryWrites=true&w=majority',
+      'mongodb+srv://test:sparta@cluster0.yjvro.mongodb.net/?retryWrites=true&w=majority',
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -27,7 +26,6 @@ import { MessageModule } from './message/message.module';
     MulterModule.register({
       dest: './public',
     }),
-    MessageModule,
   ],
 
   controllers: [AppController],
