@@ -7,13 +7,15 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class SocialloginService {
-  constructor(@InjectModel('User') private userModel: Model<UserDocument>) {}
-  async kakaoLoginMain(@Query() query) {
-    const kakao = {
-      clientid: '968fe442549959a4ab2bb530f508c889',
-      redirectUri: 'http://localhost:3000/main',
-      // 수정 필요 redirectUri: '{ec2-ipv4}/main',
-    };
+
+    constructor(@InjectModel('User') private userModel: Model<UserDocument>){}
+    async kakaoLoginMain(@Query() query) {
+        const kakao = {
+            clientid: '968fe442549959a4ab2bb530f508c889',
+            redirectUri: 'http://13.125.58.110:3000/main',
+            // 수정 필요 redirectUri: '{ec2-ipv4}/main',
+        };
+
 
     const { code } = query;
     const options = {
