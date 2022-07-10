@@ -48,26 +48,14 @@ export class SocialloginService {
     const kakaouserId = userInfo.id;
     const userNick = userInfo.kakao_account.profile.nickname;
     const existUser = await this.userModel.findOne({ kakaouserId });
+    if (!existUser) {
+        // const from = 'kakao'; 나중에 네이버나 구글서비스 로그인 추가 할 거면 필요
+        const user = new this.userModel({
+        kakaouserId,
+        userNick,
+        });
 
-
-            await this.userModel.create(user);
-        }
-
-        const loginUser = await this.userModel.findOne({ kakaouserId });
-        const userId = loginUser.id as string
-        console.log('userid: ', userId)
-        const token = jwt.sign({ userId },'MyKey');
-        console.log(token)
-        return {
-            token,
-            userId,
-            userNick,
-            msg: '카카오 로그인 완료.',
-        };
-        }
-
-
-      await this.userModel.create(user);
+        await this.userModel.create(user);
     }
 
     const loginUser = await this.userModel.findOne({ kakaouserId });
