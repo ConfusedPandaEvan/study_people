@@ -7,13 +7,15 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class SocialloginService {
-  constructor(@InjectModel('User') private userModel: Model<UserDocument>) {}
-  async kakaoLoginMain(@Query() query) {
-    const kakao = {
-      clientid: '968fe442549959a4ab2bb530f508c889',
-      redirectUri: 'http://localhost:3000/main',
-      // 수정 필요 redirectUri: '{ec2-ipv4}/main',
-    };
+
+    constructor(@InjectModel('User') private userModel: Model<UserDocument>){}
+    async kakaoLoginMain(@Query() query) {
+        const kakao = {
+            clientid: '968fe442549959a4ab2bb530f508c889',
+            redirectUri: 'http://13.125.58.110:3000/main',
+            // 수정 필요 redirectUri: '{ec2-ipv4}/main',
+        };
+
 
     const { code } = query;
     const options = {
@@ -47,12 +49,23 @@ export class SocialloginService {
     const userNick = userInfo.kakao_account.profile.nickname;
     const existUser = await this.userModel.findOne({ kakaouserId });
 
-    if (!existUser) {
-      // const from = 'kakao'; 나중에 네이버나 구글서비스 로그인 추가 할 거면 필요
-      const user = new this.userModel({
-        kakaouserId,
-        userNick,
-      });
+
+            await this.userModel.create(user);
+        }
+
+        const loginUser = await this.userModel.findOne({ kakaouserId });
+        const userId = loginUser.id as string
+        console.log('userid: ', userId)
+        const token = jwt.sign({ userId },'MyKey');
+        console.log(token)
+        return {
+            token,
+            userId,
+            userNick,
+            msg: '카카오 로그인 완료.',
+        };
+        }
+
 
       await this.userModel.create(user);
     }
