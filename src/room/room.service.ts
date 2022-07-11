@@ -53,9 +53,13 @@ export class RoomService {
 
     //change JSON string to Array Object
     //Check This Part ****************************************
-    const check = createRoomDto.hashtag;
-    const checkArray2 = Object.values(check);
-    const hashtags = checkArray2.toString()
+    // const check = createRoomDto.hashtag;
+    // const checkArray2 = Object.values(check);
+    // console.log('a: ', checkArray);
+    // console.log('at: ', typeof checkArray);
+    // console.log('b: ', checkArray2);
+    // console.log('bt: ', typeof checkArray2);
+    const hashtags = createRoomDto.hashtag.toString()
       .replace(/\[|\]/g, '')
       .replace(/\s/g, '')
       .split(',');
