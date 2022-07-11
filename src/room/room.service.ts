@@ -62,7 +62,7 @@ export class RoomService {
     //   .split(',');
 
     const hashtags = JSON.parse(check);
-    console.log("hashtags", hashtags)
+    console.log('hashtags', hashtags);
 
     //Need to delete this part after putting res for res.locals.userid
     const userId = ['dopeDude'];
