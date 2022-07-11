@@ -8,20 +8,17 @@ import { UserSchema } from 'src/schemas/user.Schema';
 import { Authmiddleware } from 'src/middlewares/auth.middleware';
 import { SocialloginService } from 'src/sociallogin/sociallogin.service';
 
-
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'Room', schema: RoomSchema }]),
     MongooseModule.forFeature([{ name: 'Hashtag', schema: HashtagSchema }]),
-    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])
+    MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
   ],
   controllers: [RoomController],
   providers: [RoomService, SocialloginService],
 })
-export class RoomModule implements NestModule{
+export class RoomModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(Authmiddleware)
-      .forRoutes(RoomController);
+    consumer.apply(Authmiddleware).forRoutes(RoomController);
   }
 }
