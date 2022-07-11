@@ -77,13 +77,9 @@ export class RoomController {
   async updateRoom(
     @UploadedFile() file,
     @Param('roomId') roomId: string,
-    @Body() createRoomDto: CreateRoomDto,
+    @Body() updateRoomDto: UpdateRoomDto,
   ) {
-    const generatedId = await this.roomService.updateRoom(
-      file,
-      roomId,
-      createRoomDto,
-    );
+    await this.roomService.updateRoom(file, roomId, updateRoomDto);
     return null;
   }
 }

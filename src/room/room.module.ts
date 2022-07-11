@@ -17,9 +17,9 @@ import { SocialloginService } from 'src/sociallogin/sociallogin.service';
   controllers: [RoomController],
   providers: [RoomService, SocialloginService],
 })
-export class RoomModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(Authmiddleware).forRoutes(RoomController);
-  }
-}
-// export class RoomModule {}
+// export class RoomModule implements NestModule {
+//   configure(consumer: MiddlewareConsumer) {
+//     consumer.apply(Authmiddleware).forRoutes(RoomController);
+//   }
+// }
+export class RoomModule {}
