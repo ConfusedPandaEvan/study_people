@@ -51,21 +51,12 @@ export class RoomService {
       filename = file.filename;
     }
 
-    //change JSON string to Array Object
-    //Check This Part ****************************************
-    // const check = createRoomDto.hashtag;
-    // const checkArray2 = Object.values(check);
-    // console.log('a: ', checkArray);
-    // console.log('at: ', typeof checkArray);
-    // console.log('b: ', checkArray2);
-    // console.log('bt: ', typeof checkArray2);
+    //change JSON Object to Array Object
     const hashtags = createRoomDto.hashtag.toString()
       .replace(/\[|\]/g, '')
       .replace(/\s/g, '')
       .split(',');
 
-    // const hashtags = JSON.parse(check);
-    // console.log('hashtags', hashtags);
 
     //Need to delete this part after putting res for res.locals.userid
     const userId = ['dopeDude'];
