@@ -56,10 +56,12 @@ export class RoomService {
     const check = createRoomDto.hashtag;
     console.log(typeof check);
     console.log(check);
-    const hashtags = createRoomDto.hashtag
-      .replace(/\[|\]/g, '')
-      .replace(/\s/g, '')
-      .split(',');
+    // const hashtags = createRoomDto.hashtag
+    //   .replace(/\[|\]/g, '')
+    //   .replace(/\s/g, '')
+    //   .split(',');
+
+    const hashtags = JSON.parse(check);
 
     //Need to delete this part after putting res for res.locals.userid
     const userId = ['dopeDude'];
