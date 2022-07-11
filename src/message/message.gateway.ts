@@ -12,9 +12,9 @@ import { getCandidateDto } from './dto/getcandidate.dto';
 @WebSocketGateway({
   transports: ['websocket','polling'],
   cors:{
-    origin:"*",
+    origin:"http://localhost:3000",
     methods: ["GET","POST"],
-    credentials: false
+    credentials: true
   },
   allowEIO3: true
 })
