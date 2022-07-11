@@ -11,11 +11,12 @@ import { getAnserDto } from './dto/getanswer.dto';
 import { getCandidateDto } from './dto/getcandidate.dto';
 @WebSocketGateway({
   transports: ['websocket','polling'],
-  cors:{
-    origin:"http://localhost:3000/",
-    methods: ["GET","POST"],
-    credentials: true
-  },
+  cors:true,
+  // cors:{
+  //   origin:"http://localhost:3000/",
+  //   methods: ["GET","POST"],
+  //   credentials: true
+  // },
   allowEIO3: true
 })
 export class MessageGateway {
