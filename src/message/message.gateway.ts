@@ -14,7 +14,7 @@ import { getCandidateDto } from './dto/getcandidate.dto';
   cors:{
     origin:"*",
     methods: ["GET","POST"],
-    credentials: true
+    credentials: false
   },
   allowEIO3: true
 })
