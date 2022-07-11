@@ -55,7 +55,10 @@ export class RoomService {
     //Check This Part ****************************************
     const check = createRoomDto.hashtag;
     console.log(typeof check);
-    console.log(check);
+    const checkArray = Object.keys(check);
+    const checkArray2 = Object.values(check);
+    console.log('a: ', checkArray);
+    console.log('b: ', checkArray2);
     // const hashtags = createRoomDto.hashtag
     //   .replace(/\[|\]/g, '')
     //   .replace(/\s/g, '')
