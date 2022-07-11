@@ -58,7 +58,9 @@ export class RoomService {
     const checkArray = Object.keys(check);
     const checkArray2 = Object.values(check);
     console.log('a: ', checkArray);
+    console.log('at: ', typeof checkArray);
     console.log('b: ', checkArray2);
+    console.log('bt: ', typeof checkArray2);
     // const hashtags = createRoomDto.hashtag
     //   .replace(/\[|\]/g, '')
     //   .replace(/\s/g, '')
