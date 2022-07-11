@@ -22,3 +22,4 @@ export class RoomModule implements NestModule {
     consumer.apply(Authmiddleware).forRoutes(RoomController);
   }
 }
+// export class RoomModule {}
