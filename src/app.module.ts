@@ -1,6 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
+import { RoomController } from './room/room.controller';
+import { TodoListController } from './todo-list/todo-list.controller'; 
 import { AppService } from './app.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { TodoListModule } from './todo-list/todo-list.module';
@@ -8,6 +10,8 @@ import { SocialloginModule } from './sociallogin/sociallogin.module';
 import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
 import { RoomModule } from './room/room.module';
+import { Authmiddleware } from './middlewares/auth.middleware';
+
 
 @Module({
   imports: [
@@ -31,4 +35,10 @@ import { RoomModule } from './room/room.module';
   controllers: [AppController],
   providers: [AppService, UserService],
 })
-export class AppModule {}
+export class AppModule implements NestModule{
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(Authmiddleware)
+      .forRoutes(RoomController,TodoListController);
+  }
+}

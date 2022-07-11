@@ -57,13 +57,13 @@ export class SocialloginService {
 
         await this.userModel.create(user);
     }
-
     const loginUser = await this.userModel.findOne({ kakaouserId });
-    const token = jwt.sign({ kakaouserId: loginUser.kakaouserId }, 'MyKey');
+    const userId = loginUser.id as string
+    const token = jwt.sign({ userId }, 'MyKey');
 
     return {
       token,
-      kakaouserId,
+      userId,
       userNick,
       msg: '카카오 로그인 완료.',
     };
