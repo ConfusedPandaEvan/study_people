@@ -3,9 +3,11 @@ import {
   IsInt,
   IsNotEmpty,
   IsString,
+  Length,
   Max,
   MaxLength,
   Min,
+  MinLength,
 } from 'class-validator';
 
 export class CreateRoomDto {
@@ -22,10 +24,11 @@ export class CreateRoomDto {
   //this part may also change for 4digit number
   @IsNotEmpty()
   @IsString()
-  @MaxLength(5)
+  @MinLength(4)
+  @MaxLength(4)
   readonly password: string;
 
-  @IsString({ each: true })
+  // @IsString()
   readonly hashtag: string[] = [];
 
   @IsNotEmpty()

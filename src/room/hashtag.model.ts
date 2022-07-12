@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
 
 export const HashtagSchema = new mongoose.Schema({
-  content: { type: String, required: true },
-  rooms: { type: [String], required: true },
+  content: { type: String },
+  rooms: { type: [String] },
 });
 
 export interface Hashtag extends mongoose.Document {
