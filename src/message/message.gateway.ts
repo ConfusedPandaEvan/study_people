@@ -12,7 +12,7 @@ import { getCandidateDto } from './dto/getcandidate.dto';
 @WebSocketGateway({
   transports: ['websocket','polling'],
   cors:{
-    origin:"http://stupy.co.kr/",
+    origin:"http://stupy.co.kr",
     methods: ["GET","POST"],
     credentials: true
   },
