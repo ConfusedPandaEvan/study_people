@@ -100,11 +100,13 @@ export class RoomService {
     }
 
     //change JSON Object to Array Object
-    const hashtags = createRoomDto.hashtag
+    const hashtagsinfo = createRoomDto.hashtag
       .toString()
       .replace(/\[|\]/g, '')
       .replace(/\s/g, '')
       .split(',');
+
+    const hashtags = [...new Set(hashtagsinfo)];
 
     //Need to delete this part after putting res for res.locals.userid
     const userId = ['dopeDude'];
