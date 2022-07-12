@@ -24,6 +24,54 @@ export class RoomService {
     }));
   }
 
+  async textSearch(textQuery) {
+    const rooms = await this.roomModel
+      .find()
+      .or([
+        { title: new RegExp(textQuery, 'i') },
+        { content: new RegExp(textQuery, 'i') },
+      ])
+      .exec();
+    return rooms.map((roomL) => ({
+      title: roomL.title,
+      users: roomL.users,
+      content: roomL.content,
+      hashtags: roomL.hashtags,
+    }));
+  }
+
+  async hashtagSearch(hashtagQuery) {
+    try {
+      const hashtags = await this.hashtagModel
+        .find({
+          content: new RegExp(hashtagQuery, 'i'),
+        })
+        .exec();
+      //Get list of rooms from hashtagDB
+      const roomList = hashtags.map((tag) => ({ rooms: tag.rooms }))[0].rooms;
+      //Remove duplicate roomId
+      const uniqueRoomList = [...new Set(roomList)];
+
+      //Create & populate search result
+      const rooms = [];
+      for (const roomId of uniqueRoomList) {
+        const foundRoom = await this.roomModel.findById(roomId);
+        rooms.push(foundRoom);
+      }
+
+      return rooms.map((roomL) => ({
+        title: roomL.title,
+        users: roomL.users,
+        content: roomL.content,
+        hashtags: roomL.hashtags,
+      }));
+    } catch (error) {
+      throw new NotFoundException(
+        'No room was found. Try searching with different Query',
+      );
+    }
+  }
+
   //put res here
   async leaveRoom(roomId) {
     const userId = 'dopeDude';
