@@ -29,7 +29,9 @@ export class MessageGateway {
   server: Server;
   
   constructor(private readonly messageService: MessageService) {}
-
+  public handleConnect(client: Socket): void {
+    console.log(client.id)
+  }
 
   @SubscribeMessage('disconnect')
   
