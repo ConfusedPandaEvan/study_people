@@ -12,6 +12,7 @@ import { getCandidateDto } from './dto/getcandidate.dto';
 @WebSocketGateway({
   transports: ['websocket','polling'],
   cors:{
+    // origin:'*',
     origin:"http://stupy.co.kr",
     methods: ["GET","POST"],
     credentials: true
@@ -29,13 +30,15 @@ export class MessageGateway {
   server: Server;
   
   constructor(private readonly messageService: MessageService) {}
-
+  public handleConnect(client: Socket): void {
+    console.log(client.id)
+  }
 
   @SubscribeMessage('disconnect')
   
-  // public handleConnection(client: Socket): void {
-  //   console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
-  // }
+  public handleConnection(client: Socket): void {
+    console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
+  }
   public handleDisconnect(client: Socket): void {
     console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
     const roomID = this.socketToRoom[client.id];
