@@ -11,6 +11,8 @@ import { UserService } from './user/user.service';
 import { UserModule } from './user/user.module';
 import { RoomModule } from './room/room.module';
 import { Authmiddleware } from './middlewares/auth.middleware';
+import { ChatsModule } from './chats/chats.module';
+import { UsersModule } from './users/users.module';
 
 
 @Module({
@@ -30,6 +32,8 @@ import { Authmiddleware } from './middlewares/auth.middleware';
     MulterModule.register({
       dest: './public',
     }),
+    ChatsModule,
+    UsersModule,
   ],
 
   controllers: [AppController],
