@@ -14,7 +14,7 @@ import { NextFunction, Request, Response } from 'express';
 import { MongooseModule } from '@nestjs/mongoose';
 
 import * as jwt from 'jsonwebtoken';
-import { UserModule } from 'src/user/user.module';
+import { UsersModule } from 'src/users/users.module';
 interface JwtPayload {
   userId: string;
 }
