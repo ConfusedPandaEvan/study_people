@@ -3,7 +3,7 @@ import { ChatsService } from './chats.service';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
 
-@Controller('chats')
+@Controller('api/chats')
 export class ChatsController {
   constructor(private readonly chatsService: ChatsService) {}
 
@@ -17,9 +17,9 @@ export class ChatsController {
     return this.chatsService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.chatsService.findOne(+id);
+  @Get(':roomid')
+  findOne(@Param('roomid') roomId: string) {
+    return this.chatsService.findChatsInsideRoom(roomId);
   }
 
   @Patch(':id')
