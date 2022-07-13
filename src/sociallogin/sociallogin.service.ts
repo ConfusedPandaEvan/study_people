@@ -13,7 +13,7 @@ export class SocialloginService {
         const kakao = {
             clientid: '968fe442549959a4ab2bb530f508c889',
             redirectUri: 'http://13.125.58.110:3000/main',
-            // 수정 필요 redirectUri: '{ec2-ipv4}/main',
+            // 수정 필요 redirectUri: 'http://13.125.58.110:3000/main',
         };
 
 
@@ -67,5 +67,8 @@ export class SocialloginService {
       userNick,
       msg: '카카오 로그인 완료.',
     };
+  }
+  async findUser(userId: string) {
+    return await this.userModel.findOne({ _id:userId });
   }
 }

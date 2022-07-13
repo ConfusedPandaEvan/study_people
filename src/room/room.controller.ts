@@ -3,9 +3,11 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
+  Query,
   Response,
   UploadedFile,
   UseInterceptors,
@@ -26,6 +28,27 @@ export class RoomController {
   @Get()
   async getAllRooms() {
     const rooms = await this.roomService.getAllRooms();
+    return rooms;
+  }
+
+  @Get('/search')
+  async textSearch(
+    @Query('text') textQuery: string,
+    @Query('hashtag') hashtagQuery: string,
+  ) {
+    let rooms;
+
+    if (textQuery) {
+      rooms = await this.roomService.textSearch(textQuery);
+    }
+    if (hashtagQuery) {
+      rooms = await this.roomService.hashtagSearch(hashtagQuery);
+    }
+    if (!rooms || rooms.length == 0) {
+      throw new NotFoundException(
+        'No room was found. Try searching with different Query',
+      );
+    }
     return rooms;
   }
 
@@ -77,13 +100,9 @@ export class RoomController {
   async updateRoom(
     @UploadedFile() file,
     @Param('roomId') roomId: string,
-    @Body() createRoomDto: CreateRoomDto,
+    @Body() updateRoomDto: UpdateRoomDto,
   ) {
-    const generatedId = await this.roomService.updateRoom(
-      file,
-      roomId,
-      createRoomDto,
-    );
+    await this.roomService.updateRoom(file, roomId, updateRoomDto);
     return null;
   }
 }

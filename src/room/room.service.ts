@@ -24,6 +24,54 @@ export class RoomService {
     }));
   }
 
+  async textSearch(textQuery) {
+    const rooms = await this.roomModel
+      .find()
+      .or([
+        { title: new RegExp(textQuery, 'i') },
+        { content: new RegExp(textQuery, 'i') },
+      ])
+      .exec();
+    return rooms.map((roomL) => ({
+      title: roomL.title,
+      users: roomL.users,
+      content: roomL.content,
+      hashtags: roomL.hashtags,
+    }));
+  }
+
+  async hashtagSearch(hashtagQuery) {
+    try {
+      const hashtags = await this.hashtagModel
+        .find({
+          content: new RegExp(hashtagQuery, 'i'),
+        })
+        .exec();
+      //Get list of rooms from hashtagDB
+      const roomList = hashtags.map((tag) => ({ rooms: tag.rooms }))[0].rooms;
+      //Remove duplicate roomId
+      const uniqueRoomList = [...new Set(roomList)];
+
+      //Create & populate search result
+      const rooms = [];
+      for (const roomId of uniqueRoomList) {
+        const foundRoom = await this.roomModel.findById(roomId);
+        rooms.push(foundRoom);
+      }
+
+      return rooms.map((roomL) => ({
+        title: roomL.title,
+        users: roomL.users,
+        content: roomL.content,
+        hashtags: roomL.hashtags,
+      }));
+    } catch (error) {
+      throw new NotFoundException(
+        'No room was found. Try searching with different Query',
+      );
+    }
+  }
+
   //put res here
   async leaveRoom(roomId) {
     const userId = 'dopeDude';
@@ -51,14 +99,14 @@ export class RoomService {
       filename = file.filename;
     }
 
-    //change JSON string to Array Object
-    //Check This Part ****************************************
-    const check = createRoomDto.hashtag;
-    console.log(typeof check);
-    const hashtags = createRoomDto.hashtag
+    //change JSON Object to Array Object
+    const hashtagsinfo = createRoomDto.hashtag
+      .toString()
       .replace(/\[|\]/g, '')
       .replace(/\s/g, '')
       .split(',');
+
+    const hashtags = [...new Set(hashtagsinfo)];
 
     //Need to delete this part after putting res for res.locals.userid
     const userId = ['dopeDude'];
@@ -85,6 +133,7 @@ export class RoomService {
           content: tag,
           rooms: [result.id as string],
         });
+
         await newHashtag.save();
       }
 
@@ -142,11 +191,12 @@ export class RoomService {
   //Need to think what can go wrong with this method. - ***CreatedAt has changed, If Image is not provided it will become default image
   async updateRoom(file, roomId, updateRoomDto) {
     const targetRoom = await this.findRoom(roomId);
-    const filename = targetRoom.imageLocation;
+    let filename = targetRoom.imageLocation;
+    let hashtags = targetRoom.hashtags;
 
     //if new image is provided, delete original image
     if (file) {
-      const filename = file.filename;
+      filename = file.filename;
       if (targetRoom.imageLocation != 'defaultImage.png') {
         await fs.unlink(
           `./public/roomImages/${targetRoom.imageLocation}`,
@@ -161,33 +211,44 @@ export class RoomService {
     }
 
     //reset Hashtags
-    for (let i = 0; i < targetRoom.hashtags.length; i++) {
-      const tag = targetRoom.hashtags[i];
-      const dbHashtag = await this.findHashtag(tag);
+    if (updateRoomDto.hashtag) {
+      for (let i = 0; i < targetRoom.hashtags.length; i++) {
+        const tag = targetRoom.hashtags[i];
+        const dbHashtag = await this.findHashtag(tag);
 
-      //If hashtag length is 1, delete hashtag from DB, else, remove roomId from hashtag.rooms
-      if (dbHashtag.rooms.length == 1) {
-        await this.hashtagModel.deleteOne({ _id: dbHashtag._id }).exec();
-      } else {
-        await this.hashtagModel.updateOne(
-          { _id: dbHashtag._id },
-          { $pull: { rooms: roomId } },
-        );
+        //If hashtag length is 1, delete hashtag from DB, else, remove roomId from hashtag.rooms
+
+        if (dbHashtag.rooms.length == 1) {
+          await this.hashtagModel.deleteOne({ _id: dbHashtag._id }).exec();
+        } else {
+          await this.hashtagModel.updateOne(
+            { _id: dbHashtag._id },
+            { $pull: { rooms: roomId } },
+          );
+        }
       }
-    }
 
-    //recreate Hashtags
-    for (let i = 0; i < updateRoomDto.hashtags.length; i++) {
-      const tag = updateRoomDto.hashtags[i];
-      const dbHashtag = await this.findHashtag(tag);
+      //change JSON Object to Array Object
 
-      //if no hashtag exists, create one
-      if (!dbHashtag) {
-        const newHashtag = new this.hashtagModel({
-          content: tag,
-          rooms: [roomId as string],
-        });
-        await newHashtag.save();
+      hashtags = updateRoomDto.hashtag
+        .toString()
+        .replace(/\[|\]/g, '')
+        .replace(/\s/g, '')
+        .split(',');
+
+      //recreate Hashtags
+      for (let i = 0; i < hashtags.length; i++) {
+        const tag = hashtags[i];
+        const dbHashtag = await this.findHashtag(tag);
+
+        //if no hashtag exists, create one
+        if (!dbHashtag) {
+          const newHashtag = new this.hashtagModel({
+            content: tag,
+            rooms: [roomId as string],
+          });
+          await newHashtag.save();
+        }
       }
     }
 
@@ -196,6 +257,7 @@ export class RoomService {
       {
         $set: {
           ...updateRoomDto,
+          hashtags,
           imageLocation: filename,
           lastVisited: new Date(),
         },

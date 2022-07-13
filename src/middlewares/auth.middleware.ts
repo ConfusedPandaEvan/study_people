@@ -1,12 +1,23 @@
-import { HttpException, HttpStatus, Injectable, NestMiddleware } from "@nestjs/common";
+import {
+  Module,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NestMiddleware,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserDocument } from 'src/users/user.Schema';
 import { Model } from 'mongoose';
-import { NextFunction, Request, Response } from "express";
+import { UserSchema } from 'src/schemas/user.Schema';
+import { SocialloginService } from 'src/sociallogin/sociallogin.service';
+import { NextFunction, Request, Response } from 'express';
+import { MongooseModule } from '@nestjs/mongoose';
+
 import * as jwt from 'jsonwebtoken';
+import { UserModule } from 'src/user/user.module';
 interface JwtPayload {
-    userId: string;
-  }
+  userId: string;
+}
 
 @Injectable()
 export class Authmiddleware implements NestMiddleware{

@@ -25,8 +25,8 @@ import { UsersModule } from './users/users.module';
         useUnifiedTopology: true,
       },
     ),
-    SocialloginModule,
     UserModule,
+    SocialloginModule,
     TodoListModule,
     RoomModule,
     MulterModule.register({
@@ -37,12 +37,6 @@ import { UsersModule } from './users/users.module';
   ],
 
   controllers: [AppController],
-  providers: [AppService, UserService],
+  providers: [AppService,UserService],
 })
-export class AppModule implements NestModule{
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(Authmiddleware)
-      .forRoutes(RoomController,TodoListController);
-  }
-}
+export class AppModule {}
