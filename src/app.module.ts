@@ -11,6 +11,7 @@ import { UsersService } from './users/users.service';
 import { UsersModule } from './users/users.module';
 import { RoomModule } from './room/room.module';
 import { ChatsModule } from './chats/chats.module';
+import { MessageModule } from './message/message.module';
 
 
 
@@ -32,6 +33,7 @@ import { ChatsModule } from './chats/chats.module';
       dest: './public',
     }),
     ChatsModule,
+    MessageModule
   ],
 
   controllers: [AppController],

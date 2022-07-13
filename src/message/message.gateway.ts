@@ -9,7 +9,7 @@ import { SockettoRoom } from './entities/sockettoroom.entity';
 import { getOfferDto } from './dto/getoffer.dto';
 import { getAnserDto } from './dto/getanswer.dto';
 import { getCandidateDto } from './dto/getcandidate.dto';
-@WebSocketGateway(3000,{
+@WebSocketGateway({
   transports: ['websocket','polling'],
   cors:{
     origin:'*',
