@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
+import { GetUser } from 'src/middlewares/get-user.decorator';
 import { CreateTodoListDto } from './dto/create-todo-list.dto';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoListDto } from './dto/update-todo-list.dto';
@@ -19,8 +20,8 @@ export class TodoListController {
   //make it possible to access with userId
   //get todos as well
   @Get()
-  async getAllTodoLists() {
-    const todoLists = await this.todoListService.getAllTodoLists();
+  async getAllTodoLists(@GetUser() userId: string) {
+    const todoLists = await this.todoListService.getAllTodoLists(userId);
     return todoLists;
   }
 
@@ -31,20 +32,22 @@ export class TodoListController {
     return todos;
   }
 
-  //Put Res.locals
   //Create a default Todo List and return the whole todolist
   @Post()
-  async createTodoList() {
-    await this.todoListService.createTodoList();
-    const todolists = await this.todoListService.getAllTodoLists();
+  async createTodoList(@GetUser() userId: string) {
+    await this.todoListService.createTodoList(userId);
+    const todolists = await this.todoListService.getAllTodoLists(userId);
     return todolists;
   }
 
   //Delete Todo-List and corresponding Todos
   @Delete('/:TodoListId')
-  async deleteTodoList(@Param('TodoListId') todoListId: string) {
+  async deleteTodoList(
+    @Param('TodoListId') todoListId: string,
+    @GetUser() userId: string,
+  ) {
     await this.todoListService.deleteTodoList(todoListId);
-    const todolists = this.getAllTodoLists();
+    const todolists = this.getAllTodoLists(userId);
     return todolists;
   }
 
@@ -53,9 +56,10 @@ export class TodoListController {
   async updateTodoList(
     @Param('TodoListId') todoListId: string,
     @Body() updateTodoListDto: UpdateTodoListDto,
+    @GetUser() userId: string,
   ) {
     await this.todoListService.updateTodoList(todoListId, updateTodoListDto);
-    const todolists = this.getAllTodoLists();
+    const todolists = this.getAllTodoLists(userId);
     return todolists;
   }
 
