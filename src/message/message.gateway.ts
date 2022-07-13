@@ -93,6 +93,7 @@ export class MessageGateway {
   const usersInThisRoom = this.users[data.roomId].filter(user => user.id !== client.id);
 
   console.log(usersInThisRoom);
+  //populate 과 execute를 사용하면 objectID 를 참조하여 JOIN 처럼 사용가능
   const chatInThisRoom = await this.chatModel.find({roomId:data.roomId});
   const datatoclient = {
     usersInThisRoom,
