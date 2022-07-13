@@ -1,16 +1,19 @@
 import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket } from '@nestjs/websockets';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { MessageService } from './message.service';
 import { CreateMessageDto } from './dto/create-message.dto';
 import { joinroomDto } from './dto/joinroom.dto';
 import { Server, Socket } from 'socket.io';
-
-import { Users } from './entities/users.entity'
+import { Room } from 'src/room/room.model';
 import { SockettoRoom } from './entities/sockettoroom.entity';
 import { getOfferDto } from './dto/getoffer.dto';
 import { getAnserDto } from './dto/getanswer.dto';
 import { getCandidateDto } from './dto/getcandidate.dto';
-
+import { NotFoundException } from '@nestjs/common';
 import { CreateChatDto } from 'src/chats/dto/create-chat.dto';
+import { Chat } from 'src/chats/chat.Schema';
+import { User } from 'src/users/user.Schema';
 
 @WebSocketGateway({
   transports: ['websocket','polling'],
@@ -32,7 +35,12 @@ export class MessageGateway {
   @WebSocketServer()
   server: Server;
   
-  constructor(private readonly messageService: MessageService) {}
+  constructor( @InjectModel('Room') private readonly roomModel: Model<Room>,
+  @InjectModel('Chat') private readonly chatModel: Model<Chat>,
+  @InjectModel('User') private readonly userModel: Model<User>,
+  private readonly messageService: MessageService){}
+
+
   public handleConnect(client: Socket): void {
     console.log(client.id)
   }
@@ -58,30 +66,39 @@ export class MessageGateway {
         console.log(this.users);
   }
   @SubscribeMessage('join_room')
-  joinRoom(@MessageBody() data: joinroomDto, @ConnectedSocket() client: Socket){
+  async joinRoom(@MessageBody() data: joinroomDto, @ConnectedSocket() client: Socket){
+    // const room = await this.roomModel.findById(data.roomId)
+    // console.log(room.users)
+    // if(room.users.includes(data.userId)){
 
-    if (this.users[data.room]) {
-      const length = this.users[data.room].length;
+
+    // }
+    if (this.users[data.roomId]) {
+      const length = this.users[data.roomId].length;
       if (length === 4) {
           this.server.to(client.id).emit('room_full');
           return;
       }
-      this.users[data.room].push({id: client.id, userid: data.userid});
+      this.users[data.roomId].push({id: client.id, userid: data.userId});
   } else {
-      this.users[data.room] = [{id: client.id, userid: data.userid}];
+      this.users[data.roomId] = [{id: client.id, userid: data.userId}];
   }
 
 
-  this.socketToRoom[client.id] = data.room;
+  this.socketToRoom[client.id] = data.roomId;
 
-  client.join(data.room);
+  client.join(data.roomId);
   console.log(`[${this.socketToRoom[client.id]}]: ${client.id} enter`);
 
-  const usersInThisRoom = this.users[data.room].filter(user => user.id !== client.id);
+  const usersInThisRoom = this.users[data.roomId].filter(user => user.id !== client.id);
 
   console.log(usersInThisRoom);
-
-  this.server.sockets.to(client.id).emit('all_users', usersInThisRoom);
+  const chatInThisRoom = await this.chatModel.find({roomId:data.roomId});
+  const datatoclient = {
+    usersInThisRoom,
+    chatInThisRoom
+  }
+  this.server.sockets.to(client.id).emit('all_users', datatoclient);
 
   }
 
@@ -123,8 +140,14 @@ export class MessageGateway {
 
   //채팅보내기
   @SubscribeMessage('MessageFromClient')
-  createMessage(@MessageBody() createChatDto: CreateChatDto) {
-    return this.createMessage(createChatDto);
+  async createMessage(@MessageBody() createChatDto: CreateChatDto,@ConnectedSocket() client: Socket) {
+    const newchat = new this.chatModel({
+      ...createChatDto,
+      createdAt: new Date()
+    })
+    await newchat.save()
+    client.broadcast.to(createChatDto.roomId).emit('chatForOther', newchat);
+    // return this.createMessage(createChatDto,client);
   }
 
   
@@ -146,5 +169,20 @@ export class MessageGateway {
   remove(@MessageBody() id: number) {
     return this.messageService.remove(id);
   }
+
+
+  ///private functions: migrate to message.service
+  // private async findRoom(id: string): Promise<Room> {
+  //   let room;
+  //   try {
+  //     room = await this.roomModel.findById(id).exec();
+  //   } catch (error) {
+  //     throw new NotFoundException('Could Not Find Room');
+  //   }
+  //   if (!room) {
+  //     throw new NotFoundException('Could Not Find Room');
+  //   }
+  //   return room;
+  // }
 }
 
