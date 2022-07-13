@@ -1,9 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Model } from 'mongoose';
-import { UserDocument } from 'src/users/user.Schema';
+import { User, UserDocument } from 'src/users/user.Schema';
 
 @Injectable()
 export class UsersService {
@@ -24,15 +24,51 @@ export class UsersService {
     return `This action returns all users`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+    let targetUser 
+    try {
+      targetUser = await this.userModel.findById(id).exec();
+
+    } catch (error) {
+      throw new NotFoundException('Could Not Find User');
+    }
+
+    return {user:targetUser,message:`user information of user ${id}`};
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    let updatingUser 
+    try {
+      updatingUser = await this.userModel.findById(id).exec();
+
+    } catch (error) {
+      throw new NotFoundException('Could Not Find User');
+    }
+
+    if (updateUserDto.email){
+      await this.userModel.updateOne({_id:id},{$set: {email:updateUserDto.email}})
+    }
+    if (updateUserDto.password){
+      await this.userModel.updateOne({_id:id},{$set: {password:updateUserDto.password}})
+    }
+    if (updateUserDto.userNick){
+      await this.userModel.updateOne({_id:id},{$set: {userNick:updateUserDto.userNick}})
+    }
+  
+    return {message:`${id} user information successfully updated`};
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    let deletingUser
+    try {
+      deletingUser = await this.userModel.findById(id).exec();
+
+    } catch (error) {
+      throw new NotFoundException('Could Not Find User');
+    }
+
+    await this.userModel.deleteOne({ _id: id }).exec();
+
+    return {message:`${id} user information successfully deleted`};
   }
 }
