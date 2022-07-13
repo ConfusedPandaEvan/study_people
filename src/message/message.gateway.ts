@@ -9,6 +9,9 @@ import { SockettoRoom } from './entities/sockettoroom.entity';
 import { getOfferDto } from './dto/getoffer.dto';
 import { getAnserDto } from './dto/getanswer.dto';
 import { getCandidateDto } from './dto/getcandidate.dto';
+
+import { CreateChatDto } from 'src/chats/dto/create-chat.dto';
+
 @WebSocketGateway({
   transports: ['websocket','polling'],
   cors:{
@@ -119,10 +122,12 @@ export class MessageGateway {
   // }
 
   //채팅보내기
-  @SubscribeMessage('createMessage')
-  create(@MessageBody() createMessageDto: CreateMessageDto) {
-    return this.messageService.create(createMessageDto);
+  @SubscribeMessage('MessageFromClient')
+  createMessage(@MessageBody() createChatDto: CreateChatDto) {
+    return this.createMessage(createChatDto);
   }
+
+  
   // 채팅 내보내기
   @SubscribeMessage('findAllMessage')
   findAll() {
