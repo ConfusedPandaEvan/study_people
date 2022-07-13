@@ -2,7 +2,7 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { RoomController } from './room/room.controller';
-import { TodoListController } from './todo-list/todo-list.controller'; 
+import { TodoListController } from './todo-list/todo-list.controller';
 import { AppService } from './app.service';
 import { MulterModule } from '@nestjs/platform-express';
 import { TodoListModule } from './todo-list/todo-list.module';
@@ -15,7 +15,7 @@ import { RoomModule } from './room/room.module';
   imports: [
     MongooseModule.forRoot(
       // 'mongodb+srv://test:sparta@cluster0.ylhhbdq.mongodb.net/?retryWrites=true&w=majority',
-      'mongodb+srv://test:sparta@cluster0.yjvro.mongodb.net/?retryWrites=true&w=majority',
+      'mongodb+srv://test:sparta@cluster0.yjvro.mongodb.net/Study_People?retryWrites=true&w=majority',
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,
@@ -31,6 +31,6 @@ import { RoomModule } from './room/room.module';
   ],
 
   controllers: [AppController],
-  providers: [AppService,UserService],
+  providers: [AppService, UserService],
 })
 export class AppModule {}
