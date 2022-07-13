@@ -17,14 +17,16 @@ export class ChatsController {
     return this.chatsService.findAll();
   }
 
-  @Get(':roomid')
-  findOne(@Param('roomid') roomId: string) {
-    return this.chatsService.findChatsInsideRoom(roomId);
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.chatsService.findOne(id);
+
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateChatDto: UpdateChatDto) {
-    return this.chatsService.update(+id, updateChatDto);
+    return this.chatsService.update(id, updateChatDto);
   }
 
   @Delete(':id')

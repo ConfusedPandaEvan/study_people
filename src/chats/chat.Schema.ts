@@ -18,4 +18,6 @@ export class Chat {
   createdAt: Date;
 }
 
+
 export const ChatSchema = SchemaFactory.createForClass(Chat);
+
