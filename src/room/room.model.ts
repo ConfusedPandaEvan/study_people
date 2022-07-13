@@ -1,5 +1,5 @@
 import * as mongoose from 'mongoose';
-import { User, UserSchema } from 'src/schemas/user.Schema';
+import { User, UserSchema } from 'src/users/user.Schema';
 
 export const RoomSchema = new mongoose.Schema({
   users: { type: [String], default: undefined, required: true },

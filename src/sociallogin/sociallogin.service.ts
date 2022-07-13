@@ -1,7 +1,7 @@
 import { Injectable, Query, Redirect } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { UserDocument } from 'src/schemas/user.Schema';
+import { UserDocument } from 'src/users/user.Schema';
 import * as rp from 'request-promise';
 import * as jwt from 'jsonwebtoken';
 
