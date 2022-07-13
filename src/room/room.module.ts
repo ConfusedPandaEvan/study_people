@@ -4,7 +4,7 @@ import { HashtagSchema } from './hashtag.model';
 import { RoomController } from './room.controller';
 import { RoomSchema } from './room.model';
 import { RoomService } from './room.service';
-import { UserSchema } from 'src/schemas/user.Schema';
+import { UserSchema } from 'src/users/user.Schema';
 import { Authmiddleware } from 'src/middlewares/auth.middleware';
 import { SocialloginService } from 'src/sociallogin/sociallogin.service';
 
