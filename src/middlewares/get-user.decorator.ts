@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { User } from 'src/schemas/user.Schema';
+import { User } from 'src/users/user.Schema';
 import * as jwt from 'jsonwebtoken';
 interface JwtPayload {
   userId: string;

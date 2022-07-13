@@ -20,7 +20,7 @@ import { UpdateRoomDto } from './dto/update-room.dto';
 import { Room } from './room.model';
 import { RoomService } from './room.service';
 import { GetUser } from 'src/middlewares/get-user.decorator';
-import { User } from 'src/schemas/user.Schema';
+import { User } from 'src/users/user.Schema';
 
 @Controller('room')
 export class RoomController {

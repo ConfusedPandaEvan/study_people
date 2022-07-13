@@ -5,7 +5,7 @@ import { TodoListController } from './todo-list.controller';
 import { TodoListService } from './todo-list.service';
 import { TodoListSchema } from './todo-list.model';
 import { TodoSchema } from './todo.model';
-import { UserSchema } from 'src/schemas/user.Schema';
+import { UserSchema } from 'src/users/user.Schema';
 import { Authmiddleware } from 'src/middlewares/auth.middleware';
 import { SocialloginService } from 'src/sociallogin/sociallogin.service';
 
