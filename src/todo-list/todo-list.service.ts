@@ -16,8 +16,8 @@ export class TodoListService {
   ) {}
 
   //Add getting todolist by userId
-  async getAllTodoLists() {
-    const todoLists = await this.todoListModel.find().exec();
+  async getAllTodoLists(userId) {
+    const todoLists = await this.todoListModel.find({ userId: userId }).exec();
     //add getting todos
     return todoLists.map((todoL) => ({
       todoListId: todoL.id,
@@ -36,10 +36,7 @@ export class TodoListService {
   }
 
   //Create Default TodoList with one Default Todo
-  async createTodoList() {
-    //delete this part and update with res.locals
-    const userId = 'somedopedude';
-
+  async createTodoList(userId) {
     const newTodoList = new this.todoListModel({
       userId,
       title: 'default To-do List',

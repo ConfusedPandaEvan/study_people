@@ -15,7 +15,7 @@ import { RoomModule } from './room/room.module';
   imports: [
     MongooseModule.forRoot(
       // 'mongodb+srv://test:sparta@cluster0.ylhhbdq.mongodb.net/?retryWrites=true&w=majority',
-      'mongodb+srv://test:sparta@cluster0.yjvro.mongodb.net/Study_People?retryWrites=true&w=majority',
+      'mongodb+srv://test:sparta@cluster0.yjvro.mongodb.net/Stupy?retryWrites=true&w=majority',
       {
         useNewUrlParser: true,
         useUnifiedTopology: true,

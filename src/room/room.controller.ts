@@ -19,6 +19,8 @@ import { diskStorage } from 'multer';
 import { UpdateRoomDto } from './dto/update-room.dto';
 import { Room } from './room.model';
 import { RoomService } from './room.service';
+import { GetUser } from 'src/middlewares/get-user.decorator';
+import { User } from 'src/schemas/user.Schema';
 
 @Controller('room')
 export class RoomController {
@@ -52,14 +54,12 @@ export class RoomController {
     return rooms;
   }
 
-  // Need to get userId from Locals
   @Get('/leave_room/:roomId')
-  async leaveRoom(@Param('roomId') roomId: string) {
-    await this.roomService.leaveRoom(roomId);
+  async leaveRoom(@Param('roomId') roomId: string, @GetUser() userId: string) {
+    await this.roomService.leaveRoom(roomId, userId);
     return null;
   }
 
-  // Need to get userId from Locals
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {
@@ -72,21 +72,25 @@ export class RoomController {
   )
   async createRoom(
     @UploadedFile() file,
-    // @Response() res,
     @Body() createRoomDto: CreateRoomDto,
+    @GetUser() userId: string,
   ) {
-    //put res here for createRoom
-    const generatedId = await this.roomService.createRoom(file, createRoomDto);
+    const generatedId = await this.roomService.createRoom(
+      file,
+      createRoomDto,
+      userId,
+    );
     return { id: generatedId };
   }
 
+  //Set Limit as Room Owner
   @Delete('/:roomId')
   async deleteRoom(@Param('roomId') roomId: string) {
     await this.roomService.deleteRoom(roomId);
     return null;
   }
 
-  // Need to get userId from Locals
+  //Set Limit as Room Owner
   @Patch('/:roomId')
   @UseInterceptors(
     FileInterceptor('image', {

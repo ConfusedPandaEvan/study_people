@@ -72,10 +72,7 @@ export class RoomService {
     }
   }
 
-  //put res here
-  async leaveRoom(roomId) {
-    const userId = 'dopeDude';
-
+  async leaveRoom(roomId, userId) {
     const targetRoom = await this.findRoom(roomId);
 
     //When leaving, if the person is the only one in the room, delete room. If not, just remove the user from room
@@ -89,10 +86,7 @@ export class RoomService {
     }
   }
 
-  //put res here
-  async createRoom(file, createRoomDto) {
-    // const { userId } = res.locals.user;
-
+  async createRoom(file, createRoomDto, userId) {
     //Default Image if image is not provided
     let filename = 'defaultImage.png';
     if (file) {
@@ -107,9 +101,6 @@ export class RoomService {
       .split(',');
 
     const hashtags = [...new Set(hashtagsinfo)];
-
-    //Need to delete this part after putting res for res.locals.userid
-    const userId = ['dopeDude'];
 
     const newRoom = new this.roomModel({
       ...createRoomDto,
@@ -188,7 +179,6 @@ export class RoomService {
   }
 
   //put res here
-  //Need to think what can go wrong with this method. - ***CreatedAt has changed, If Image is not provided it will become default image
   async updateRoom(file, roomId, updateRoomDto) {
     const targetRoom = await this.findRoom(roomId);
     let filename = targetRoom.imageLocation;
