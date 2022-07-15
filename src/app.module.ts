@@ -1,4 +1,4 @@
-import { Module, NestModule, MiddlewareConsumer} from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { RoomController } from './room/room.controller';
@@ -12,17 +12,16 @@ import { UsersModule } from './users/users.module';
 import { RoomModule } from './room/room.module';
 import { ChatsModule } from './chats/chats.module';
 import { MessageModule } from './message/message.module';
-import { join } from 'path'
-import { ServeStaticModule } from '@nestjs/serve-static'
+import { join } from 'path';
+import { ServeStaticModule } from '@nestjs/serve-static';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
     MongooseModule.forRoot(
-
       // 'mongodb+srv://test:sparta@cluster0.ylhhbdq.mongodb.net/?retryWrites=true&w=majority',
-      'mongodb+srv://test:sparta@Stupy.yjvro.mongodb.net/?retryWrites=true&w=majority',
+      'mongodb+srv://test:sparta@cluster0.yjvro.mongodb.net/Stupy?retryWrites=true&w=majority',
 
       {
         useNewUrlParser: true,
@@ -37,12 +36,11 @@ import { ServeStaticModule } from '@nestjs/serve-static'
       dest: './public',
     }),
     ChatsModule,
-    MessageModule
+    MessageModule,
   ],
 
   controllers: [AppController],
 
   providers: [AppService],
-
 })
 export class AppModule {}

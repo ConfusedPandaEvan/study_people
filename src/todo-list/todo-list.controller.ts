@@ -40,6 +40,25 @@ export class TodoListController {
     return todolists;
   }
 
+  //Change Todo Status
+  @Post('/status_to_false/:TodoListId/:TodoId')
+  async statusTodo2False(
+    @Param('TodoListId') todoListId: string,
+    @Param('TodoId') todoId: string,
+  ) {
+    await this.todoListService.statusTodo2False(todoListId, todoId);
+    return null;
+  }
+
+  @Post('/status_to_true/:TodoListId/:TodoId')
+  async statusTodo2True(
+    @Param('TodoListId') todoListId: string,
+    @Param('TodoId') todoId: string,
+  ) {
+    await this.todoListService.statusTodo2True(todoListId, todoId);
+    return null;
+  }
+
   //Delete Todo-List and corresponding Todos
   @Delete('/:TodoListId')
   async deleteTodoList(
@@ -92,15 +111,5 @@ export class TodoListController {
     await this.todoListService.updateTodo(todoListId, todoId, createTodoDto);
     const todos = await this.todoListService.getAllTodo(todoListId);
     return todos;
-  }
-
-  //Change Todo Status
-  @Get('/:TodoListId/:TodoId')
-  async statusTodo(
-    @Param('TodoListId') todoListId: string,
-    @Param('TodoId') todoId: string,
-  ) {
-    await this.todoListService.statusTodo(todoListId, todoId);
-    return null;
   }
 }

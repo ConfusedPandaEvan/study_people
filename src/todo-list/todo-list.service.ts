@@ -100,7 +100,7 @@ export class TodoListService {
   }
 
   //Need to fix toggle status part
-  async statusTodo(todoListId, todoId) {
+  async statusTodo2False(todoListId, todoId) {
     // const status = await this.todoListModel
     //   .find({ _id: todoListId }, { todos: { $elemMatch: { _id: todoId } } })
     //   .exec();
@@ -110,7 +110,18 @@ export class TodoListService {
       { $set: { 'todos.$[elem].status': false } },
       { arrayFilters: [{ $and: [{ 'elem._id': todoId }] }] },
     );
+    return null;
+  }
+  async statusTodo2True(todoListId, todoId) {
+    // const status = await this.todoListModel
+    //   .find({ _id: todoListId }, { todos: { $elemMatch: { _id: todoId } } })
+    //   .exec();
 
+    await this.todoListModel.updateOne(
+      { _id: todoListId },
+      { $set: { 'todos.$[elem].status': true } },
+      { arrayFilters: [{ $and: [{ 'elem._id': todoId }] }] },
+    );
     return null;
   }
 

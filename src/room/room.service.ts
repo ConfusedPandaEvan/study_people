@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Hashtag } from './hashtag.model';
@@ -95,6 +99,20 @@ export class RoomService {
         { _id: roomId },
         { $pull: { users: userId } },
       );
+    }
+  }
+
+  async enterRoom(roomId, userId) {
+    const targetRoom = await this.findRoom(roomId);
+
+    //When leaving, if the person is the only one in the room, delete room. If not, just remove the user from room
+    if (targetRoom.users.length < targetRoom.maxPeople) {
+      await this.roomModel.updateOne(
+        { _id: roomId },
+        { $push: { users: userId } },
+      );
+    } else {
+      throw new BadRequestException('The room is full.');
     }
   }
 
