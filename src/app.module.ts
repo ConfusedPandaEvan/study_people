@@ -21,8 +21,8 @@ import { ServeStaticModule } from '@nestjs/serve-static'
     }),
     MongooseModule.forRoot(
 
-      'mongodb+srv://test:sparta@cluster0.ylhhbdq.mongodb.net/?retryWrites=true&w=majority',
-      // 'mongodb+srv://test:sparta@cluster0.yjvro.mongodb.net/?retryWrites=true&w=majority',
+      // 'mongodb+srv://test:sparta@cluster0.ylhhbdq.mongodb.net/?retryWrites=true&w=majority',
+      'mongodb+srv://test:sparta@Stupy.yjvro.mongodb.net/?retryWrites=true&w=majority',
 
       {
         useNewUrlParser: true,
