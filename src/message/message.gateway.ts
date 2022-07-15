@@ -19,7 +19,7 @@ import { User } from 'src/users/user.Schema';
   transports: ['websocket','polling'],
   cors:{
     // origin:'*',
-    origin:["http://stupy.co.kr","https://stupy.co.kr"],
+    origin:"http://stupy.co.kr",
     methods: ["GET","POST"],
     credentials: true
   },
