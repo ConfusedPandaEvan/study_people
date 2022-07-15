@@ -17,14 +17,10 @@ export class RoomService {
 
     //Need to Edit Room Mapping if needed
     return rooms.map((roomL) => ({
-      roomId: roomL._id,
       title: roomL.title,
-      usersNum: roomL.users.length,
-      maxPeople: roomL.maxPeople,
+      users: roomL.users,
       content: roomL.content,
       hashtags: roomL.hashtags,
-      openKakao: roomL.openKakao,
-      image: '../public/roomImages/' + roomL.imageLocation,
     }));
   }
 
@@ -37,14 +33,10 @@ export class RoomService {
       ])
       .exec();
     return rooms.map((roomL) => ({
-      roomId: roomL._id,
       title: roomL.title,
-      usersNum: roomL.users.length,
-      maxPeople: roomL.maxPeople,
+      users: roomL.users,
       content: roomL.content,
       hashtags: roomL.hashtags,
-      openKakao: roomL.openKakao,
-      image: '../public/roomImages/' + roomL.imageLocation,
     }));
   }
 
@@ -68,14 +60,10 @@ export class RoomService {
       }
 
       return rooms.map((roomL) => ({
-        roomId: roomL._id,
         title: roomL.title,
-        usersNum: roomL.users.length,
-        maxPeople: roomL.maxPeople,
+        users: roomL.users,
         content: roomL.content,
         hashtags: roomL.hashtags,
-        openKakao: roomL.openKakao,
-        image: '../public/roomImages/' + roomL.imageLocation,
       }));
     } catch (error) {
       throw new NotFoundException(
