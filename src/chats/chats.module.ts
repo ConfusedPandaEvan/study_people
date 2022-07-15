@@ -4,8 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ChatsController } from './chats.controller';
 import { ChatSchema } from './chat.Schema';
 
-
-
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'Chat', schema: ChatSchema }])],
   controllers: [ChatsController],
