@@ -1,9 +1,15 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import * as fs from 'fs';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const httpsOptions = {
+    key: fs.readFileSync('./private.key'),
+    cert: fs.readFileSync('./private.crt')
+
+  }
+  const app = await NestFactory.create(AppModule,{httpsOptions});
   app.enableCors();
 //   app.enableCors({
 //     origin:"http://stupy.co.kr",
