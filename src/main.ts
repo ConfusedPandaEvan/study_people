@@ -1,17 +1,38 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { ExpressAdapter } from '@nestjs/platform-express';
+import { SocketIoAdapter } from './adapters/socket-io.adapters';
+
+import * as fs from 'fs';
+import * as http from 'http';
+import * as https from 'https';
+import * as express from 'express';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const httpsOptions = {
+    key: fs.readFileSync(__dirname + '/private.key', 'utf-8'),
+    cert: fs.readFileSync(__dirname + '/certificate.crt', 'utf-8'),
+    ca: fs.readFileSync(__dirname + '/ca_bundle.crt', 'utf-8'),
+  };
+  const server = express();
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
   app.enableCors();
-//   app.enableCors({
-//     origin:"http://stupy.co.kr",
-//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-//     credentials: true,
-// });
 
   app.useGlobalPipes(new ValidationPipe());
-  await app.listen(3000);
+
+  await app.init();
+
+  const httpServer = http.createServer(server);
+  const httpsServer = https.createServer(httpsOptions, server);
+  app.useWebSocketAdapter(new SocketIoAdapter(httpServer));
+
+  httpServer.listen(3000, () => {
+    console.log('3000번 포트로 서버가 켜졌어요.');
+  });
+  httpsServer.listen(3001, () => {
+    console.log('3001번 포트로 서버가 켜졌어요.');
+  });
 }
+
 bootstrap();
