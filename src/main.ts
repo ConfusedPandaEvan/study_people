@@ -19,7 +19,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   await app.init();
 
-  http.createServer(server).listen(3000);
-  https.createServer(server).listen(443);
+  // http.createServer(server).listen(3000);
+  await https.createServer(server).listen(443);
 }
 bootstrap();
