@@ -9,11 +9,11 @@ export class AppController {
   getHello(): string {
     return this.appService.getHello();
   }
-  @Get('/.well-known/pki-validation/010E487D5E54DDAB56FEEBAF2F4EAB37.txt')
+  @Get('/.well-known/pki-validation/724F5E422FBC3D01831016D700674821.txt')
   wellknown(@Res() res: any) {
     res.sendFile(
       __dirname +
-        '/.well-known/pki-validation/010E487D5E54DDAB56FEEBAF2F4EAB37.txt',
+        '/.well-known/pki-validation/724F5E422FBC3D01831016D700674821.txt',
     );
   }
 }
