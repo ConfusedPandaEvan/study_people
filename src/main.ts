@@ -2,7 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { SocketIoAdapter } from './adapters/socket-io.adapters';
+// import { SocketIoAdapter } from './adapters/socket-io.adapters';
 
 import * as fs from 'fs';
 import * as http from 'http';
