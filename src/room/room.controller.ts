@@ -60,6 +60,12 @@ export class RoomController {
     return null;
   }
 
+  @Get('/enter_room/:roomId')
+  async enterRoom(@Param('roomId') roomId: string, @GetUser() userId: string) {
+    await this.roomService.enterRoom(roomId, userId);
+    return null;
+  }
+
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {
