@@ -15,11 +15,11 @@ import { CreateChatDto } from 'src/chats/dto/create-chat.dto';
 import { Chat } from 'src/chats/chat.Schema';
 import { User } from 'src/users/user.Schema';
 
-@WebSocketGateway({
+@WebSocketGateway(5000,{
   transports: ['websocket','polling'],
   cors:{
-    // origin:'*',
-    origin:"http://stupy.co.kr",
+    origin:'*',
+    // origin:"http://stupy.co.kr",
     methods: ["GET","POST"],
     credentials: true
   },

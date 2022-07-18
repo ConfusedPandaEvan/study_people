@@ -2,7 +2,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
-// import { SocketIoAdapter } from './adapters/socket-io.adapters';
+// import { IoAdapter } from '@nestjs/platform-socket.io';
+import { SocketIoAdapter } from './adapters/socket-io.adapters';
 
 import * as fs from 'fs';
 import * as http from 'http';
@@ -25,7 +26,7 @@ async function bootstrap() {
 
   const httpServer = http.createServer(server);
   const httpsServer = https.createServer(httpsOptions, server);
-  // app.useWebSocketAdapter(new SocketIoAdapter(httpServer));
+  app.useWebSocketAdapter(new SocketIoAdapter(httpServer));
 
   httpServer.listen(3000, () => {
     console.log('3000번 포트로 서버가 켜졌어요.');
