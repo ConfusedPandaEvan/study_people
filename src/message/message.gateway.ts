@@ -15,15 +15,22 @@ import { CreateChatDto } from 'src/chats/dto/create-chat.dto';
 import { Chat } from 'src/chats/chat.Schema';
 import { User } from 'src/users/user.Schema';
 
-@WebSocketGateway(5000,{
-  transports: ['websocket','polling'],
-  cors:{
-    // origin:'*',
-    origin:"http://stupy.co.kr",
-    methods: ["GET","POST"],
-    credentials: true
+// @WebSocketGateway(5000,{
+//   transports: ['websocket','polling'],
+//   cors:{
+//     // origin:'*',
+//     origin:"http://stupy.co.kr",
+//     methods: ["GET","POST"],
+//     credentials: true
+//   },
+//   allowEIO3: true
+// })
+
+@WebSocketGateway(5000, {
+  transports: ['websocket'],
+  cors: {
+    origin: '*',
   },
-  allowEIO3: true
 })
 export class MessageGateway {
 
