@@ -12,7 +12,7 @@ export class SocialloginService {
     async kakaoLoginMain(@Query() query) {
         const kakao = {
             clientid: '968fe442549959a4ab2bb530f508c889',
-            redirectUri: 'https://54.180.141.17:3000/main',
+            redirectUri: 'https://stupy.shop:3000/main',
             // 수정 필요 redirectUri: 'http://13.125.58.110:3000/main',
         };
 
