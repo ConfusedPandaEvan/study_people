@@ -18,8 +18,8 @@ import { User } from 'src/users/user.Schema';
 @WebSocketGateway(5000,{
   transports: ['websocket','polling'],
   cors:{
-    origin:'*',
-    // origin:"http://stupy.co.kr",
+    // origin:'*',
+    origin:"http://stupy.co.kr",
     methods: ["GET","POST"],
     credentials: true
   },
