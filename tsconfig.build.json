@@ -1,5 +1,4 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["./ca_bundle.crt", "./certificate.crt", "./private.key"],
   "exclude": ["node_modules", "test", "dist", "**/*spec.ts"]
 }
