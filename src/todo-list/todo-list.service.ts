@@ -17,7 +17,13 @@ export class TodoListService {
 
   //Add getting todolist by userId
   async getAllTodoLists(userId) {
-    const todoLists = await this.todoListModel.find({ userId: userId }).exec();
+    let todoLists = await this.todoListModel.find({ userId: userId }).exec();
+
+    if (!todoLists) {
+      await this.createTodoList(userId);
+      todoLists = await this.todoListModel.find({ userId: userId }).exec();
+    }
+
     //add getting todos
     return todoLists.map((todoL) => ({
       todoListId: todoL.id,

@@ -17,7 +17,7 @@ async function bootstrap() {
     ca: fs.readFileSync(__dirname + '/ca_bundle.crt', 'utf-8'),
   };
   // const server = express();
-  const app = await NestFactory.create(AppModule, {httpsOptions});
+  const app = await NestFactory.create(AppModule, { httpsOptions });
   app.enableCors();
 
   await app.init();
@@ -32,8 +32,7 @@ async function bootstrap() {
   // httpsServer.listen(3001, () => {
   //   console.log('3001번 포트로 서버가 켜졌어요.');
   // });
-  await app.listen(3000)
-  
+  await app.listen(3000);
 }
 
 bootstrap();
