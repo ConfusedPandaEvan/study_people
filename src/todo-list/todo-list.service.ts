@@ -19,7 +19,7 @@ export class TodoListService {
   async getAllTodoLists(userId) {
     let todoLists = await this.todoListModel.find({ userId: userId }).exec();
 
-    if (!todoLists) {
+    if (todoLists.length == 0) {
       await this.createTodoList(userId);
       todoLists = await this.todoListModel.find({ userId: userId }).exec();
     }
