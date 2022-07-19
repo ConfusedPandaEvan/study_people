@@ -14,6 +14,7 @@ import { NotFoundException } from '@nestjs/common';
 import { CreateChatDto } from 'src/chats/dto/create-chat.dto';
 import { Chat } from 'src/chats/chat.Schema';
 import { User } from 'src/users/user.Schema';
+import { Time } from 'src/times/time.Schema';
 
 @WebSocketGateway({
   transports: ['websocket','polling'],
@@ -36,7 +37,8 @@ export class MessageGateway {
 
   users = { '123456': [ { id: 'testsocketid', userid: 'test' }]}
   socketToRoom = {'123456':'123456'} 
-  
+  public starttime: Date
+  public endtime: Date
 
 
   @WebSocketServer()
@@ -45,6 +47,7 @@ export class MessageGateway {
   constructor( @InjectModel('Room') private readonly roomModel: Model<Room>,
   @InjectModel('Chat') private readonly chatModel: Model<Chat>,
   @InjectModel('User') private readonly userModel: Model<User>,
+  @InjectModel('Time') private readonly timeModel: Model<Time>,
   private readonly messageService: MessageService){}
 
 
@@ -57,10 +60,31 @@ export class MessageGateway {
   public handleConnection(client: Socket): void {
     console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
   }
-  public handleDisconnect(client: Socket): void {
+  public async handleDisconnect(client: Socket): Promise<void> {
     console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
     const roomID = this.socketToRoom[client.id];
         let room = this.users[roomID];
+
+        //타이머 기능 추가 우선 5 초 이상 머물러야 기록함
+        this.endtime = new Date()
+        const timediffinms = this.endtime.getTime() - this.starttime.getTime();
+        if (timediffinms >= 5000){
+          const newtime = new this.timeModel({
+            roomId:roomID,
+            userId: room.userid,
+            studytime: timediffinms
+          })
+          
+          await newtime.save()
+          console.log('studytime has been saved')
+        } else {
+          console.log('studytime has not been saved')
+        }
+
+
+        
+
+
         if (room) {
             room = room.filter((user) => user.id !== client.id);
             this.users[roomID] = room;
@@ -69,6 +93,9 @@ export class MessageGateway {
                 return;
             }
         }
+
+
+
         this.server.to(roomID).emit('user_exit', {id: client.id});
         console.log(this.users);
   }
@@ -102,6 +129,7 @@ export class MessageGateway {
   const usersInThisRoom = this.users[data.roomId].filter(user => user.id !== client.id);
   console.log('alluser in the room rightnow',this.users[data.roomId]);
   console.log('userinthisroom (not including oneself)',usersInThisRoom);
+  this.starttime = new Date()
   //populate 과 execute를 사용하면 objectID 를 참조하여 JOIN 처럼 사용가능
   const chatInThisRoom = await this.chatModel.find({roomId:data.roomId});
   const datatoclient = {
