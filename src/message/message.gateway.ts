@@ -90,12 +90,13 @@ export class MessageGateway {
   } else {
       this.users[data.roomId] = [{id: client.id, userid: data.userId}];
   }
-
+  console.log('current users',this.users)
 
   this.socketToRoom[client.id] = data.roomId;
+  console.log('current socketTORoom ',this.socketToRoom)
 
   client.join(data.roomId);
-  console.log(`[${this.socketToRoom[client.id]}]: ${client.id} enter`);
+  console.log(`roomID: [${this.socketToRoom[client.id]}]: userId of ${client.id} enter`);
 
   const usersInThisRoom = this.users[data.roomId].filter(user => user.id !== client.id);
 
@@ -110,6 +111,7 @@ export class MessageGateway {
 
   }
 
+  
   
     
   
