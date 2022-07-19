@@ -1,4 +1,14 @@
 {
+  "compilerOptions": {    
+    "assets": [
+      {
+        "include": "../ssl-keys",
+        "outDir": "dist",
+        "watchAssets": true
+      }
+    ],
+    "watchAssets": true
+  },
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
   "sourceRoot": "src"
