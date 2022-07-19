@@ -83,6 +83,7 @@ export class MessageGateway {
     if (this.users[data.roomId]) {
       const length = this.users[data.roomId].length;
       if (length === 4) {
+          console.log('room is full!!!!!!!!!!')
           this.server.to(client.id).emit('room_full');
           return;
       }
@@ -96,11 +97,11 @@ export class MessageGateway {
   console.log('current socketTORoom ',this.socketToRoom)
 
   client.join(data.roomId);
-  console.log(`roomID: [${this.socketToRoom[client.id]}]: userId of ${client.id} enter`);
+  console.log(`: userId :${client.id} has entered roomID: [${this.socketToRoom[client.id]}]`);
 
   const usersInThisRoom = this.users[data.roomId].filter(user => user.id !== client.id);
-
-  console.log(usersInThisRoom);
+  console.log('alluser in the room rightnow',this.users[data.roomId]);
+  console.log('userinthisroom (not including oneself)',usersInThisRoom);
   //populate 과 execute를 사용하면 objectID 를 참조하여 JOIN 처럼 사용가능
   const chatInThisRoom = await this.chatModel.find({roomId:data.roomId});
   const datatoclient = {
@@ -111,7 +112,7 @@ export class MessageGateway {
 
   }
 
-  
+
   
     
   
@@ -156,6 +157,7 @@ export class MessageGateway {
       createdAt: new Date()
     })
     await newchat.save()
+    console.log('the message has been saved to the DB: ',createChatDto.content,)
     client.broadcast.to(createChatDto.roomId).emit('chatForOther', newchat);
     // return this.createMessage(createChatDto,client);
   }
