@@ -19,9 +19,9 @@ import { User } from 'src/users/user.Schema';
   transports: ['websocket','polling'],
   cors:{
     // origin:'*',
-    origin:["http://stupy.co.kr","https://stupy.co.kr","https://localhost:3000","localhost:3000"],
+    origin:["http://stupy.co.kr","https://stupy.co.kr","https://localhost:3000","http://localhost:3000"],
     methods: ["GET","POST"],
-    credentials: true
+    credentials: false
   },
   allowEIO3: true
 })
@@ -30,7 +30,7 @@ import { User } from 'src/users/user.Schema';
 //   transports: ['websocket'],
 //   cors: {
 //     origin: '*',
-//   },
+//   },ggggggggggggggg
 // })
 export class MessageGateway {
 
