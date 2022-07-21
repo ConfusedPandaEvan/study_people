@@ -56,6 +56,8 @@ export class MessageGateway {
   
   public handleConnection(client: Socket): void {
     console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
+    const token = client.handshake.auth.token
+    console.log('유저의 토큰값:',token)
   }
   public handleDisconnect(client: Socket): void {
     console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
