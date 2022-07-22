@@ -41,8 +41,8 @@ export class MessageGateway {
 
   users = { '123456': [ { id: 'testsocketid', userid: 'test' }]}
   socketToRoom = {'123456':'123456'} 
-  public starttime: Date
-  public endtime: Date
+  // public starttime: Date
+  // public endtime: Date
 
 
   @WebSocketServer()
@@ -87,20 +87,20 @@ export class MessageGateway {
         let room = this.users[roomID];
 
         //타이머 기능 추가 우선 5 초 이상 머물러야 기록함
-        this.endtime = new Date()
-        const timediffinms = this.endtime.getTime() - this.starttime.getTime();
-        if (timediffinms >= 5000){
-          const newtime = new this.timeModel({
-            roomId:roomID,
-            userId: room.userid,
-            studytime: timediffinms
-          })
+        // this.endtime = new Date()
+        // const timediffinms = this.endtime.getTime() - this.starttime.getTime();
+        // if (timediffinms >= 5000){
+        //   const newtime = new this.timeModel({
+        //     roomId:roomID,
+        //     userId: room.userid,
+        //     studytime: timediffinms
+        //   })
           
-          await newtime.save()
-          console.log('studytime has been saved')
-        } else {
-          console.log('studytime has not been saved')
-        }
+        //   await newtime.save()
+        //   console.log('studytime has been saved')
+        // } else {
+        //   console.log('studytime has not been saved')
+        // }
 
 
         
@@ -126,8 +126,7 @@ export class MessageGateway {
   async joinRoom(@MessageBody() data: joinroomDto, @ConnectedSocket() client: Socket){
     const token = client.handshake.auth.token
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
-    const joineduser = await this.userModel.findOne({ _id: verifiedtoken.userId })
-    const joineduserid = joineduser.id as string
+    const joineduserid = verifiedtoken.userId
     // const room = await this.roomModel.findById(data.roomId)
     // console.log(room.users)
     // if(room.users.includes(data.userId)){
@@ -156,14 +155,14 @@ export class MessageGateway {
   const usersInThisRoom = this.users[data.roomId].filter(user => user.id !== client.id);
   console.log('alluser in the room rightnow',this.users[data.roomId]);
   console.log('userinthisroom (not including oneself)',usersInThisRoom);
-  this.starttime = new Date()
-  const timestarted = this.starttime
+  // this.starttime = new Date()
+  // const timestarted = this.starttime
   //populate 과 execute를 사용하면 objectID 를 참조하여 JOIN 처럼 사용가능
   const chatInThisRoom = await this.chatModel.find({roomId:data.roomId}).populate("userId");
   const datatoclient = {
     usersInThisRoom,
     chatInThisRoom,
-    timestarted
+    // timestarted
   }
   this.server.sockets.to(client.id).emit('all_users', datatoclient);
   // datatoclient.chatInThisRoom.userId.userNick 안에 닉네임이 들어가게씀 줘라 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
