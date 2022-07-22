@@ -12,7 +12,7 @@ export class Chat {
   @Prop()
   content: string;
 
-  @Prop({type: mongoose.Schema.Types.ObjectId,ref: 'User'})
+  @Prop()
   userId: User;
 
   @Prop()

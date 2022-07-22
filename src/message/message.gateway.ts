@@ -158,7 +158,7 @@ export class MessageGateway {
   // this.starttime = new Date()
   // const timestarted = this.starttime
   //populate 과 execute를 사용하면 objectID 를 참조하여 JOIN 처럼 사용가능
-  const chatInThisRoom = await this.chatModel.find({roomId:data.roomId}).populate("userId");
+  const chatInThisRoom = await this.chatModel.find({roomId:data.roomId});
   const datatoclient = {
     usersInThisRoom,
     chatInThisRoom,
@@ -212,14 +212,15 @@ export class MessageGateway {
     const token = client.handshake.auth.token
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     const joineduserid = verifiedtoken.userId
-    const chat = new this.chatModel({
+
+    const user = await this.userModel.findOne({ _id: joineduserid})
+    const newchat = new this.chatModel({
       ...createChatDto,
-      userId:joineduserid,
+      userId:user,
       createdAt: new Date()
     })
-    await chat.save()
-    const newchat = await this.chatModel.findById(chat._id).populate("userId")
-    console.log('the message has been saved to the DB: ',createChatDto.content,)
+    await newchat.save()
+    console.log('the message has been saved to the DB: ',createChatDto.content,newchat)
     client.broadcast.to(createChatDto.roomId).emit('chatForOther', newchat);
     // newchat 안에 usernick 담아서 줄것 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // return this.createMessage(createChatDto,client);
