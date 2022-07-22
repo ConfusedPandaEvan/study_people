@@ -35,7 +35,7 @@ interface JwtPayload {
 //   transports: ['websocket'],
 //   cors: {
 //     origin: '*',
-//   },
+//   },ggggggggggggggg
 // })
 export class MessageGateway {
 
@@ -64,6 +64,7 @@ export class MessageGateway {
   public handleConnection(client: Socket): void {
     console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
     const token = client.handshake.auth.token
+
     try {
       const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
       this.userModel.findOne({ _id: verifiedtoken.userId }).then((user) => {
@@ -78,6 +79,7 @@ export class MessageGateway {
       );
     }
     
+
   }
   public async handleDisconnect(client: Socket): Promise<void> {
     console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
