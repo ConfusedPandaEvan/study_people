@@ -12,7 +12,7 @@ export class Chat {
   content: string;
 
   @Prop()
-  senderId: string;
+  userId: string;
 
   @Prop()
   createdAt: Date;
