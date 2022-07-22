@@ -1,4 +1,4 @@
-import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket } from '@nestjs/websockets';
+import { WebSocketGateway, SubscribeMessage, MessageBody, WebSocketServer, ConnectedSocket,WsException } from '@nestjs/websockets';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { MessageService } from './message.service';
@@ -15,6 +15,10 @@ import { CreateChatDto } from 'src/chats/dto/create-chat.dto';
 import { Chat } from 'src/chats/chat.Schema';
 import { User } from 'src/users/user.Schema';
 import { Time } from 'src/times/time.Schema';
+import * as jwt from 'jsonwebtoken';
+interface JwtPayload {
+  userId: string;
+}
 
 @WebSocketGateway({
   transports: ['websocket','polling'],
@@ -60,7 +64,20 @@ export class MessageGateway {
   public handleConnection(client: Socket): void {
     console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
     const token = client.handshake.auth.token
-    console.log('유저의 토큰값:',token)
+    try {
+      const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
+      this.userModel.findOne({ _id: verifiedtoken.userId }).then((user) => {
+        console.log(verifiedtoken.userId,'유저의 검증된 토큰값:',verifiedtoken)
+      });
+    } catch (err) {
+      throw new WsException(
+        {
+          status: 'error',
+          errorMessage: 'Invalid credentials.(토큰검증에러)',
+        },
+      );
+    }
+    
   }
   public async handleDisconnect(client: Socket): Promise<void> {
     console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
@@ -101,8 +118,14 @@ export class MessageGateway {
         this.server.to(roomID).emit('user_exit', {id: client.id});
         console.log(this.users);
   }
+
+  //join_room 으로 받는 데이터 {roomId: string}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   @SubscribeMessage('join_room')
   async joinRoom(@MessageBody() data: joinroomDto, @ConnectedSocket() client: Socket){
+    const token = client.handshake.auth.token
+    const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
+    const joineduser = await this.userModel.findOne({ _id: verifiedtoken.userId })
+    const joineduserid = joineduser.id as string
     // const room = await this.roomModel.findById(data.roomId)
     // console.log(room.users)
     // if(room.users.includes(data.userId)){
@@ -116,9 +139,9 @@ export class MessageGateway {
           this.server.to(client.id).emit('room_full');
           return;
       }
-      this.users[data.roomId].push({id: client.id, userid: data.userId});
+      this.users[data.roomId].push({id: client.id, userid: joineduserid});
   } else {
-      this.users[data.roomId] = [{id: client.id, userid: data.userId}];
+      this.users[data.roomId] = [{id: client.id, userid: joineduserid}];
   }
   console.log('current users',this.users)
 
@@ -132,14 +155,16 @@ export class MessageGateway {
   console.log('alluser in the room rightnow',this.users[data.roomId]);
   console.log('userinthisroom (not including oneself)',usersInThisRoom);
   this.starttime = new Date()
+  const timestarted = this.starttime
   //populate 과 execute를 사용하면 objectID 를 참조하여 JOIN 처럼 사용가능
-  const chatInThisRoom = await this.chatModel.find({roomId:data.roomId});
+  const chatInThisRoom = await this.chatModel.find({roomId:data.roomId}).populate("userId");
   const datatoclient = {
     usersInThisRoom,
-    chatInThisRoom
+    chatInThisRoom,
+    timestarted
   }
   this.server.sockets.to(client.id).emit('all_users', datatoclient);
-
+  // datatoclient.chatInThisRoom.userId.userNick 안에 닉네임이 들어가게씀 줘라 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   }
 
 
@@ -180,15 +205,22 @@ export class MessageGateway {
   // }
 
   //채팅보내기
+  // userId 를 못받는다 토큰을 풀어서 유저 아이디를 사용하자 받는 데이터는 {roomId: string, conetent: string} !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   @SubscribeMessage('MessageFromClient')
   async createMessage(@MessageBody() createChatDto: CreateChatDto,@ConnectedSocket() client: Socket) {
-    const newchat = new this.chatModel({
+    const token = client.handshake.auth.token
+    const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
+    const joineduserid = verifiedtoken.userId
+    const chat = new this.chatModel({
       ...createChatDto,
+      userId:joineduserid,
       createdAt: new Date()
     })
-    await newchat.save()
+    await chat.save()
+    const newchat = await this.chatModel.findById(chat._id).populate("userId")
     console.log('the message has been saved to the DB: ',createChatDto.content,)
     client.broadcast.to(createChatDto.roomId).emit('chatForOther', newchat);
+    // newchat 안에 usernick 담아서 줄것 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // return this.createMessage(createChatDto,client);
   }
 
