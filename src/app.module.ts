@@ -14,6 +14,7 @@ import { ChatsModule } from './chats/chats.module';
 import { MessageModule } from './message/message.module';
 import { join } from 'path';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { TimesModule } from './times/times.module';
 @Module({
   imports: [
     ServeStaticModule.forRoot({
@@ -37,6 +38,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
     }),
     ChatsModule,
     MessageModule,
+    TimesModule,
   ],
 
   controllers: [AppController],
