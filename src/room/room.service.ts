@@ -103,8 +103,13 @@ export class RoomService {
     }
   }
 
+  //add checking blacklist
   async enterRoom(roomId, userId) {
     const targetRoom = await this.findRoom(roomId);
+
+    if (targetRoom.blackList.includes(userId)) {
+      throw new UnauthorizedException('당신은 방장한테 찍혀서 접근 못해요');
+    }
 
     //When leaving, if the person is the only one in the room, delete room. If not, just remove the user from room
     if (targetRoom.users.length < targetRoom.maxPeople) {
@@ -115,6 +120,76 @@ export class RoomService {
     } else {
       throw new BadRequestException('The room is full.');
     }
+  }
+
+  async changeOwner(roomId, removeUserDto, userId) {
+    const targetRoom = await this.findRoom(roomId);
+    const target = removeUserDto.targetId;
+
+    //Check Room Owner
+    if (targetRoom.users[0] !== userId) {
+      throw new UnauthorizedException('당신은 이 공간의 주인이 아닙니다.');
+    }
+
+    if (targetRoom.users.includes(target)) {
+      try {
+        await this.roomModel.updateOne(
+          { _id: roomId },
+          { $pull: { users: target } },
+        );
+
+        await this.roomModel.updateOne(
+          { _id: roomId },
+          { $push: { users: { $each: [target], $position: 0 } } },
+        );
+      } catch (error) {
+        console.log(error);
+        throw new NotFoundException(
+          '이 방에 없는 사람은 주인으로 임명할 수 없습니다. target 다시 확인해주세요',
+        );
+      }
+    } else {
+      throw new NotFoundException(
+        '이 방에 없는 사람은 주인으로 임명할 수 없습니다. target 다시 확인해주세요',
+      );
+    }
+
+    return null;
+  }
+
+  async removeUser(roomId, removeUserDto, userId) {
+    const targetRoom = await this.findRoom(roomId);
+    const target = removeUserDto.targetId;
+
+    //Check Room Owner
+    if (targetRoom.users[0] !== userId) {
+      throw new UnauthorizedException('당신은 이 공간의 주인이 아닙니다.');
+    }
+
+    if (targetRoom.users.includes(target)) {
+      try {
+        await this.roomModel.updateOne(
+          { _id: roomId },
+          { $pull: { users: target } },
+        );
+
+        await this.roomModel.updateOne(
+          { _id: roomId },
+          { $push: { blackList: target } },
+        );
+      } catch (error) {
+        console.log(error);
+        throw new NotFoundException(
+          '이 방에 없는 사람은 원해도 없엘 수 없어요,,, target 다시 확인해주세요',
+        );
+      }
+    } else {
+      throw new NotFoundException(
+        '이 방에 없는 사람은 원해도 없엘 수 없어요,,, target 다시 확인해주세요',
+      );
+    }
+
+    return null;
   }
 
   async createRoom(file, createRoomDto, userId) {
@@ -175,6 +250,7 @@ export class RoomService {
   async deleteRoom(roomId, userId) {
     const targetRoom = await this.findRoom(roomId);
 
+    //Check Room Owner
     if (targetRoom.users[0] !== userId) {
       throw new UnauthorizedException(
         "You don't have access to delete this room",
@@ -215,12 +291,12 @@ export class RoomService {
     return null;
   }
 
-  //put res here
   async updateRoom(file, roomId, updateRoomDto, userId) {
     const targetRoom = await this.findRoom(roomId);
     let filename = targetRoom.imageLocation;
     let hashtags = targetRoom.hashtags;
 
+    //Check Room Owner
     if (targetRoom.users[0] !== userId) {
       throw new UnauthorizedException(
         "You don't have access to delete this room",

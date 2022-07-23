@@ -21,6 +21,7 @@ import { Room } from './room.model';
 import { RoomService } from './room.service';
 import { GetUser } from 'src/middlewares/get-user.decorator';
 import { User } from 'src/users/user.Schema';
+import { RemoveUserDto } from './dto/remove-user.dto';
 
 @Controller('room')
 export class RoomController {
@@ -66,6 +67,26 @@ export class RoomController {
     return null;
   }
 
+  @Patch('/change_owner/:roomId')
+  async changeOwner(
+    @Param('roomId') roomId: string,
+    @Body() removeUserDto: RemoveUserDto,
+    @GetUser() userId: string,
+  ) {
+    await this.roomService.changeOwner(roomId, removeUserDto, userId);
+    return null;
+  }
+
+  @Patch('/remove_user/:roomId')
+  async removeUser(
+    @Param('roomId') roomId: string,
+    @Body() removeUserDto: RemoveUserDto,
+    @GetUser() userId: string,
+  ) {
+    await this.roomService.removeUser(roomId, removeUserDto, userId);
+    return null;
+  }
+
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {
@@ -89,14 +110,12 @@ export class RoomController {
     return { id: generatedId };
   }
 
-  //Set Limit as Room Owner
   @Delete('/:roomId')
   async deleteRoom(@Param('roomId') roomId: string, @GetUser() userId: string) {
     await this.roomService.deleteRoom(roomId, userId);
     return null;
   }
 
-  //Set Limit as Room Owner
   @Patch('/:roomId')
   @UseInterceptors(
     FileInterceptor('image', {
