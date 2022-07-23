@@ -39,10 +39,11 @@ interface JwtPayload {
 // })
 export class MessageGateway {
 
-  users = { '123456': [ { id: 'testsocketid', userid: 'test' }]}
+  users = { '123456': [ { id: 'testsocketid', userid: 'test',joinedtime: 1000 }]}
   socketToRoom = {'123456':'123456'} 
-  // public starttime: Date
-  // public endtime: Date
+  public starttime: number
+  public endtime: number
+  public currenttime: number
 
 
   @WebSocketServer()
@@ -86,24 +87,21 @@ export class MessageGateway {
     const roomID = this.socketToRoom[client.id];
         let room = this.users[roomID];
 
-        //타이머 기능 추가 우선 5 초 이상 머물러야 기록함
-        // this.endtime = new Date()
-        // const timediffinms = this.endtime.getTime() - this.starttime.getTime();
-        // if (timediffinms >= 5000){
-        //   const newtime = new this.timeModel({
-        //     roomId:roomID,
-        //     userId: room.userid,
-        //     studytime: timediffinms
-        //   })
+        // 타이머 기능 추가 우선 5 초 이상 머물러야 기록함
+        this.endtime = new Date().getTime()
+        const timediffinms = this.endtime - this.starttime;
+        if (timediffinms >= 5000){
+          const newtime = new this.timeModel({
+            roomId:roomID,
+            userId: room.userid,
+            studytime: timediffinms
+          })
           
-        //   await newtime.save()
-        //   console.log('studytime has been saved')
-        // } else {
-        //   console.log('studytime has not been saved')
-        // }
-
-
-        
+          await newtime.save()
+          console.log(room.userid,' this users studytime has been saved')
+        } else {
+          console.log(room.userid,' this users studytime is too short, it has not been saved')
+        }
 
 
         if (room) {
@@ -121,6 +119,8 @@ export class MessageGateway {
         console.log(this.users);
   }
 
+
+
   //join_room 으로 받는 데이터 {roomId: string}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   @SubscribeMessage('join_room')
   async joinRoom(@MessageBody() data: joinroomDto, @ConnectedSocket() client: Socket){
@@ -130,7 +130,7 @@ export class MessageGateway {
     // const room = await this.roomModel.findById(data.roomId)
     // console.log(room.users)
     // if(room.users.includes(data.userId)){
-
+    this.starttime = new Date().getTime()
 
     // }
     if (this.users[data.roomId]) {
@@ -140,9 +140,9 @@ export class MessageGateway {
           this.server.to(client.id).emit('room_full');
           return;
       }
-      this.users[data.roomId].push({id: client.id, userid: joineduserid});
+      this.users[data.roomId].push({id: client.id, userid: joineduserid, joinedtime: this.starttime});
   } else {
-      this.users[data.roomId] = [{id: client.id, userid: joineduserid}];
+      this.users[data.roomId] = [{id: client.id, userid: joineduserid, joinedtime: this.starttime}];
   }
   console.log('current users',this.users)
 
@@ -155,14 +155,15 @@ export class MessageGateway {
   const usersInThisRoom = this.users[data.roomId].filter(user => user.id !== client.id);
   console.log('alluser in the room rightnow',this.users[data.roomId]);
   console.log('userinthisroom (not including oneself)',usersInThisRoom);
-  // this.starttime = new Date()
+  
+
+
   // const timestarted = this.starttime
-  //populate 과 execute를 사용하면 objectID 를 참조하여 JOIN 처럼 사용가능
+  // populate 과 execute를 사용하면 objectID 를 참조하여 JOIN 처럼 사용가능
   const chatInThisRoom = await this.chatModel.find({roomId:data.roomId});
   const datatoclient = {
     usersInThisRoom,
     chatInThisRoom,
-    // timestarted
   }
   this.server.sockets.to(client.id).emit('all_users', datatoclient);
   // datatoclient.chatInThisRoom.userId.userNick 안에 닉네임이 들어가게씀 줘라 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -226,6 +227,28 @@ export class MessageGateway {
     // return this.createMessage(createChatDto,client);
   }
 
+  //타이머 토글을 켜고 각 유저의 공부시간을 받고싶을때(timertoggleon)
+  @SubscribeMessage('timertoggleon')
+  async timeinfo(@ConnectedSocket() client: Socket) {
+    const token = client.handshake.auth.token
+    const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
+    const joineduserid = verifiedtoken.userId
+
+    const user = await this.userModel.findOne({ _id: joineduserid})
+
+    const roomid = this.socketToRoom[client.id]
+    const times = await this.timeModel.find({roomId:roomid});
+    let roomstotaltime = 0
+    
+    for (let i = 0;i < times.length;i++){
+      roomstotaltime += times[i].studytime
+    }
+
+    const data = {currenttime: new Date().getTime(), users:this.users[roomid],roomstotaltime}
+    client.emit('timeinfos', data);
+    // newchat 안에 usernick 담아서 줄것 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    // return this.createMessage(createChatDto,client);
+  }
   
   // 채팅 내보내기
   @SubscribeMessage('findAllMessage')
