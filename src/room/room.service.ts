@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -93,7 +94,7 @@ export class RoomService {
 
     //When leaving, if the person is the only one in the room, delete room. If not, just remove the user from room
     if (targetRoom.users.length == 1) {
-      this.deleteRoom(roomId);
+      this.deleteRoom(roomId, userId);
     } else {
       await this.roomModel.updateOne(
         { _id: roomId },
@@ -171,8 +172,14 @@ export class RoomService {
     return result.id as string;
   }
 
-  async deleteRoom(roomId) {
+  async deleteRoom(roomId, userId) {
     const targetRoom = await this.findRoom(roomId);
+
+    if (targetRoom.users[0] !== userId) {
+      throw new UnauthorizedException(
+        "You don't have access to delete this room",
+      );
+    }
 
     for (let i = 0; i < targetRoom.hashtags.length; i++) {
       const tag = targetRoom.hashtags[i];
@@ -209,10 +216,16 @@ export class RoomService {
   }
 
   //put res here
-  async updateRoom(file, roomId, updateRoomDto) {
+  async updateRoom(file, roomId, updateRoomDto, userId) {
     const targetRoom = await this.findRoom(roomId);
     let filename = targetRoom.imageLocation;
     let hashtags = targetRoom.hashtags;
+
+    if (targetRoom.users[0] !== userId) {
+      throw new UnauthorizedException(
+        "You don't have access to delete this room",
+      );
+    }
 
     //if new image is provided, delete original image
     if (file) {

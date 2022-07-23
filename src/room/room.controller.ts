@@ -91,8 +91,8 @@ export class RoomController {
 
   //Set Limit as Room Owner
   @Delete('/:roomId')
-  async deleteRoom(@Param('roomId') roomId: string) {
-    await this.roomService.deleteRoom(roomId);
+  async deleteRoom(@Param('roomId') roomId: string, @GetUser() userId: string) {
+    await this.roomService.deleteRoom(roomId, userId);
     return null;
   }
 
@@ -111,8 +111,9 @@ export class RoomController {
     @UploadedFile() file,
     @Param('roomId') roomId: string,
     @Body() updateRoomDto: UpdateRoomDto,
+    @GetUser() userId: string,
   ) {
-    await this.roomService.updateRoom(file, roomId, updateRoomDto);
+    await this.roomService.updateRoom(file, roomId, updateRoomDto, userId);
     return null;
   }
 }
