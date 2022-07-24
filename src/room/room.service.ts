@@ -103,11 +103,10 @@ export class RoomService {
     }
   }
 
-  //add checking blacklist
   async enterRoom(roomId, userId) {
     const targetRoom = await this.findRoom(roomId);
 
-    if (targetRoom.blackList.includes(userId)) {
+    if (targetRoom.blackList && targetRoom.blackList.includes(userId)) {
       throw new UnauthorizedException('당신은 방장한테 찍혀서 접근 못해요');
     }
 
