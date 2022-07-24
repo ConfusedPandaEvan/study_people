@@ -17,31 +17,31 @@ async function bootstrap() {
     ca: fs.readFileSync(__dirname + '/ca_bundle.crt', 'utf-8'),
   };
 
-  // const app = await NestFactory.create(AppModule, { httpsOptions });
-  // app.enableCors();
-
-  // await app.init();
-
-  // await app.listen(3000, () => {
-  //   console.log('listening to port 3000');
-  // });
-
-  const server = express();
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  const app = await NestFactory.create(AppModule, { httpsOptions });
   app.enableCors();
 
   await app.init();
 
-  const httpServer = http.createServer(server);
-  const httpsServer = https.createServer(httpsOptions, server);
-  app.useWebSocketAdapter(new SocketIoAdapter(httpServer));
+  await app.listen(3000, () => {
+    console.log('listening to port 3000');
+  });
 
-  httpServer.listen(3000, () => {
-    console.log('3000번 포트로 서버가 켜졌어요.');
-  });
-  httpsServer.listen(3001, () => {
-    console.log('3001번 포트로 서버가 켜졌어요.');
-  });
+  // const server = express();
+  // const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
+  // app.enableCors();
+
+  // await app.init();
+
+  // const httpServer = http.createServer(server);
+  // const httpsServer = https.createServer(httpsOptions, server);
+  // app.useWebSocketAdapter(new SocketIoAdapter(httpServer));
+
+  // httpServer.listen(3000, () => {
+  //   console.log('3000번 포트로 서버가 켜졌어요.');
+  // });
+  // httpsServer.listen(3001, () => {
+  //   console.log('3001번 포트로 서버가 켜졌어요.');
+  // });
 }
 
 bootstrap();
