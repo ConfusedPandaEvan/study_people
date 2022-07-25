@@ -7,15 +7,13 @@ import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class SocialloginService {
-
-    constructor(@InjectModel('User') private userModel: Model<UserDocument>){}
-    async kakaoLoginMain(@Query() query) {
-        const kakao = {
-            clientid: '968fe442549959a4ab2bb530f508c889',
-            redirectUri: 'https://stupy.shop/main',
-            // 수정 필요 redirectUri: 'http://13.125.58.110:3000/main',
-        };
-
+  constructor(@InjectModel('User') private userModel: Model<UserDocument>) {}
+  async kakaoLoginMain(@Query() query) {
+    const kakao = {
+      clientid: '968fe442549959a4ab2bb530f508c889',
+      redirectUri: 'https://stupy.shop/main',
+      // 수정 필요 redirectUri: 'http://13.125.58.110:3000/main',
+    };
 
     const { code } = query;
     const options = {
@@ -48,17 +46,19 @@ export class SocialloginService {
     const kakaouserId = userInfo.id;
     const userNick = userInfo.kakao_account.profile.nickname;
     const existUser = await this.userModel.findOne({ kakaouserId });
+    const profileImage = 'defaultProfileImage.jpg';
     if (!existUser) {
-        // const from = 'kakao'; 나중에 네이버나 구글서비스 로그인 추가 할 거면 필요
-        const user = new this.userModel({
+      // const from = 'kakao'; 나중에 네이버나 구글서비스 로그인 추가 할 거면 필요
+      const user = new this.userModel({
         kakaouserId,
         userNick,
-        });
+        profileImage,
+      });
 
-        await this.userModel.create(user);
+      await this.userModel.create(user);
     }
     const loginUser = await this.userModel.findOne({ kakaouserId });
-    const userId = loginUser.id as string
+    const userId = loginUser.id as string;
     const token = jwt.sign({ userId }, 'MyKey');
 
     return {
@@ -69,6 +69,6 @@ export class SocialloginService {
     };
   }
   async findUser(userId: string) {
-    return await this.userModel.findOne({ _id:userId });
+    return await this.userModel.findOne({ _id: userId });
   }
 }
