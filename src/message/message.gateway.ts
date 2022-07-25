@@ -112,9 +112,6 @@ export class MessageGateway {
                 return;
             }
         }
-
-
-
         this.server.to(roomID).emit('user_exit', {id: client.id});
         console.log(this.users);
   }
@@ -131,16 +128,56 @@ export class MessageGateway {
     // console.log(room.users)
     // if(room.users.includes(data.userId)){
     this.starttime = new Date().getTime()
+    //방장인지 아닌지? true/false !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  
+    let roomOwner = false
+  
+  const thisroom = await this.roomModel.findById(data.roomId)
+  if(thisroom.users[0]===joineduserid){
+    roomOwner = true
+    console.log('해당유저는 이 방의 방장입니다.')
+  }
+  //블랙리스트에 저장되어있으면 코드진행 X
+  if (thisroom.blackList && thisroom.blackList.includes(joineduserid)) {
+    throw new WsException(
+      {
+        status: 'error',
+        errorMessage: 'blocked by the owner.(블랙리스트)',
+      })
+  }
+  //방이 꽉 차고, 내 아이디가 룸 안에 저장 안되있으면 코드진행 X
+  if (thisroom.users.length === thisroom.maxPeople && !thisroom.users.includes(joineduserid)){
+    throw new WsException(
+      {
+        status: 'error',
+        errorMessage: 'room has reached max number of people (방에 회원이 꽉참)',
+      })
+  }
 
-    // }
-    if (this.users[data.roomId]) {
-      const length = this.users[data.roomId].length;
-      if (length === 4) {
-          console.log('room is full!!!!!!!!!!')
-          this.server.to(client.id).emit('room_full');
-          return;
-      }
-      this.users[data.roomId].push({id: client.id, userid: joineduserid, joinedtime: this.starttime});
+  //방이 꽉 차지 않았고, 내 유저아이디가 방 안에 없으면 방안에 넣어주고 코드진행
+  if (thisroom.users.length < thisroom.maxPeople && !thisroom.users.includes(joineduserid)){
+    await this.roomModel.updateOne(
+      { _id: data.roomId },
+      { $push: { users: joineduserid } },
+    );
+    console.log('유저의 아이디가 방에 성공적으로 저장됨')
+  }
+
+  //방이 꽉 차지 않았고, 내 유저 아이디가 방안에 있으면 그냥 코드진행. 
+  //방이 꽉 찼고,내 유저 아이디가 방 안에 가입되어있으면 코드진행
+
+  
+
+
+
+  if (this.users[data.roomId]) {
+    const length = this.users[data.roomId].length;
+    if (length === 4) {
+        console.log('room is full!!!!!!!!!!')
+        this.server.to(client.id).emit('room_full');
+        return;
+    }
+    this.users[data.roomId].push({id: client.id, userid: joineduserid, joinedtime: this.starttime});
   } else {
       this.users[data.roomId] = [{id: client.id, userid: joineduserid, joinedtime: this.starttime}];
   }
@@ -156,7 +193,7 @@ export class MessageGateway {
   console.log('alluser in the room rightnow',this.users[data.roomId]);
   console.log('userinthisroom (not including oneself)',usersInThisRoom);
   
-
+  
 
   // const timestarted = this.starttime
   // populate 과 execute를 사용하면 objectID 를 참조하여 JOIN 처럼 사용가능
@@ -164,12 +201,67 @@ export class MessageGateway {
   const datatoclient = {
     usersInThisRoom,
     chatInThisRoom,
+    roomOwner,
   }
   this.server.sockets.to(client.id).emit('all_users', datatoclient);
   // datatoclient.chatInThisRoom.userId.userNick 안에 닉네임이 들어가게씀 줘라 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   }
 
 
+  //data 에선 roomId 랑 targetId
+  @SubscribeMessage('addblacklist')
+  async blacklist(@MessageBody() data , @ConnectedSocket() client: Socket){
+    const token = client.handshake.auth.token
+    const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
+    const joineduserid = verifiedtoken.userId
+    const thisroom = await this.roomModel.findById(data.roomId)
+    if (thisroom.users[0] !== joineduserid) {
+      throw new WsException(
+        {
+          status: 'error',
+          errorMessage: 'you are not the owner.(방장만 블랙리스트보낼수있음)',
+        })
+    }
+    if (thisroom.users.includes(data.targetId)) {
+      try {
+        await this.roomModel.updateOne(
+          { _id: data.roomId },
+          { $pull: { users: data.targetId } },
+        );
+
+        await this.roomModel.updateOne(
+          { _id: data.roomId },
+          { $push: { blackList: data.targetId } },
+        );
+      } catch (error) {
+        console.log(error);
+        throw new WsException(
+          '이 방에 없는 사람은 원해도 없엘 수 없어요,,, target 다시 확인해주세요',
+        );
+      }
+    } else {
+      throw new WsException(
+        '이 방에 없는 사람은 원해도 없엘 수 없어요,,, target 다시 확인해주세요',
+      );
+    }
+
+    console.log('해당유저 데이터 베이스에서 삭제후 블랙리스트 추가 완료')
+
+    //채팅 지우는 부분은 아직 구현 못함
+    // this.roomModel.deleteMany({ roomId: { data.roomId }, User._id:  }).then(function(){
+    //   console.log("Data deleted"); // Success
+    // }).catch(function(error){
+    //     console.log(error); // Failure
+    // });
+
+
+
+    console.log('해당유저의 해당채팅방안에서의 채팅기록 삭제 완료')
+    const targetuserinfo = this.users[data.roomId].filter(user=> user.userid === data.targetId)
+    const targetsocketid = targetuserinfo.id
+    //클라이언트에서 disconnect처리 해주어야 될수도 있음
+    this.server.to(targetsocketid).emit('disconnect')
+  }
   
     
   
