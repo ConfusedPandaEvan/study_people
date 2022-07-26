@@ -84,6 +84,9 @@ export class MessageGateway {
   }
   public async handleDisconnect(client: Socket): Promise<void> {
     console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
+    const token = client.handshake.auth.token
+    const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
+    const joineduserid = verifiedtoken.userId
     const roomID = this.socketToRoom[client.id];
         let room = this.users[roomID];
 
@@ -93,7 +96,7 @@ export class MessageGateway {
         if (timediffinms >= 5000){
           const newtime = new this.timeModel({
             roomId:roomID,
-            userId: room.userid,
+            userId: joineduserid,
             studytime: timediffinms
           })
           
@@ -371,8 +374,7 @@ export class MessageGateway {
     })
 
     client.emit('timeinfos', data);
-    // newchat 안에 usernick 담아서 줄것 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // return this.createMessage(createChatDto,client);
+    //data: [... {profilepic,nickName,currentrecord,accumrecord}]
   }
   
   // 채팅 내보내기
