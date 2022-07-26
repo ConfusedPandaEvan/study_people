@@ -10,6 +10,7 @@ import {
 import { GetUser } from 'src/middlewares/get-user.decorator';
 import { CreateTodoListDto } from './dto/create-todo-list.dto';
 import { CreateTodoDto } from './dto/create-todo.dto';
+import { DeleteTodoListDto } from './dto/delete-todolist.dto';
 import { UpdateTodoListDto } from './dto/update-todo-list.dto';
 import { TodoListService } from './todo-list.service';
 
@@ -60,12 +61,12 @@ export class TodoListController {
   }
 
   //Delete Todo-List and corresponding Todos
-  @Delete('/:TodoListId')
+  @Delete('')
   async deleteTodoList(
-    @Param('TodoListId') todoListId: string,
+    @Body() deleteTodoListDto: DeleteTodoListDto,
     @GetUser() userId: string,
   ) {
-    await this.todoListService.deleteTodoList(todoListId);
+    await this.todoListService.deleteTodoList(deleteTodoListDto);
     const todolists = this.getAllTodoLists(userId);
     return todolists;
   }

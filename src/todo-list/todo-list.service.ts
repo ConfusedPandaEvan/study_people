@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { HashtagSchema } from 'src/room/hashtag.model';
 import { CreateTodoListDto } from './dto/create-todo-list.dto';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoListDto } from './dto/update-todo-list.dto';
@@ -54,8 +55,18 @@ export class TodoListService {
     return result.id as string;
   }
 
-  async deleteTodoList(todoListId: string) {
-    await this.todoListModel.deleteOne({ _id: todoListId }).exec();
+  async deleteTodoList(deleteTodoListDto) {
+    const TodoListsArray = deleteTodoListDto.targetTodoList
+      .toString()
+      .replace(/\[|\]/g, '')
+      .replace(/\s/g, '')
+      .split(',');
+
+    for (let i = 0; i < TodoListsArray.length; i++) {
+      const target = TodoListsArray[i];
+      await this.todoListModel.deleteOne({ _id: target }).exec();
+    }
+
     return null;
   }
 
