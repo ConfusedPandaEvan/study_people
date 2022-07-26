@@ -358,7 +358,7 @@ export class MessageGateway {
       }
 
       let eachdata = {
-        profilepic:'../public/profileImages/' + user.profileImage,
+        profilepic: user.profileImage,
         nickName:user.userNick,
         currentrecord: currentrecord,
         accumrecord,
