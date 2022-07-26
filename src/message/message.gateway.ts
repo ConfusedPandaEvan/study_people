@@ -44,7 +44,9 @@ export class MessageGateway {
   public starttime: number
   public endtime: number
   public currenttime: number
-
+  //접속성공하면 현재 내 방 이라는 변수 안에 방 아이디 불러오기
+  //접속성공하면 현재 접속유저 변수 안에 유저 인포 불러오기 
+  
 
   @WebSocketServer()
   server: Server;
@@ -94,6 +96,7 @@ export class MessageGateway {
         this.endtime = new Date().getTime()
         const timediffinms = this.endtime - this.starttime;
         if (timediffinms >= 5000){
+          
           const newtime = new this.timeModel({
             roomId:roomID,
             userId: joineduserid,
@@ -151,7 +154,11 @@ export class MessageGateway {
       })
   }
   //방이 꽉 차고, 내 아이디가 룸 안에 저장 안되있으면 코드진행 X
+
+  console.log('1:',thisroom.users.length,'2:', thisroom.maxPeople,'3:',thisroom.users, '4:',joineduserid)
   if (thisroom.users.length === thisroom.maxPeople && !thisroom.users.includes(joineduserid)){
+    //이코드가 작동 안하는거 같은데, return 을써보자
+    console.log('해당방이 정원 초과라서 입장 할 수 없습니다 ~~~~~~~~~~~~')
     throw new WsException(
       {
         status: 'error',
@@ -178,7 +185,7 @@ export class MessageGateway {
   if (this.users[data.roomId]) {
     const length = this.users[data.roomId].length;
     if (length === 4) {
-        console.log('room is full!!!!!!!!!!')
+        console.log('room is !full!!!!!!!!!')
         this.server.to(client.id).emit('room_full');
         return;
     }
