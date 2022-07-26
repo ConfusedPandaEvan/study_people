@@ -45,13 +45,15 @@ export class SocialloginService {
     const userInfo = await rp(options1);
     const kakaouserId = userInfo.id;
     const userNick = userInfo.kakao_account.profile.nickname;
+    const email = userInfo.kakao_account.email;
     const existUser = await this.userModel.findOne({ kakaouserId });
-    const profileImage = 'defaultProfileImage.jpg';
+    const profileImage = userInfo.kakao_account.profile.profile_image_url;
     if (!existUser) {
       // const from = 'kakao'; 나중에 네이버나 구글서비스 로그인 추가 할 거면 필요
       const user = new this.userModel({
         kakaouserId,
         userNick,
+        email,
         profileImage,
       });
 
