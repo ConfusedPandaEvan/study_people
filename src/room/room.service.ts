@@ -199,13 +199,17 @@ export class RoomService {
     }
 
     //change JSON Object to Array Object
-    const hashtagsinfo = createRoomDto.hashtag
-      .toString()
-      .replace(/\[|\]/g, '')
-      .replace(/\s/g, '')
-      .split(',');
+    let hashtags = [];
 
-    const hashtags = [...new Set(hashtagsinfo)];
+    if (createRoomDto.hashtag) {
+      const hashtagsinfo = createRoomDto.hashtag
+        .toString()
+        .replace(/\[|\]/g, '')
+        .replace(/\s/g, '')
+        .split(',');
+
+      hashtags = [...new Set(hashtagsinfo)];
+    }
 
     const newRoom = new this.roomModel({
       ...createRoomDto,
