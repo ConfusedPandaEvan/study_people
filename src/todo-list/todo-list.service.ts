@@ -104,13 +104,28 @@ export class TodoListService {
     return null;
   }
 
-  async updateTodo(todoListId, todoId, createTodoDto: CreateTodoDto) {
-    if (createTodoDto.content) {
-      await this.todoListModel.updateOne(
-        { _id: todoListId },
-        { $set: { 'todos.$[elem].content': createTodoDto.content } },
-        { arrayFilters: [{ $and: [{ 'elem._id': todoId }] }] },
-      );
+  async updateTodo(todoListId, createTodoDto: CreateTodoDto) {
+    const updated = await this.findTodoList(todoListId);
+    if (createTodoDto.categoryTitle) {
+      updated.title = createTodoDto.categoryTitle;
+    }
+    await updated.save();
+
+    if (createTodoDto.todoItem) {
+      for (let i = 0; i < createTodoDto.todoItem.length; i++)
+        await this.todoListModel.updateOne(
+          { _id: todoListId },
+          {
+            $set: {
+              'todos.$[elem].content': createTodoDto.todoItem[i].content,
+            },
+          },
+          {
+            arrayFilters: [
+              { $and: [{ 'elem._id': createTodoDto.todoItem[i].id }] },
+            ],
+          },
+        );
     }
 
     return null;

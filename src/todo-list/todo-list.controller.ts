@@ -103,13 +103,12 @@ export class TodoListController {
   }
 
   //Change Todo Content
-  @Patch('/:TodoListId/:TodoId')
+  @Patch('/:TodoListId')
   async updateTodo(
     @Param('TodoListId') todoListId: string,
-    @Param('TodoId') todoId: string,
     @Body() createTodoDto: CreateTodoDto,
   ) {
-    await this.todoListService.updateTodo(todoListId, todoId, createTodoDto);
+    await this.todoListService.updateTodo(todoListId, createTodoDto);
     const todos = await this.todoListService.getAllTodo(todoListId);
     return todos;
   }
