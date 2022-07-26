@@ -263,7 +263,6 @@ export class MessageGateway {
     this.server.to(targetsocketid).emit('disconnect')
   }
   
-    
   
   @SubscribeMessage('offer')
   getoffer(@MessageBody() data: getOfferDto, @ConnectedSocket() client: Socket){
@@ -326,17 +325,51 @@ export class MessageGateway {
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     const joineduserid = verifiedtoken.userId
 
-    const user = await this.userModel.findOne({ _id: joineduserid})
+    
 
     const roomid = this.socketToRoom[client.id]
-    const times = await this.timeModel.find({roomId:roomid});
-    let roomstotaltime = 0
+
+    // 룸아이디에서 있는 유저들을 for 문을 돌린다. 그리고는 맵을 해준다. 
+    // 프사 url, nickNAME(user가서 아이디로 또 찾아서 줘야함), 기록: 현재시간 - 접속시간 주면됨, 누적, 체팅 찾아서 더해서 주면됨.)
     
-    for (let i = 0;i < times.length;i++){
-      roomstotaltime += times[i].studytime
+    const room = await this.roomModel.findById(roomid);
+
+    const roomusers = room.users
+    let data = []
+    for (let eachuserid of roomusers){
+      let user = await this.userModel.findById(eachuserid);
+      let times = await this.timeModel.find({roomId:roomid,userId:eachuserid})
+      //[{userid:, roomid: ,studytime,},{}]
+      let accumrecord = 0
+      if (times){
+        for (let time of times){
+          accumrecord+=time.studytime
+        }
+      }
+      let connecteduser = this.users[roomid]
+      let connecteduserid = connecteduser.map((eachuser)=>{
+        eachuser.userid
+      })
+
+      let currentrecord = 0
+      if (connecteduserid.includes(eachuserid)){
+        const findeduser = this.users[roomid].filter((eachuser)=>eachuser.userid === eachuserid)
+        currentrecord = this.currenttime - findeduser.joinedtime
+      }
+
+      let eachdata = {
+        profilepic:'../public/profileImages/' + user.profileImage,
+        nickName:user.userNick,
+        currentrecord: currentrecord,
+        accumrecord,
+      }
+      data = [...data,eachdata]
     }
 
-    const data = {currenttime: new Date().getTime(), users:this.users[roomid],roomstotaltime}
+    data.sort((a,b)=>{
+      return b.accumrecord - a.accumrecord
+    })
+
     client.emit('timeinfos', data);
     // newchat 안에 usernick 담아서 줄것 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // return this.createMessage(createChatDto,client);
