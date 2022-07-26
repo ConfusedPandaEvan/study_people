@@ -101,7 +101,7 @@ export class MessageGateway {
           })
           
           await newtime.save()
-          console.log(joineduserid,' this users studytime has been saved')
+          console.log(joineduserid,' this users studytime has been saved',newtime, timediffinms)
         } else {
           console.log(joineduserid,' this users studytime is too short, it has not been saved')
         }
@@ -115,6 +115,8 @@ export class MessageGateway {
                 return;
             }
         }
+
+        delete this.socketToRoom[client.id]
         this.server.to(roomID).emit('user_exit', {id: client.id});
         console.log(this.users);
   }
