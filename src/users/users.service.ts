@@ -14,6 +14,7 @@ export class UsersService {
       kakakouserId: null,
       userNick: createUserDto.userNick,
       email: createUserDto.email,
+      profileImage: './public/profileImages/defaultImage.png',
       password: createUserDto.password,
     });
     const createduser = await user.save();
@@ -47,8 +48,10 @@ export class UsersService {
 
     //if new image is provided, delete original image
     if (file) {
-      filename = file.filename;
-      if (updatingUser.imageLocation != 'defaultImage.png') {
+      filename = './public/profileImages/' + file.filename;
+      if (
+        updatingUser.imageLocation != './public/profileImages/defaultImage.png'
+      ) {
         await fs.unlink(
           `./public/profileImages/${updatingUser.imageLocation}`,
           (err) => {
