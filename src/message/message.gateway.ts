@@ -101,9 +101,9 @@ export class MessageGateway {
           })
           
           await newtime.save()
-          console.log(room.userid,' this users studytime has been saved')
+          console.log(joineduserid,' this users studytime has been saved')
         } else {
-          console.log(room.userid,' this users studytime is too short, it has not been saved')
+          console.log(joineduserid,' this users studytime is too short, it has not been saved')
         }
 
 
