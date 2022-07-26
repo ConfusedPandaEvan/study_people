@@ -72,16 +72,16 @@ export class TodoListController {
   }
 
   //Change Todo-List Title
-  @Patch('/:TodoListId')
-  async updateTodoList(
-    @Param('TodoListId') todoListId: string,
-    @Body() updateTodoListDto: UpdateTodoListDto,
-    @GetUser() userId: string,
-  ) {
-    await this.todoListService.updateTodoList(todoListId, updateTodoListDto);
-    const todolists = this.getAllTodoLists(userId);
-    return todolists;
-  }
+  // @Patch('/:TodoListId')
+  // async updateTodoList(
+  //   @Param('TodoListId') todoListId: string,
+  //   @Body() updateTodoListDto: UpdateTodoListDto,
+  //   @GetUser() userId: string,
+  // ) {
+  //   await this.todoListService.updateTodoList(todoListId, updateTodoListDto);
+  //   const todolists = this.getAllTodoLists(userId);
+  //   return todolists;
+  // }
 
   //Create Todo
   @Post('/:TodoListId')
