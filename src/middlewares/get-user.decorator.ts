@@ -16,7 +16,6 @@ export const GetUser = createParamDecorator(
       const { authorization } = req.headers;
       const tokenValue = authorization.split(' ')[1];
       const token = jwt.verify(tokenValue, 'MyKey') as JwtPayload;
-      console.log(token.userId);
       return token.userId;
     } catch (error) {
       throw new UnauthorizedException('로그인 후 이용해주시오!');
