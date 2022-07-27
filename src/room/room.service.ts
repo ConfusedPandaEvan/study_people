@@ -205,6 +205,11 @@ export class RoomService {
     return null;
   }
 
+  async getRoomTitle(roomId) {
+    const targetRoom = await this.findRoom(roomId);
+    return targetRoom.title;
+  }
+
   async createRoom(file, createRoomDto, userId) {
     //Default Image if image is not provided
     let filename = 'defaultImage.png';

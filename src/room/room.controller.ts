@@ -93,6 +93,12 @@ export class RoomController {
     return null;
   }
 
+  @Get('/:roomId')
+  async getRoomTitle(@Param('roomId') roomId: string) {
+    const roomTitle = await this.roomService.getRoomTitle(roomId);
+    return roomTitle;
+  }
+
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {
