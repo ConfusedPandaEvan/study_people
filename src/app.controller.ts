@@ -23,7 +23,7 @@ export class AppController {
         '/.well-known/pki-validation/724F5E422FBC3D01831016D700674821.txt',
     );
   }
-  @Get('/main')
+  @Get('/mainpage')
   async getMainPage(@GetUser() userId: string) {
     const rooms = await this.roomService.getMyRooms(userId);
     const todoLists = await this.todoListService.getAllTodoLists(userId);

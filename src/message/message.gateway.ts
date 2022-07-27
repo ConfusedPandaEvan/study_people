@@ -118,7 +118,7 @@ export class MessageGateway {
         }
 
         delete this.socketToRoom[client.id]
-        console.log(this.users);
+                console.log(this.users);
         this.server.to(roomID).emit('user_exit', {id: client.id});
 
   }
@@ -359,14 +359,20 @@ export class MessageGateway {
         }
       }
       let connecteduser = this.users[roomid]
-      let connecteduserid = connecteduser.map((eachuser)=>{
-        eachuser.userid
-      })
+      let connecteduserid = []
+
+      for (let eachuser of connecteduser){
+        connecteduserid = [... connecteduserid,eachuser.userid]
+      }
+      // let connecteduserid = connecteduser.map((eachuser)=>{
+      //   eachuser.userid
+      // })
 
       let currentrecord = 0
+      let timeNow = new Date().getTime()
       if (connecteduserid.includes(eachuserid)){
         const findeduser = this.users[roomid].filter((eachuser)=>eachuser.userid === eachuserid)
-        currentrecord = this.currenttime - findeduser.joinedtime
+        currentrecord = timeNow - findeduser.joinedtime
       }
 
       let eachdata = {
@@ -374,6 +380,7 @@ export class MessageGateway {
         nickName:user.userNick,
         currentrecord: currentrecord,
         accumrecord,
+        // online: online
       }
       data = [...data,eachdata]
     }
@@ -383,7 +390,7 @@ export class MessageGateway {
     })
 
     client.emit('timeinfos', data);
-    //data: [... {profilepic,nickName,currentrecord,accumrecord}]
+    //data: [... {profilepic,nickName,currentrecord,accumrecord,online}]
   }
   
   // 채팅 내보내기
