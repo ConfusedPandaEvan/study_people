@@ -33,6 +33,20 @@ export class RoomService {
     }));
   }
 
+  async getMyRooms(userId) {
+    const rooms = await this.roomModel.find({ users: userId }).exec();
+    return rooms.map((roomL) => ({
+      roomId: roomL._id,
+      title: roomL.title,
+      usersNum: roomL.users.length,
+      maxPeople: roomL.maxPeople,
+      content: roomL.content,
+      hashtags: roomL.hashtags,
+      openKakao: roomL.openKakao,
+      image: '../public/roomImages/' + roomL.imageLocation,
+    }));
+  }
+
   async textSearch(textQuery) {
     const rooms = await this.roomModel
       .find()

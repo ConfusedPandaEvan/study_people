@@ -17,6 +17,7 @@ import { SocialloginService } from 'src/sociallogin/sociallogin.service';
   ],
   controllers: [TodoListController],
   providers: [TodoListService, SocialloginService],
+  exports: [TodoListService],
 })
 export class TodoListModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

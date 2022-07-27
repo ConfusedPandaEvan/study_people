@@ -34,6 +34,12 @@ export class RoomController {
     return rooms;
   }
 
+  @Get('/myrooms')
+  async getMyRooms(@GetUser() userId: string) {
+    const rooms = await this.roomService.getMyRooms(userId);
+    return rooms;
+  }
+
   @Get('/search')
   async textSearch(
     @Query('text') textQuery: string,

@@ -16,6 +16,7 @@ import { SocialloginService } from 'src/sociallogin/sociallogin.service';
   ],
   controllers: [RoomController],
   providers: [RoomService, SocialloginService],
+  exports: [RoomService],
 })
 export class RoomModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
