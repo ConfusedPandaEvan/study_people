@@ -39,14 +39,14 @@ interface JwtPayload {
 // })
 export class MessageGateway {
 
-  users = { '123456': [ { id: 'testsocketid', userid: 'test',joinedtime: 1000 }]}
-  socketToRoom = {'123456':'123456'} 
+  users = { 'testroomid': [ { id: 'testsocketid', userid: 'test',joinedtime: 1000 }]}
+  socketToRoom = {'testsocketid':'testroomid'} 
   public starttime: number
   public endtime: number
   public currenttime: number
   //접속성공하면 현재 내 방 이라는 변수 안에 방 아이디 불러오기
   //접속성공하면 현재 접속유저 변수 안에 유저 인포 불러오기 
-  
+
 
   @WebSocketServer()
   server: Server;
@@ -58,11 +58,11 @@ export class MessageGateway {
   private readonly messageService: MessageService){}
 
 
-  public handleConnect(client: Socket): void {
-    console.log(client.id)
-  }
+  // public handleConnect(client: Socket): void {
+  //   console.log(client.id)
+  // }
 
-  @SubscribeMessage('disconnect')
+  // @SubscribeMessage('disconnect')
   
   public handleConnection(client: Socket): void {
     console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
@@ -81,8 +81,6 @@ export class MessageGateway {
         },
       );
     }
-    
-
   }
   public async handleDisconnect(client: Socket): Promise<void> {
     console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
@@ -120,8 +118,9 @@ export class MessageGateway {
         }
 
         delete this.socketToRoom[client.id]
-        this.server.to(roomID).emit('user_exit', {id: client.id});
         console.log(this.users);
+        this.server.to(roomID).emit('user_exit', {id: client.id});
+
   }
 
 
@@ -147,6 +146,7 @@ export class MessageGateway {
   }
   //블랙리스트에 저장되어있으면 코드진행 X
   if (thisroom.blackList && thisroom.blackList.includes(joineduserid)) {
+    console.log('블랙리스트라서 방에 입장할수없습니다. ~~~~~~~~~~~~')
     throw new WsException(
       {
         status: 'error',
@@ -343,9 +343,9 @@ export class MessageGateway {
 
     // 룸아이디에서 있는 유저들을 for 문을 돌린다. 그리고는 맵을 해준다. 
     // 프사 url, nickNAME(user가서 아이디로 또 찾아서 줘야함), 기록: 현재시간 - 접속시간 주면됨, 누적, 체팅 찾아서 더해서 주면됨.)
-    
+    console.log(roomid)
     const room = await this.roomModel.findById(roomid);
-
+    console.log(room)
     const roomusers = room.users
     let data = []
     for (let eachuserid of roomusers){
