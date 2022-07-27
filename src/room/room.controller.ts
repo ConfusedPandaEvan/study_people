@@ -68,9 +68,12 @@ export class RoomController {
   }
 
   @Get('/enter_room/:roomId')
-  async enterRoom(@Param('roomId') roomId: string, @GetUser() userId: string) {
-    await this.roomService.enterRoom(roomId, userId);
-    return null;
+  async enterRoom(
+    @Param('roomId') roomId: string,
+    @GetUser() userId: string,
+    @Body('password') password: string,
+  ) {
+    return await this.roomService.enterRoom(roomId, userId, password);
   }
 
   @Patch('/change_owner/:roomId')

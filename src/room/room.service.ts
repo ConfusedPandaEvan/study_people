@@ -117,22 +117,32 @@ export class RoomService {
     }
   }
 
-  async enterRoom(roomId, userId) {
+  async enterRoom(roomId, userId, password) {
     const targetRoom = await this.findRoom(roomId);
 
+    //Blacklist Check
     if (targetRoom.blackList && targetRoom.blackList.includes(userId)) {
       throw new UnauthorizedException('당신은 방장한테 찍혀서 접근 못해요');
     }
 
-    //When leaving, if the person is the only one in the room, delete room. If not, just remove the user from room
-    if (targetRoom.users.length < targetRoom.maxPeople) {
+    //Password Check
+    if (targetRoom.password !== password) {
+      throw new UnauthorizedException('비밀번호 틀렸습니다.');
+    }
+
+    //People number Check
+    if (targetRoom.users.length == targetRoom.maxPeople) {
+      throw new BadRequestException('이 방은 이미 만원입니다.');
+    }
+
+    //Only Add the userId if it does not exist
+    if (!targetRoom.users.includes(userId)) {
       await this.roomModel.updateOne(
         { _id: roomId },
         { $push: { users: userId } },
       );
-    } else {
-      throw new BadRequestException('The room is full.');
     }
+    return 'true';
   }
 
   async changeOwner(roomId, removeUserDto, userId) {
