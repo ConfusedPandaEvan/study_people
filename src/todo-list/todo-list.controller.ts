@@ -8,17 +8,14 @@ import {
   Post,
 } from '@nestjs/common';
 import { GetUser } from 'src/middlewares/get-user.decorator';
-import { CreateTodoListDto } from './dto/create-todo-list.dto';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { DeleteTodoListDto } from './dto/delete-todolist.dto';
-import { UpdateTodoListDto } from './dto/update-todo-list.dto';
 import { TodoListService } from './todo-list.service';
 
 @Controller('todolist')
 export class TodoListController {
   constructor(private readonly todoListService: TodoListService) {}
 
-  //make it possible to access with userId
   //get todos as well
   @Get()
   async getAllTodoLists(@GetUser() userId: string) {
@@ -70,18 +67,6 @@ export class TodoListController {
     const todolists = this.getAllTodoLists(userId);
     return todolists;
   }
-
-  //Change Todo-List Title
-  // @Patch('/:TodoListId')
-  // async updateTodoList(
-  //   @Param('TodoListId') todoListId: string,
-  //   @Body() updateTodoListDto: UpdateTodoListDto,
-  //   @GetUser() userId: string,
-  // ) {
-  //   await this.todoListService.updateTodoList(todoListId, updateTodoListDto);
-  //   const todolists = this.getAllTodoLists(userId);
-  //   return todolists;
-  // }
 
   //Create Todo
   @Post('/:TodoListId')
