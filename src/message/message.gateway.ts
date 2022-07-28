@@ -46,7 +46,7 @@ export class MessageGateway {
   public currenttime: number
   //접속성공하면 현재 내 방 이라는 변수 안에 방 아이디 불러오기
   //접속성공하면 현재 접속유저 변수 안에 유저 인포 불러오기 
-
+  public usertosocket = {'userid':'socketid'}
 
   @WebSocketServer()
   server: Server;
@@ -81,6 +81,15 @@ export class MessageGateway {
         },
       );
     }
+
+    const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
+    const joineduserid = verifiedtoken.userId
+    if (this.usertosocket[joineduserid]) {
+      client.disconnect()
+    } else {
+      this.usertosocket[joineduserid] = client.id
+    }
+    
   }
   public async handleDisconnect(client: Socket): Promise<void> {
     console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
