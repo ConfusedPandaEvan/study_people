@@ -86,13 +86,13 @@ export class MessageGateway {
       );
     }
 
-    const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
-    const joineduserid = verifiedtoken.userId
-    if (this.usertosocket[joineduserid]) {
-      client.disconnect()
-    } else {
-      this.usertosocket[joineduserid] = client.id
-    }
+    // const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
+    // const joineduserid = verifiedtoken.userId
+    // if (this.usertosocket[joineduserid]) {
+    //   client.disconnect()
+    // } else {
+    //   this.usertosocket[joineduserid] = client.id
+    // }
     
   }
   public async handleDisconnect(client: Socket): Promise<void> {
@@ -132,7 +132,7 @@ export class MessageGateway {
 
         delete this.socketToRoom[client.id]
                 console.log(this.users);
-        delete this.usertosocket[joineduserid];
+        // delete this.usertosocket[joineduserid];
         this.server.to(roomID).emit('user_exit', {id: client.id});
 
   }
