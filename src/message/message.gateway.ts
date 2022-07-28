@@ -60,9 +60,13 @@ export class MessageGateway {
 
   // public handleConnect(client: Socket): void {
   //   console.log(client.id)
+  //   const token = client.handshake.auth.token
+  //   const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
+  //   const joineduserid = verifiedtoken.userId
+
   // }
 
-  // @SubscribeMessage('disconnect')
+  @SubscribeMessage('disconnect')
   
   public handleConnection(client: Socket): void {
     console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
@@ -128,6 +132,7 @@ export class MessageGateway {
 
         delete this.socketToRoom[client.id]
                 console.log(this.users);
+        delete this.usertosocket[joineduserid];
         this.server.to(roomID).emit('user_exit', {id: client.id});
 
   }
