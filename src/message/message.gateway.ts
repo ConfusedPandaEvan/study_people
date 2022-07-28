@@ -41,8 +41,6 @@ export class MessageGateway {
 
   users = { 'testroomid': [ { id: 'testsocketid', userid: 'test',joinedtime: 1000 }]}
   socketToRoom = {'testsocketid':'testroomid'} 
-  public starttime: number
-  public endtime: number
   public currenttime: number
   //접속성공하면 현재 내 방 이라는 변수 안에 방 아이디 불러오기
   //접속성공하면 현재 접속유저 변수 안에 유저 인포 불러오기 
@@ -101,11 +99,11 @@ export class MessageGateway {
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     const joineduserid = verifiedtoken.userId
     const roomID = this.socketToRoom[client.id];
-        let room = this.users[roomID];
-
+    let room = this.users[roomID];
+    let findeduser = room.filter((eachuser)=> eachuser.userid ===joineduserid) 
+    let endtime = new Date().getTime()
         // 타이머 기능 추가 우선 5 초 이상 머물러야 기록함
-        this.endtime = new Date().getTime()
-        const timediffinms = this.endtime - this.starttime;
+        const timediffinms = endtime - findeduser[0].joinedtime;
         if (timediffinms >= 5000){
           
           const newtime = new this.timeModel({
@@ -148,7 +146,7 @@ export class MessageGateway {
     // const room = await this.roomModel.findById(data.roomId)
     // console.log(room.users)
     // if(room.users.includes(data.userId)){
-    this.starttime = new Date().getTime()
+    let starttime = new Date().getTime()
     //방장인지 아닌지? true/false !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   
     let roomOwner = false
@@ -203,9 +201,9 @@ export class MessageGateway {
         this.server.to(client.id).emit('room_full');
         return;
     }
-    this.users[data.roomId].push({id: client.id, userid: joineduserid, joinedtime: this.starttime});
+    this.users[data.roomId].push({id: client.id, userid: joineduserid, joinedtime: starttime});
   } else {
-      this.users[data.roomId] = [{id: client.id, userid: joineduserid, joinedtime: this.starttime}];
+      this.users[data.roomId] = [{id: client.id, userid: joineduserid, joinedtime: starttime}];
   }
   console.log('current users',this.users)
 
