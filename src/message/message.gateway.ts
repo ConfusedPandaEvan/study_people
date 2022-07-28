@@ -10,7 +10,7 @@ import { SockettoRoom } from './entities/sockettoroom.entity';
 import { getOfferDto } from './dto/getoffer.dto';
 import { getAnserDto } from './dto/getanswer.dto';
 import { getCandidateDto } from './dto/getcandidate.dto';
-import { NotFoundException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { CreateChatDto } from 'src/chats/dto/create-chat.dto';
 import { Chat } from 'src/chats/chat.Schema';
 import { User } from 'src/users/user.Schema';
@@ -76,12 +76,8 @@ export class MessageGateway {
         console.log(verifiedtoken.userId,'유저의 검증된 토큰값:',verifiedtoken)
       });
     } catch (err) {
-      throw new WsException(
-        {
-          status: 'error',
-          errorMessage: 'Invalid credentials.(토큰검증에러)',
-        },
-      );
+      console.log('Invalid credentials.(토큰검증에러)')
+      throw new UnauthorizedException('Invalid credentials.(토큰검증에러)');
     }
 
     // const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
@@ -159,11 +155,7 @@ export class MessageGateway {
   //블랙리스트에 저장되어있으면 코드진행 X
   if (thisroom.blackList && thisroom.blackList.includes(joineduserid)) {
     console.log('블랙리스트라서 방에 입장할수없습니다. ~~~~~~~~~~~~')
-    throw new WsException(
-      {
-        status: 'error',
-        errorMessage: 'blocked by the owner.(블랙리스트)',
-      })
+    throw new ForbiddenException('blocked by the owner.(블랙리스트)')
   }
   //방이 꽉 차고, 내 아이디가 룸 안에 저장 안되있으면 코드진행 X
 
@@ -172,10 +164,8 @@ export class MessageGateway {
     //이코드가 작동 안하는거 같은데, return 을써보자
     console.log('해당방이 정원 초과라서 입장 할 수 없습니다 ~~~~~~~~~~~~')
     throw new WsException(
-      {
-        status: 'error',
-        errorMessage: 'room has reached max number of people (방에 회원이 꽉참)',
-      })
+      '해당방이 정원 초과라서 입장 할 수 없습니다 ~~~~~~~~~~~~',
+    );
   }
 
   //방이 꽉 차지 않았고, 내 유저아이디가 방 안에 없으면 방안에 넣어주고 코드진행

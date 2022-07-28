@@ -137,6 +137,8 @@ export class RoomService {
 
     //Only Add the userId if it does not exist
     if (!targetRoom.users.includes(userId)) {
+      
+
       await this.roomModel.updateOne(
         { _id: roomId },
         { $push: { users: userId } },
