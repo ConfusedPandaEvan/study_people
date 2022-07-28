@@ -17,10 +17,25 @@ export class RoomService {
     @InjectModel('Hashtag') private readonly hashtagModel: Model<Hashtag>,
   ) {}
 
-  async getAllRooms() {
-    const rooms = await this.roomModel.find().exec();
+  async getAllRooms(sort) {
+    let rooms = [];
 
-    //Need to Edit Room Mapping if needed
+    switch (sort) {
+      case 'latest':
+        rooms = await this.roomModel.find().sort({ createdAt: -1 }).exec();
+        break;
+      case 'popularity':
+        rooms = await this.roomModel.find().sort({ usersNum: -1 }).exec();
+        break;
+      //Needs to be Updated
+      case 'open':
+        rooms = await this.roomModel.find().sort({ usersNum: -1 }).exec();
+        break;
+      default:
+        rooms = await this.roomModel.find().exec();
+        break;
+    }
+
     return rooms.map((roomL) => ({
       roomId: roomL._id,
       title: roomL.title,
@@ -71,7 +86,7 @@ export class RoomService {
           .sort({ usersNum: -1 })
           .exec();
         break;
-
+      //Needs to be Updated
       case 'open':
         rooms = await this.roomModel
           .find()

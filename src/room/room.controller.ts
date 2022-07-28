@@ -30,8 +30,8 @@ export class RoomController {
 
   //This is only for dev purpose. This should be edited for Community Page Search
   @Get()
-  async getAllRooms() {
-    const rooms = await this.roomService.getAllRooms();
+  async getAllRooms(@Query('sort') sort: string) {
+    const rooms = await this.roomService.getAllRooms(sort);
     return rooms;
   }
 
