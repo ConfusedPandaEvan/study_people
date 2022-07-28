@@ -172,7 +172,7 @@ export class MessageGateway {
   if (thisroom.users.length < thisroom.maxPeople && !thisroom.users.includes(joineduserid)){
     await this.roomModel.updateOne(
       { _id: data.roomId },
-      { $push: { users: joineduserid } },
+      { $push: { users: joineduserid }, $inc: { usersNum: 1 } },
     );
     console.log('유저의 아이디가 방에 성공적으로 저장됨')
   }
@@ -240,7 +240,7 @@ export class MessageGateway {
       try {
         await this.roomModel.updateOne(
           { _id: data.roomId },
-          { $pull: { users: data.targetId } },
+          { $pull: { users: data.targetId }, $inc: { usersNum: -1 } },
         );
 
         await this.roomModel.updateOne(

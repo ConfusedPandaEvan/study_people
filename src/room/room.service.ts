@@ -24,7 +24,7 @@ export class RoomService {
     return rooms.map((roomL) => ({
       roomId: roomL._id,
       title: roomL.title,
-      usersNum: roomL.users.length,
+      usersNum: roomL.usersNum,
       maxPeople: roomL.maxPeople,
       content: roomL.content,
       hashtags: roomL.hashtags,
@@ -38,7 +38,7 @@ export class RoomService {
     return rooms.map((roomL) => ({
       roomId: roomL._id,
       title: roomL.title,
-      usersNum: roomL.users.length,
+      usersNum: roomL.usersNum,
       maxPeople: roomL.maxPeople,
       content: roomL.content,
       hashtags: roomL.hashtags,
@@ -47,18 +47,56 @@ export class RoomService {
     }));
   }
 
-  async textSearch(textQuery) {
-    const rooms = await this.roomModel
-      .find()
-      .or([
-        { title: new RegExp(textQuery, 'i') },
-        { content: new RegExp(textQuery, 'i') },
-      ])
-      .exec();
+  async textSearch(textQuery, sort) {
+    let rooms = [];
+
+    switch (sort) {
+      case 'latest':
+        rooms = await this.roomModel
+          .find()
+          .or([
+            { title: new RegExp(textQuery, 'i') },
+            { content: new RegExp(textQuery, 'i') },
+          ])
+          .sort({ createdAt: -1 })
+          .exec();
+        break;
+      case 'popularity':
+        rooms = await this.roomModel
+          .find()
+          .or([
+            { title: new RegExp(textQuery, 'i') },
+            { content: new RegExp(textQuery, 'i') },
+          ])
+          .sort({ usersNum: -1 })
+          .exec();
+        break;
+
+      case 'open':
+        rooms = await this.roomModel
+          .find()
+          .or([
+            { title: new RegExp(textQuery, 'i') },
+            { content: new RegExp(textQuery, 'i') },
+          ])
+          .sort({ createdAt: -1 })
+          .exec();
+        break;
+      default:
+        rooms = await this.roomModel
+          .find()
+          .or([
+            { title: new RegExp(textQuery, 'i') },
+            { content: new RegExp(textQuery, 'i') },
+          ])
+          .exec();
+        break;
+    }
+
     return rooms.map((roomL) => ({
       roomId: roomL._id,
       title: roomL.title,
-      usersNum: roomL.users.length,
+      usersNum: roomL.usersNum,
       maxPeople: roomL.maxPeople,
       content: roomL.content,
       hashtags: roomL.hashtags,
@@ -67,7 +105,7 @@ export class RoomService {
     }));
   }
 
-  async hashtagSearch(hashtagQuery) {
+  async hashtagSearch(hashtagQuery, sort) {
     try {
       const hashtags = await this.hashtagModel
         .find({
@@ -89,7 +127,7 @@ export class RoomService {
       return rooms.map((roomL) => ({
         roomId: roomL._id,
         title: roomL.title,
-        usersNum: roomL.users.length,
+        usersNum: roomL.usersNum,
         maxPeople: roomL.maxPeople,
         content: roomL.content,
         hashtags: roomL.hashtags,
@@ -112,7 +150,7 @@ export class RoomService {
     } else {
       await this.roomModel.updateOne(
         { _id: roomId },
-        { $pull: { users: userId } },
+        { $pull: { users: userId }, $inc: { usersNum: -1 } },
       );
     }
   }
@@ -137,11 +175,9 @@ export class RoomService {
 
     //Only Add the userId if it does not exist
     if (!targetRoom.users.includes(userId)) {
-      
-
       await this.roomModel.updateOne(
         { _id: roomId },
-        { $push: { users: userId } },
+        { $push: { users: userId }, $inc: { usersNum: 1 } },
       );
     }
     return 'true';
@@ -195,7 +231,7 @@ export class RoomService {
       try {
         await this.roomModel.updateOne(
           { _id: roomId },
-          { $pull: { users: target } },
+          { $pull: { users: target }, $inc: { usersNum: -1 } },
         );
 
         await this.roomModel.updateOne(
@@ -246,6 +282,7 @@ export class RoomService {
       ...createRoomDto,
       hashtags,
       users: userId,
+      usersNum: 1,
       imageLocation: filename,
       createdAt: new Date(),
       lastVisited: new Date(),

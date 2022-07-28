@@ -22,6 +22,7 @@ import { RoomService } from './room.service';
 import { GetUser } from 'src/middlewares/get-user.decorator';
 import { User } from 'src/users/user.Schema';
 import { RemoveUserDto } from './dto/remove-user.dto';
+import { SortOrder } from 'mongoose';
 
 @Controller('room')
 export class RoomController {
@@ -44,14 +45,15 @@ export class RoomController {
   async textSearch(
     @Query('text') textQuery: string,
     @Query('hashtag') hashtagQuery: string,
+    @Query('sort') sort: string,
   ) {
     let rooms;
 
     if (textQuery) {
-      rooms = await this.roomService.textSearch(textQuery);
+      rooms = await this.roomService.textSearch(textQuery, sort);
     }
     if (hashtagQuery) {
-      rooms = await this.roomService.hashtagSearch(hashtagQuery);
+      rooms = await this.roomService.hashtagSearch(hashtagQuery, sort);
     }
     if (!rooms || rooms.length == 0) {
       throw new NotFoundException(

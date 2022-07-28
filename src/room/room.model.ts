@@ -10,6 +10,7 @@ export const RoomSchema = new mongoose.Schema({
   hashtags: { type: [String], default: undefined },
   openKakao: { type: String, required: true },
   maxPeople: { type: Number, required: true },
+  usersNum: { type: Number, required: true },
   imageLocation: { type: String, required: true },
   blackList: { type: [String], default: undefined },
   createdAt: { type: Date, required: true },
@@ -25,6 +26,7 @@ export interface Room extends mongoose.Document {
   hashtags: [string];
   openKakao: string;
   maxPeople: number;
+  usersNum: number;
   imageLocation: string;
   blackList: Array<string>;
   createdAt: Date;
