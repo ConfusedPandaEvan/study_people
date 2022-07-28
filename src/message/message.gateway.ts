@@ -386,7 +386,7 @@ export class MessageGateway {
       let timeNow = new Date().getTime()
       if (connecteduserid.includes(eachuserid)){
         const findeduser = this.users[roomid].filter((eachuser)=>eachuser.userid === eachuserid)
-        currentrecord = timeNow - findeduser.joinedtime
+        currentrecord = timeNow - findeduser[0].joinedtime
       }
 
       let eachdata = {

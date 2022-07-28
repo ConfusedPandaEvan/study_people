@@ -52,7 +52,6 @@ export class Authmiddleware implements NestMiddleware {
       // const loginUser = await SocialloginService.findUser({ _id:userid });
       // res.locals.user = user
       // next();
-      console.log('error2');
       const token = jwt.verify(tokenValue, 'MyKey') as JwtPayload;
       console.log('valid token: ', token);
       this.userModel.findOne({ _id: token.userId }).then((user) => {
