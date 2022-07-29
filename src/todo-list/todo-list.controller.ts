@@ -6,19 +6,25 @@ import {
   Param,
   Patch,
   Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
 import { GetUser } from 'src/middlewares/get-user.decorator';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { DeleteTodoListDto } from './dto/delete-todolist.dto';
 import { TodoListService } from './todo-list.service';
+import { ControllerAuthGuard } from 'src/auth/controllerauth.guard';
+import { RequestWithAuth } from 'src/types';
 
 @Controller('todolist')
 export class TodoListController {
   constructor(private readonly todoListService: TodoListService) {}
 
   //get todos as well
+  @UseGuards(ControllerAuthGuard)
   @Get()
-  async getAllTodoLists(@GetUser() userId: string) {
+  async getAllTodoLists(@Req() request: RequestWithAuth) {
+    const { userId } = request;
     const todoLists = await this.todoListService.getAllTodoLists(userId);
     return todoLists;
   }
@@ -31,8 +37,10 @@ export class TodoListController {
   }
 
   //Create a default Todo List and return the whole todolist
+  @UseGuards(ControllerAuthGuard)
   @Post()
-  async createTodoList(@GetUser() userId: string) {
+  async createTodoList(@Req() request: RequestWithAuth) {
+    const { userId } = request;
     await this.todoListService.createTodoList(userId);
     const todolists = await this.todoListService.getAllTodoLists(userId);
     return todolists;
@@ -58,13 +66,14 @@ export class TodoListController {
   }
 
   //Delete Todo-List and corresponding Todos
+  @UseGuards(ControllerAuthGuard)
   @Delete('')
   async deleteTodoList(
     @Body() deleteTodoListDto: DeleteTodoListDto,
-    @GetUser() userId: string,
+    @Req() request: RequestWithAuth,
   ) {
     await this.todoListService.deleteTodoList(deleteTodoListDto);
-    const todolists = this.getAllTodoLists(userId);
+    const todolists = this.getAllTodoLists(request);
     return todolists;
   }
 

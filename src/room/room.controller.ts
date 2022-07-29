@@ -8,8 +8,10 @@ import {
   Patch,
   Post,
   Query,
+  Req,
   Response,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -24,6 +26,8 @@ import { User } from 'src/users/user.Schema';
 import { RemoveUserDto } from './dto/remove-user.dto';
 import { SortOrder } from 'mongoose';
 import { RoomSearchService } from './roomSearch.service';
+import { ControllerAuthGuard } from 'src/auth/controllerauth.guard';
+import { RequestWithAuth } from 'src/types';
 
 @Controller('room')
 export class RoomController {
@@ -39,8 +43,10 @@ export class RoomController {
     return rooms;
   }
 
+  @UseGuards(ControllerAuthGuard)
   @Get('/myrooms')
-  async getMyRooms(@GetUser() userId: string) {
+  async getMyRooms(@Req() request: RequestWithAuth) {
+    const { userId } = request;
     const rooms = await this.roomService.getMyRooms(userId);
     return rooms;
   }
@@ -67,37 +73,48 @@ export class RoomController {
     return rooms;
   }
 
+  @UseGuards(ControllerAuthGuard)
   @Get('/leave_room/:roomId')
-  async leaveRoom(@Param('roomId') roomId: string, @GetUser() userId: string) {
+  async leaveRoom(
+    @Param('roomId') roomId: string,
+    @Req() request: RequestWithAuth,
+  ) {
+    const { userId } = request;
     await this.roomService.leaveRoom(roomId, userId);
     return null;
   }
 
+  @UseGuards(ControllerAuthGuard)
   @Get('/enter_room/:roomId')
   async enterRoom(
     @Param('roomId') roomId: string,
-    @GetUser() userId: string,
+    @Req() request: RequestWithAuth,
     @Body('password') password: string,
   ) {
+    const { userId } = request;
     return await this.roomService.enterRoom(roomId, userId, password);
   }
 
+  @UseGuards(ControllerAuthGuard)
   @Patch('/change_owner/:roomId')
   async changeOwner(
     @Param('roomId') roomId: string,
     @Body() removeUserDto: RemoveUserDto,
-    @GetUser() userId: string,
+    @Req() request: RequestWithAuth,
   ) {
+    const { userId } = request;
     await this.roomService.changeOwner(roomId, removeUserDto, userId);
     return null;
   }
 
+  @UseGuards(ControllerAuthGuard)
   @Patch('/remove_user/:roomId')
   async removeUser(
     @Param('roomId') roomId: string,
     @Body() removeUserDto: RemoveUserDto,
-    @GetUser() userId: string,
+    @Req() request: RequestWithAuth,
   ) {
+    const { userId } = request;
     await this.roomService.removeUser(roomId, removeUserDto, userId);
     return null;
   }
@@ -108,6 +125,7 @@ export class RoomController {
     return roomTitle;
   }
 
+  @UseGuards(ControllerAuthGuard)
   @Post()
   @UseInterceptors(
     FileInterceptor('image', {
@@ -121,8 +139,9 @@ export class RoomController {
   async createRoom(
     @UploadedFile() file,
     @Body() createRoomDto: CreateRoomDto,
-    @GetUser() userId: string,
+    @Req() request: RequestWithAuth,
   ) {
+    const { userId } = request;
     const generatedId = await this.roomService.createRoom(
       file,
       createRoomDto,
@@ -131,12 +150,18 @@ export class RoomController {
     return { id: generatedId };
   }
 
+  @UseGuards(ControllerAuthGuard)
   @Delete('/:roomId')
-  async deleteRoom(@Param('roomId') roomId: string, @GetUser() userId: string) {
+  async deleteRoom(
+    @Param('roomId') roomId: string,
+    @Req() request: RequestWithAuth,
+  ) {
+    const { userId } = request;
     await this.roomService.deleteRoom(roomId, userId);
     return null;
   }
 
+  @UseGuards(ControllerAuthGuard)
   @Patch('/:roomId')
   @UseInterceptors(
     FileInterceptor('image', {
@@ -151,8 +176,9 @@ export class RoomController {
     @UploadedFile() file,
     @Param('roomId') roomId: string,
     @Body() updateRoomDto: UpdateRoomDto,
-    @GetUser() userId: string,
+    @Req() request: RequestWithAuth,
   ) {
+    const { userId } = request;
     await this.roomService.updateRoom(file, roomId, updateRoomDto, userId);
     return null;
   }
