@@ -78,15 +78,15 @@ export class MessageGateway {
     const token = client.handshake.auth.token || client.handshake.headers['token']
     this.allonlineuser.push(client.userId)
     console.log('지금 서버에 연결된 소켓: ', this.allonlineuser)
-    try {
-      const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
-      this.userModel.findOne({ _id: verifiedtoken.userId }).then((user) => {
-        console.log(verifiedtoken.userId,'유저의 검증된 토큰값:',verifiedtoken)
-      });
-    } catch (err) {
-      console.log('Invalid credentials.(토큰검증에러)')
-      throw new UnauthorizedException('Invalid credentials.(토큰검증에러)');
-    }
+    // try {
+    //   const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
+    //   this.userModel.findOne({ _id: verifiedtoken.userId }).then((user) => {
+    //     console.log(verifiedtoken.userId,'유저의 검증된 토큰값:',verifiedtoken)
+    //   });
+    // } catch (err) {
+    //   console.log('Invalid credentials.(토큰검증에러)')
+    //   throw new UnauthorizedException('Invalid credentials.(토큰검증에러)');
+    // }
 
     // const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     // const joineduserid = verifiedtoken.userId
@@ -126,9 +126,11 @@ export class MessageGateway {
         console.log('nickName: ',client.nickName)
         console.log('roomId: ',client.roomId)
         console.log('profileImage: ',client.profileImage);
+
         if (this.allonlineuser.includes(client.userId)) {
           const errormessage = '이미 채팅방에 접속중인 유저입니다.'
           console.log('이미 채팅방에 접속중인 유저입니다.')
+          this.server.to(roomID).emit('user_exit', {id: client.userId})
           client.emit('disconnectuser',errormessage)
           return
         }
@@ -138,7 +140,7 @@ export class MessageGateway {
           this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
         }
 
-        console.log('지금 서버에 연결된 소켓: ', this.allonlineuser)
+        console.log('퇴장 후 지금 서버에 연결된 소켓: ', this.allonlineuser)
 
         if (room) {
             room = room.filter((user) => user.id !== client.id);
@@ -163,10 +165,10 @@ export class MessageGateway {
 
   //join_room 으로 받는 데이터 {roomId: string}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   @SubscribeMessage('join_room')
-  async joinRoom(@MessageBody() data: joinroomDto, @ConnectedSocket() client: Socket){
-    const token = client.handshake.auth.token || client.handshake.headers['token']
-    const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
-    const joineduserid = verifiedtoken.userId
+  async joinRoom(@MessageBody() data: joinroomDto, @ConnectedSocket() client: SocketWithAuth){
+    // const token = client.handshake.auth.token || client.handshake.headers['token']
+    // const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
+    // const joineduserid = verifiedtoken.userId
     // const room = await this.roomModel.findById(data.roomId)
     // console.log(room.users)
     // if(room.users.includes(data.userId)){
@@ -176,12 +178,12 @@ export class MessageGateway {
     let roomOwner = false
   
   const thisroom = await this.roomModel.findById(data.roomId)
-  if(thisroom.users[0]===joineduserid){
+  if(thisroom.users[0]===client.userId){
     roomOwner = true
     console.log('해당유저는 이 방의 방장입니다.')
   }
   //블랙리스트에 저장되어있으면 코드진행 X
-  if (thisroom.blackList && thisroom.blackList.includes(joineduserid)) {
+  if (thisroom.blackList && thisroom.blackList.includes(client.userId)) {
     const errormessage = '블랙리스트라서 방에 입장할수없습니다'
     client.emit('disconnectuser',errormessage)
     console.log('블랙리스트라서 방에 입장할수없습니다. ')
@@ -190,8 +192,8 @@ export class MessageGateway {
   }
   //방이 꽉 차고, 내 아이디가 룸 안에 저장 안되있으면 코드진행 X
 
-  console.log('1:',thisroom.users.length,'2:', thisroom.maxPeople,'3:',thisroom.users, '4:',joineduserid)
-  if (thisroom.users.length === thisroom.maxPeople && !thisroom.users.includes(joineduserid)){
+
+  if (thisroom.users.length === thisroom.maxPeople && !thisroom.users.includes(client.userId)){
     //이코드가 작동 안하는거 같은데, return 을써보자
     
     const errormessage = '해당방이 정원 초과라서 입장 할 수 없습니다'
@@ -204,10 +206,10 @@ export class MessageGateway {
   }
 
   //방이 꽉 차지 않았고, 내 유저아이디가 방 안에 없으면 방안에 넣어주고 코드진행
-  if (thisroom.users.length < thisroom.maxPeople && !thisroom.users.includes(joineduserid)){
+  if (thisroom.users.length < thisroom.maxPeople && !thisroom.users.includes(client.userId)){
     await this.roomModel.updateOne(
       { _id: data.roomId },
-      { $push: { users: joineduserid }, $inc: { usersNum: 1 } },
+      { $push: { users: client.userId }, $inc: { usersNum: 1 } },
     );
     console.log('유저의 아이디가 방에 성공적으로 저장됨')
   }
@@ -229,9 +231,9 @@ export class MessageGateway {
         // this.server.to(client.id).emit('room_full');
       return;
     }
-    this.users[data.roomId].push({id: client.id, userid: joineduserid, joinedtime: starttime});
+    this.users[data.roomId].push({id: client.id, userid: client.userId, joinedtime: starttime});
   } else {
-      this.users[data.roomId] = [{id: client.id, userid: joineduserid, joinedtime: starttime}];
+      this.users[data.roomId] = [{id: client.id, userid: client.userId, joinedtime: starttime}];
   }
   console.log('current users',this.users)
 
@@ -313,10 +315,11 @@ export class MessageGateway {
     const targetsocketid = targetuserinfo[0].id
     //클라이언트에서 disconnect처리 해주어야 될수도 있음
     const errormessage = '방장에 의해 강퇴당했습니다.'
-
-    this.server.to(targetsocketid).emit('disconnectuser',errormessage)
-    console.log('강퇴 발생')
     this.server.to(data.roomID).emit('user_exit', {id: targetsocketid});
+    console.log('강퇴 발생')
+    this.server.to(targetsocketid).emit('disconnectuser',errormessage)
+    
+    
   }
   
   
