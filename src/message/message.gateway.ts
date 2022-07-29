@@ -46,7 +46,7 @@ export class MessageGateway {
   //접속성공하면 현재 내 방 이라는 변수 안에 방 아이디 불러오기
   //접속성공하면 현재 접속유저 변수 안에 유저 인포 불러오기 
   public usertosocket = {'userid':'socketid'}
-
+  public allonlineuser =[]
   @WebSocketServer()
   server: Server;
   
@@ -65,7 +65,7 @@ export class MessageGateway {
 
   // }
 
-  @SubscribeMessage('disconnect')
+  // @SubscribeMessage('disconnect')
   
   public handleConnection(client: SocketWithAuth): void {
     
@@ -76,7 +76,8 @@ export class MessageGateway {
     console.log('roomId: ',client.roomId)
     console.log('profileImage: ',client.profileImage);
     const token = client.handshake.auth.token || client.handshake.headers['token']
-
+    this.allonlineuser[client.userId]
+    console.log('지금 서버에 연결된 소켓: ', this.allonlineuser)
     try {
       const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
       this.userModel.findOne({ _id: verifiedtoken.userId }).then((user) => {
@@ -125,6 +126,12 @@ export class MessageGateway {
         console.log('nickName: ',client.nickName)
         console.log('roomId: ',client.roomId)
         console.log('profileImage: ',client.profileImage);
+        const index = this.allonlineuser.indexOf(client.userId);
+        if (index > -1) { // only splice array when item is found
+          this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
+        }
+
+        console.log('지금 서버에 연결된 소켓: ', this.allonlineuser)
 
         if (room) {
             room = room.filter((user) => user.id !== client.id);
