@@ -76,7 +76,7 @@ export class MessageGateway {
     console.log('roomId: ',client.roomId)
     console.log('profileImage: ',client.profileImage);
     const token = client.handshake.auth.token || client.handshake.headers['token']
-    this.allonlineuser[client.userId]
+    this.allonlineuser.push(client.userId)
     console.log('지금 서버에 연결된 소켓: ', this.allonlineuser)
     try {
       const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
