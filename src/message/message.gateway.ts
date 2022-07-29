@@ -277,9 +277,10 @@ export class MessageGateway {
 
     console.log('해당유저의 해당채팅방안에서의 채팅기록 삭제 완료')
     const targetuserinfo = this.users[data.roomId].filter(user=> user.userid === data.targetId)
-    const targetsocketid = targetuserinfo.id
+    const targetsocketid = targetuserinfo[0].id
     //클라이언트에서 disconnect처리 해주어야 될수도 있음
-    this.server.to(targetsocketid).emit('disconnect')
+    const errormessage = '방장에 의해 강퇴당했습니다.'
+    this.server.to(targetsocketid).emit('disconnectuser',errormessage)
   }
   
   
