@@ -302,7 +302,7 @@ export class MessageGateway {
     console.log('해당유저 데이터 베이스에서 삭제후 블랙리스트 추가 완료')
 
     // 채팅 지우는 부분은
-    this.roomModel.deleteMany({roomId:data.roomId, userId:data.targetId}).then(function(){
+    this.chatModel.deleteMany({roomId:data.roomId, userId:data.targetId}).then(function(){
       console.log("Data deleted"); // Success
     }).catch(function(error){
         console.log(error); // Failure

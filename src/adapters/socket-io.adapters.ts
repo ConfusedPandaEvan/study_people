@@ -41,7 +41,6 @@ const createTokenMiddleware =  (usersService: UsersService) => async (socket: So
         const token = 
         socket.handshake.auth.token || socket.handshake.headers['token']
         const {userId} = jwt.verify(token, 'MyKey') as JwtPayload;
-        console.log('userId decoded from jwt',userId)
         //DB 에서 유저아이디로 해당 유저 찾기 
   
         const user = await usersService.verifywithtoken(token)

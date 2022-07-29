@@ -114,7 +114,6 @@ export class UsersService {
     try {
         const verified = jwt.verify(token, 'MyKey') as JwtPayload;
         user = await this.userModel.findById(verified.userId);
-        console.log('userId decoded from jwt',verified.userId)
       } catch (error) {
         throw new NotFoundException('Could Not Find User');
       }
