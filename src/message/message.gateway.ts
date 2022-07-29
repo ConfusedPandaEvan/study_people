@@ -70,9 +70,11 @@ export class MessageGateway {
   public handleConnection(client: SocketWithAuth): void {
     
     console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
+    console.log('기능점검')
     console.log(client.userId)
     console.log(client.nickName)
-    console.log('기능점검 ',`connection: ${client.userId,client.nickName,client.profileImage}`);
+    console.log(client.roomId)
+    console.log(client.profileImage);
     const token = client.handshake.auth.token || client.handshake.headers['token']
 
     try {
