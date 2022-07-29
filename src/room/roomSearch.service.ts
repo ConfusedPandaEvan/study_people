@@ -25,6 +25,7 @@ export class RoomSearchService {
           .sort({ createdAt: -1 })
           .exec();
         break;
+
       case 'popularity':
         rooms = await this.roomModel
           .find()
@@ -35,7 +36,7 @@ export class RoomSearchService {
           .sort({ usersNum: -1 })
           .exec();
         break;
-      //Needs to be Updated
+
       case 'open':
         rooms = await this.roomModel
           .find()
@@ -46,8 +47,8 @@ export class RoomSearchService {
           .sort({ createdAt: -1 })
           .exec();
         rooms = rooms.filter((room) => room.usersNum < room.maxPeople);
-
         break;
+
       default:
         rooms = await this.roomModel
           .find()
@@ -84,10 +85,27 @@ export class RoomSearchService {
       const uniqueRoomList = [...new Set(roomList)];
 
       //Create & populate search result
-      const rooms = [];
+      let rooms = [];
       for (const roomId of uniqueRoomList) {
         const foundRoom = await this.roomModel.findById(roomId);
         rooms.push(foundRoom);
+      }
+
+      switch (sort) {
+        case 'latest':
+          rooms = rooms.sort((a, b) => b.createdAt - a.createdAt);
+          break;
+
+        case 'popularity':
+          rooms = rooms.sort((a, b) => b.usersNum - a.usersNum);
+          break;
+
+        case 'open':
+          rooms = rooms.filter((room) => room.usersNum < room.maxPeople);
+          break;
+
+        default:
+          break;
       }
 
       return rooms.map((roomL) => ({
