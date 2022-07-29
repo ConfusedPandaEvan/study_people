@@ -127,20 +127,20 @@ export class MessageGateway {
         console.log('roomId: ',client.roomId)
         console.log('profileImage: ',client.profileImage);
 
-        if (this.allonlineuser.includes(client.userId)) {
-          const errormessage = '이미 채팅방에 접속중인 유저입니다.'
-          console.log('이미 채팅방에 접속중인 유저입니다.')
-          this.server.to(roomID).emit('user_exit', {id: client.userId})
-          client.emit('disconnectuser',errormessage)
-          return
-        }
+        // if (this.allonlineuser.includes(client.userId)) {
+        //   const errormessage = '이미 채팅방에 접속중인 유저입니다.'
+        //   console.log('이미 채팅방에 접속중인 유저입니다.')
+        //   this.server.to(roomID).emit('user_exit', {id: client.userId})
+        //   client.emit('disconnectuser',errormessage)
+        //   return
+        // }
 
-        const index = this.allonlineuser.indexOf(client.userId);
-        if (index > -1) { // only splice array when item is found
-          this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
-        }
+        // const index = this.allonlineuser.indexOf(client.userId);
+        // if (index > -1) { // only splice array when item is found
+        //   this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
+        // }
 
-        console.log('퇴장 후 지금 서버에 연결된 소켓: ', this.allonlineuser)
+        // console.log('퇴장 후 지금 서버에 연결된 소켓: ', this.allonlineuser)
 
         if (room) {
             room = room.filter((user) => user.id !== client.id);
@@ -469,7 +469,7 @@ export class MessageGateway {
       data = [...data,eachdata]
     }
 
-    client.emit('userinfos', data);
+    client.emit('userInfos', data);
     //data: [... {profilepic,nickName,userId}] 방장이면 맨 위에
   }
   
