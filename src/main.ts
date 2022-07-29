@@ -3,7 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
 // import { IoAdapter } from '@nestjs/platform-socket.io';
-import { SocketIoAdapter } from './adapters/socket-io.adapters';
+import { SocketIOAdapter } from './adapters/socket-io.adapters';
 
 import * as fs from 'fs';
 import * as http from 'http';
@@ -19,7 +19,9 @@ async function bootstrap() {
 
   const app = await NestFactory.create(AppModule, { httpsOptions });
   app.enableCors();
-
+  const socketIoAdapter = new SocketIOAdapter(app)
+  // await socketIoAdapter.connectToRedis();
+  app.useWebSocketAdapter(socketIoAdapter)
   await app.init();
 
   await app.listen(3000, () => {

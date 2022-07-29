@@ -68,7 +68,7 @@ export class MessageGateway {
   
   public handleConnection(client: Socket): void {
     console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
-    const token = client.handshake.auth.token
+    const token = client.handshake.auth.token || client.handshake.headers['token']
 
     try {
       const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
@@ -91,7 +91,7 @@ export class MessageGateway {
   }
   public async handleDisconnect(client: Socket): Promise<void> {
     console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
-    const token = client.handshake.auth.token
+    const token = client.handshake.auth.token || client.handshake.headers['token']
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     const joineduserid = verifiedtoken.userId
     const roomID = this.socketToRoom[client.id];
@@ -136,7 +136,7 @@ export class MessageGateway {
   //join_room 으로 받는 데이터 {roomId: string}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   @SubscribeMessage('join_room')
   async joinRoom(@MessageBody() data: joinroomDto, @ConnectedSocket() client: Socket){
-    const token = client.handshake.auth.token
+    const token = client.handshake.auth.token || client.handshake.headers['token']
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     const joineduserid = verifiedtoken.userId
     // const room = await this.roomModel.findById(data.roomId)
@@ -225,7 +225,7 @@ export class MessageGateway {
   //data 에선 roomId 랑 targetId
   @SubscribeMessage('addblacklist')
   async blacklist(@MessageBody() data , @ConnectedSocket() client: Socket){
-    const token = client.handshake.auth.token
+    const token = client.handshake.auth.token || client.handshake.headers['token']
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     const joineduserid = verifiedtoken.userId
     const thisroom = await this.roomModel.findById(data.roomId)
@@ -315,7 +315,7 @@ export class MessageGateway {
   // userId 를 못받는다 토큰을 풀어서 유저 아이디를 사용하자 받는 데이터는 {roomId: string, conetent: string} !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   @SubscribeMessage('MessageFromClient')
   async createMessage(@MessageBody() createChatDto: CreateChatDto,@ConnectedSocket() client: Socket) {
-    const token = client.handshake.auth.token
+    const token = client.handshake.auth.token || client.handshake.headers['token']
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     const joineduserid = verifiedtoken.userId
 
@@ -335,7 +335,7 @@ export class MessageGateway {
   //타이머 토글을 켜고 각 유저의 공부시간을 받고싶을때(timertoggleon)
   @SubscribeMessage('timertoggleon')
   async timeinfo(@ConnectedSocket() client: Socket) {
-    const token = client.handshake.auth.token
+    const token = client.handshake.auth.token || client.handshake.headers['token']
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     const joineduserid = verifiedtoken.userId
 
@@ -379,6 +379,7 @@ export class MessageGateway {
 
       let eachdata = {
         profilepic: user.profileImage,
+        userId: user._id,
         nickName:user.userNick,
         currentrecord: currentrecord,
         accumrecord,

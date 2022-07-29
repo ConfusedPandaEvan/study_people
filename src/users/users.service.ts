@@ -4,7 +4,12 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/users/user.Schema';
+import * as jwt from 'jsonwebtoken';
 import * as fs from 'fs';
+
+interface JwtPayload {
+  userId: string;
+}
 
 @Injectable()
 export class UsersService {
@@ -102,5 +107,17 @@ export class UsersService {
     await this.userModel.deleteOne({ _id: id }).exec();
 
     return { message: `${id} user information successfully deleted` };
+  }
+
+  async verifywithtoken(token: string): Promise<User> {
+    let user;
+    try {
+        const verified = jwt.verify(token, 'MyKey') as JwtPayload;
+        user = await this.userModel.findById(verified.userId);
+        console.log('userId decoded from jwt',verified.userId)
+      } catch (error) {
+        throw new NotFoundException('Could Not Find User');
+      }
+      return user
   }
 }
