@@ -70,11 +70,11 @@ export class MessageGateway {
   public handleConnection(client: SocketWithAuth): void {
     
     console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
-    console.log('기능점검')
-    console.log(client.userId)
-    console.log(client.nickName)
-    console.log(client.roomId)
-    console.log(client.profileImage);
+    console.log('소켓연결 됬을때 기능점검')
+    console.log('userid: ',client.userId)
+    console.log('nickName: ',client.nickName)
+    console.log('roomId: ',client.roomId)
+    console.log('profileImage: ',client.profileImage);
     const token = client.handshake.auth.token || client.handshake.headers['token']
 
     try {
@@ -96,7 +96,7 @@ export class MessageGateway {
     // }
     
   }
-  public async handleDisconnect(client: Socket): Promise<void> {
+  public async handleDisconnect(client: SocketWithAuth): Promise<void> {
     console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
     const token = client.handshake.auth.token || client.handshake.headers['token']
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
@@ -133,6 +133,13 @@ export class MessageGateway {
 
         delete this.socketToRoom[client.id]
                 console.log(this.users);
+
+
+        console.log('소켓연결 끊길때 기능점검:  ')
+        console.log('userid: ',client.userId)
+        console.log('nickName: ',client.nickName)
+        console.log('roomId: ',client.roomId)
+        console.log('profileImage: ',client.profileImage);
         // delete this.usertosocket[joineduserid];
         this.server.to(roomID).emit('user_exit', {id: client.id});
 
