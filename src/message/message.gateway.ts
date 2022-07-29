@@ -16,6 +16,7 @@ import { Chat } from 'src/chats/chat.Schema';
 import { User } from 'src/users/user.Schema';
 import { Time } from 'src/times/time.Schema';
 import * as jwt from 'jsonwebtoken';
+import { SocketWithAuth } from 'src/types';
 interface JwtPayload {
   userId: string;
 }
@@ -66,8 +67,12 @@ export class MessageGateway {
 
   @SubscribeMessage('disconnect')
   
-  public handleConnection(client: Socket): void {
+  public handleConnection(client: SocketWithAuth): void {
+    
     console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
+    console.log(client.userId)
+    console.log(client.nickName)
+    console.log('기능점검 ',`connection: ${client.userId,client.nickName,client.profileImage}`);
     const token = client.handshake.auth.token || client.handshake.headers['token']
 
     try {
