@@ -126,6 +126,12 @@ export class MessageGateway {
         console.log('nickName: ',client.nickName)
         console.log('roomId: ',client.roomId)
         console.log('profileImage: ',client.profileImage);
+        if (this.allonlineuser.includes(client.userId)) {
+          const errormessage = '이미 채팅방에 접속중인 유저입니다.'
+          client.emit('disconnectuser',errormessage)
+          return
+        }
+
         const index = this.allonlineuser.indexOf(client.userId);
         if (index > -1) { // only splice array when item is found
           this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
