@@ -120,7 +120,11 @@ export class MessageGateway {
         } else {
           console.log(joineduserid,' this users studytime is too short, it has not been saved')
         }
-
+        console.log('소켓연결 끊길때 기능점검:  ')
+        console.log('userid: ',client.userId)
+        console.log('nickName: ',client.nickName)
+        console.log('roomId: ',client.roomId)
+        console.log('profileImage: ',client.profileImage);
 
         if (room) {
             room = room.filter((user) => user.id !== client.id);
@@ -135,11 +139,7 @@ export class MessageGateway {
                 console.log(this.users);
 
 
-        console.log('소켓연결 끊길때 기능점검:  ')
-        console.log('userid: ',client.userId)
-        console.log('nickName: ',client.nickName)
-        console.log('roomId: ',client.roomId)
-        console.log('profileImage: ',client.profileImage);
+        
         // delete this.usertosocket[joineduserid];
         this.server.to(roomID).emit('user_exit', {id: client.id});
 
