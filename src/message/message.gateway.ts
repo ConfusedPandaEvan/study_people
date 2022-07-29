@@ -128,6 +128,7 @@ export class MessageGateway {
         console.log('profileImage: ',client.profileImage);
         if (this.allonlineuser.includes(client.userId)) {
           const errormessage = '이미 채팅방에 접속중인 유저입니다.'
+          console.log('이미 채팅방에 접속중인 유저입니다.')
           client.emit('disconnectuser',errormessage)
           return
         }
@@ -312,7 +313,10 @@ export class MessageGateway {
     const targetsocketid = targetuserinfo[0].id
     //클라이언트에서 disconnect처리 해주어야 될수도 있음
     const errormessage = '방장에 의해 강퇴당했습니다.'
+
     this.server.to(targetsocketid).emit('disconnectuser',errormessage)
+    console.log('강퇴 발생')
+    this.server.to(data.roomID).emit('user_exit', {id: targetsocketid});
   }
   
   
