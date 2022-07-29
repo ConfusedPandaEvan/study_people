@@ -7,6 +7,7 @@ import { RoomService } from './room.service';
 import { UserSchema } from 'src/users/user.Schema';
 import { Authmiddleware } from 'src/middlewares/auth.middleware';
 import { SocialloginService } from 'src/sociallogin/sociallogin.service';
+import { RoomSearchService } from './roomSearch.service';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { SocialloginService } from 'src/sociallogin/sociallogin.service';
     MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
   ],
   controllers: [RoomController],
-  providers: [RoomService, SocialloginService],
+  providers: [RoomService, SocialloginService, RoomSearchService],
   exports: [RoomService],
 })
 export class RoomModule implements NestModule {

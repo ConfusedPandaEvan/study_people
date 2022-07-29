@@ -23,10 +23,14 @@ import { GetUser } from 'src/middlewares/get-user.decorator';
 import { User } from 'src/users/user.Schema';
 import { RemoveUserDto } from './dto/remove-user.dto';
 import { SortOrder } from 'mongoose';
+import { RoomSearchService } from './roomSearch.service';
 
 @Controller('room')
 export class RoomController {
-  constructor(private readonly roomService: RoomService) {}
+  constructor(
+    private readonly roomService: RoomService,
+    private readonly roomSearchService: RoomSearchService,
+  ) {}
 
   //This is only for dev purpose. This should be edited for Community Page Search
   @Get()
@@ -50,10 +54,10 @@ export class RoomController {
     let rooms;
 
     if (textQuery) {
-      rooms = await this.roomService.textSearch(textQuery, sort);
+      rooms = await this.roomSearchService.textSearch(textQuery, sort);
     }
     if (hashtagQuery) {
-      rooms = await this.roomService.hashtagSearch(hashtagQuery, sort);
+      rooms = await this.roomSearchService.hashtagSearch(hashtagQuery, sort);
     }
     if (!rooms || rooms.length == 0) {
       throw new NotFoundException(
