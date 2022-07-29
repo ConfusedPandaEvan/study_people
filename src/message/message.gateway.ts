@@ -440,6 +440,38 @@ export class MessageGateway {
     client.emit('timeinfos', data);
     //data: [... {profilepic,nickName,currentrecord,accumrecord,online}]
   }
+
+
+  @SubscribeMessage('kicktoggleon')
+  async userinfo(@ConnectedSocket() client: SocketWithAuth) {
+
+    // 룸아이디에서 있는 유저들을 for 문을 돌린다. 그리고는 맵을 해준다. 
+    // 프사 url, nickNAME(user가서 아이디로 또 찾아서 줘야함), 기록: 현재시간 - 접속시간 주면됨, 누적, 체팅 찾아서 더해서 주면됨.)
+
+    const room = await this.roomModel.findById(client.roomId);
+    console.log(room)
+    const roomusers = room.users
+    let data = []
+    for (let eachuserid of roomusers){
+      let user = await this.userModel.findById(eachuserid);
+      let connecteduser = this.users[client.roomId]
+      let connecteduserid = []
+
+      for (let eachuser of connecteduser){
+        connecteduserid = [... connecteduserid,eachuser.userid]
+      }
+
+      let eachdata = {
+        profilepic: user.profileImage,
+        userId: user._id,
+        nickName:user.userNick
+      }
+      data = [...data,eachdata]
+    }
+
+    client.emit('userinfos', data);
+    //data: [... {profilepic,nickName,userId}] 방장이면 맨 위에
+  }
   
   // 채팅 내보내기
   @SubscribeMessage('findAllMessage')
