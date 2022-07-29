@@ -168,18 +168,25 @@ export class MessageGateway {
   }
   //블랙리스트에 저장되어있으면 코드진행 X
   if (thisroom.blackList && thisroom.blackList.includes(joineduserid)) {
-    console.log('블랙리스트라서 방에 입장할수없습니다. ~~~~~~~~~~~~')
-    throw new ForbiddenException('blocked by the owner.(블랙리스트)')
+    const errormessage = '블랙리스트라서 방에 입장할수없습니다'
+    client.emit('disconnectuser',errormessage)
+    console.log('블랙리스트라서 방에 입장할수없습니다. ')
+    return
+    // throw new ForbiddenException('blocked by the owner.(블랙리스트)')
   }
   //방이 꽉 차고, 내 아이디가 룸 안에 저장 안되있으면 코드진행 X
 
   console.log('1:',thisroom.users.length,'2:', thisroom.maxPeople,'3:',thisroom.users, '4:',joineduserid)
   if (thisroom.users.length === thisroom.maxPeople && !thisroom.users.includes(joineduserid)){
     //이코드가 작동 안하는거 같은데, return 을써보자
-    console.log('해당방이 정원 초과라서 입장 할 수 없습니다 ~~~~~~~~~~~~')
-    throw new WsException(
-      '해당방이 정원 초과라서 입장 할 수 없습니다 ~~~~~~~~~~~~',
-    );
+    
+    const errormessage = '해당방이 정원 초과라서 입장 할 수 없습니다'
+    client.emit('disconnectuser',errormessage)
+    console.log('해당방이 정원 초과라서 입장 할 수 없습니다' )
+    return
+    // throw new WsException(
+    //   '해당방이 정원 초과라서 입장 할 수 없습니다 ~~~~~~~~~~~~',
+    // );
   }
 
   //방이 꽉 차지 않았고, 내 유저아이디가 방 안에 없으면 방안에 넣어주고 코드진행
@@ -201,9 +208,12 @@ export class MessageGateway {
   if (this.users[data.roomId]) {
     const length = this.users[data.roomId].length;
     if (length === 4) {
-        console.log('room is !full!!!!!!!!!')
-        this.server.to(client.id).emit('room_full');
-        return;
+      const errormessage = '방이 꽉찼습니다'
+      console.log('방이 꽉찼습니다' )
+      client.emit('disconnectuser',errormessage)
+      
+        // this.server.to(client.id).emit('room_full');
+      return;
     }
     this.users[data.roomId].push({id: client.id, userid: joineduserid, joinedtime: starttime});
   } else {
@@ -275,12 +285,12 @@ export class MessageGateway {
 
     console.log('해당유저 데이터 베이스에서 삭제후 블랙리스트 추가 완료')
 
-    //채팅 지우는 부분은 아직 구현 못함
-    // this.roomModel.deleteMany({ roomId: { data.roomId }, User._id:  }).then(function(){
-    //   console.log("Data deleted"); // Success
-    // }).catch(function(error){
-    //     console.log(error); // Failure
-    // });
+    // 채팅 지우는 부분은
+    this.roomModel.deleteMany({roomId:data.roomId, userId:data.targetId}).then(function(){
+      console.log("Data deleted"); // Success
+    }).catch(function(error){
+        console.log(error); // Failure
+    });
 
 
 
