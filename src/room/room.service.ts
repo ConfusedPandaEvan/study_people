@@ -77,7 +77,8 @@ export class RoomService {
     }
   }
 
-  async enterRoom(roomId, userId, password) {
+  // async enterRoom(roomId, userId, password) {
+    async enterRoom(roomId, userId) {
     const targetRoom = await this.findRoom(roomId);
 
     //Blacklist Check
@@ -86,12 +87,12 @@ export class RoomService {
     }
 
     //Password Check
-    if (targetRoom.password !== password) {
-      throw new UnauthorizedException('비밀번호 틀렸습니다.');
-    }
+    // if (targetRoom.password !== password) {
+    //   throw new UnauthorizedException('비밀번호 틀렸습니다.');
+    // }
 
     //People number Check
-    if (targetRoom.users.length == targetRoom.maxPeople) {
+    if (targetRoom.users.length == targetRoom.maxPeople && !targetRoom.users.includes(userId)) {
       throw new BadRequestException('이 방은 이미 만원입니다.');
     }
 
@@ -102,7 +103,7 @@ export class RoomService {
         { $push: { users: userId }, $inc: { usersNum: 1 } },
       );
     }
-    return 'true';
+    return true;
   }
 
   async changeOwner(roomId, removeUserDto, userId) {
