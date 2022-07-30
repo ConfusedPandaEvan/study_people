@@ -75,6 +75,89 @@ export class SocialloginService {
       msg: '카카오 로그인 완료.',
     };
   }
+
+  async naverLogin(@Query() query) {
+    const naver = {
+      clientid: '9iq4Y1nFcUpuQ9_Tpmtb6',
+      redirectUri: 'https://stupy.shop/naverlogin',
+      client_secret: 'upkjLQQL7d'
+
+      // 수정 필요 redirectUri: 'http://13.125.58.110:3000/main',
+    };
+
+    const { code } = query;
+    const options = {
+      url: 'https://kauth.kakao.com/oauth/token',
+      method: 'POST',
+      form: {
+        grant_type: 'authorization_code',
+        client_id: naver.clientid,
+        client_secret: naver.client_secret,
+        // redirect_uri: naver.redirectUri,
+        code: code,
+      },
+      headers: {
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      json: true,
+    };
+    // const kakaotoken = await rp(options);
+    try {
+      const {access_token} = await rp(options)
+      console.log('token from naver: ',access_token)
+    } catch(e){
+      console.log(e)
+      console.log('above error occure while requesting token from naver')
+    }
+      const {access_token} = await rp(options)
+    
+
+    const options1 = {
+      url: 'https://openapi.naver.com/v1/nid/me',
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${access_token}`,
+        'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
+      },
+      json: true,
+    };
+
+    const userInfo = await rp(options1);
+
+    console.log('user info from naver using naver token',userInfo)
+    const naverId = userInfo.response.id;
+    const userNick = userInfo.response.name;
+    const email = userInfo.response.email;
+    let profileImage = userInfo.response.profile_image;
+    if (!profileImage){
+      profileImage = './public/profileImages/defaultImage.png';
+    }
+    const existUser = await this.userModel.findOne({ naverId }); 
+
+
+    if (!existUser) {
+      // const from = 'kakao'; 나중에 네이버나 구글서비스 로그인 추가 할 거면 필요
+      const user = new this.userModel({
+        naverId,
+        userNick,
+        email,
+        profileImage,
+      });
+      console.log('새로운 유저가 네이버를 통해 회원가입을 하였습니다.! user: ', user)
+
+      await this.userModel.create(user);
+    }
+    const loginUser = await this.userModel.findOne({ naverId });
+    const userId = loginUser.id as string;
+    const token = jwt.sign({ userId }, 'MyKey');
+
+    return {
+      token,
+      userId,
+      userNick,
+      msg: '네이버 로그인 완료 .'
+    };
+  }
   async findUser(userId: string) {
     return await this.userModel.findOne({ _id: userId });
   }
