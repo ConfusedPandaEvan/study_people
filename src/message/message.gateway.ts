@@ -91,7 +91,6 @@ export class MessageGateway {
     // const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     // const joineduserid = verifiedtoken.userId
     if (this.allonlineuser.includes(client.userId)) {
-      this.allonlineuser.push(client.userId)
       client.disconnect()
       return
     } else {
