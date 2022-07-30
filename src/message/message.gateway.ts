@@ -91,10 +91,11 @@ export class MessageGateway {
     // const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     // const joineduserid = verifiedtoken.userId
     if (this.allonlineuser.includes(client.userId)) {
+      this.allonlineuser.push(client.userId)
       client.disconnect()
       return
     } else {
-      this.allonlineuser.push(client.id)
+      this.allonlineuser.push(client.userId)
     }
 
     console.log('all online user after connection: ', this.allonlineuser)
@@ -146,7 +147,7 @@ export class MessageGateway {
         // console.log('퇴장 후 지금 서버에 연결된 소켓: ', this.allonlineuser)
   
 
-        const index = this.allonlineuser.indexOf(5);
+        const index = this.allonlineuser.indexOf(client.userId);
         if (index > -1) { // only splice array when item is found
           this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
         }
