@@ -37,7 +37,13 @@ export class ControllerAuthGuard implements CanActivate{
 
         const verified = jwt.verify(tokenValue,'MyKey') as JwtPayload;
         console.log('valid token: ', verified);
-        const user = await this.userModel.findById(verified.userId)
+        const user = await this.userModel.findById(verified.
+            userId)
+        if (!user){
+            console.log('존재하지 않는 유저입니다  회원가입후 이용하세요!')
+            throw new ForbiddenException('존재하지 않는 유저입니다  회원가입후 이용하세요!')
+            ;
+        }
         request.userId = verified.userId
         request.nickName = user.userNick//데이터베이스에서 찾아서 넣기;
         request.profileImage = user.profileImage

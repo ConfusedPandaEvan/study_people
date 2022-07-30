@@ -45,6 +45,11 @@ const createTokenMiddleware =  (usersService: UsersService) => async (socket: So
   
         const user = await usersService.verifywithtoken(token)
         console.log(user)
+        if (!user){
+            console.log('존재하지 않는 유저입니다  회원가입후 이용하세요!')
+            throw new Error('존재하지 않는 유저입니다  회원가입후 이용하세요!')
+            ;
+        }
         socket.userId = userId
         socket.nickName = user.userNick
         socket.profileImage= user.profileImage;
