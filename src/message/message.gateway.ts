@@ -42,11 +42,11 @@ export class MessageGateway {
 
   users = { 'testroomid': [ { id: 'testsocketid', userid: 'test',joinedtime: 1000 }]}
   socketToRoom = {'testsocketid':'testroomid'} 
-  public currenttime: number
   //접속성공하면 현재 내 방 이라는 변수 안에 방 아이디 불러오기
   //접속성공하면 현재 접속유저 변수 안에 유저 인포 불러오기 
   public usertosocket = {'userid':'socketid'}
   public allonlineuser =[]
+
   @WebSocketServer()
   server: Server;
   
@@ -76,7 +76,7 @@ export class MessageGateway {
     console.log('roomId: ',client.roomId)
     console.log('profileImage: ',client.profileImage);
     const token = client.handshake.auth.token || client.handshake.headers['token']
-    this.allonlineuser.push(client.userId)
+    
     console.log('지금 서버에 연결된 소켓: ', this.allonlineuser)
     // try {
     //   const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
@@ -90,11 +90,14 @@ export class MessageGateway {
 
     // const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     // const joineduserid = verifiedtoken.userId
-    // if (this.usertosocket[joineduserid]) {
-    //   client.disconnect()
-    // } else {
-    //   this.usertosocket[joineduserid] = client.id
-    // }
+    if (this.allonlineuser.includes(client.userId)) {
+      client.disconnect()
+      return
+    } else {
+      this.allonlineuser.push(client.id)
+    }
+
+    console.log('all online user after connection: ', this.allonlineuser)
     
   }
   public async handleDisconnect(client: SocketWithAuth): Promise<void> {
@@ -141,6 +144,13 @@ export class MessageGateway {
         // }
 
         // console.log('퇴장 후 지금 서버에 연결된 소켓: ', this.allonlineuser)
+  
+
+        const index = this.allonlineuser.indexOf(5);
+        if (index > -1) { // only splice array when item is found
+          this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
+        }
+        console.log('all online user after disconnection: ', this.allonlineuser)
 
         if (room) {
             room = room.filter((user) => user.id !== client.id);
