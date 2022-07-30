@@ -77,7 +77,6 @@ export class MessageGateway {
     console.log('profileImage: ',client.profileImage);
     const token = client.handshake.auth.token || client.handshake.headers['token']
     
-    console.log('지금 서버에 연결된 소켓: ', this.allonlineuser)
     // try {
     //   const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     //   this.userModel.findOne({ _id: verifiedtoken.userId }).then((user) => {
