@@ -100,7 +100,14 @@ export class MessageGateway {
     
   }
   public async handleDisconnect(client: SocketWithAuth): Promise<void> {
-    console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
+    const index = this.allonlineuser.indexOf(client.userId);
+        if (index > -1) { // only splice array when item is found
+          this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
+        }
+
+        console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
+        console.log('all online user after disconnection: ', this.allonlineuser)
+    
     const token = client.handshake.auth.token || client.handshake.headers['token']
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     const joineduserid = verifiedtoken.userId
@@ -145,11 +152,7 @@ export class MessageGateway {
         // console.log('퇴장 후 지금 서버에 연결된 소켓: ', this.allonlineuser)
   
 
-        const index = this.allonlineuser.indexOf(client.userId);
-        if (index > -1) { // only splice array when item is found
-          this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
-        }
-        console.log('all online user after disconnection: ', this.allonlineuser)
+        
 
         if (room) {
             room = room.filter((user) => user.id !== client.id);
