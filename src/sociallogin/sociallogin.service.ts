@@ -60,7 +60,7 @@ export class SocialloginService {
         email,
         profileImage,
       });
-      console.log('새로운 유저가 회원가입을 하였습니다.! user: ', user)
+      console.log('새로운 유저가 카카오를 통해 회원가입을 하였습니다.! user: ', user)
 
       await this.userModel.create(user);
     }
@@ -86,7 +86,6 @@ export class SocialloginService {
     };
     const { code } = query
     const {state} =query
-    console.log('code is: ',code)
     const options = {
       url: '	https://nid.naver.com/oauth2.0/token',
       method: 'POST',
@@ -106,8 +105,6 @@ export class SocialloginService {
     };
     // const kakaotoken = await rp(options);
     const {access_token} = await rp(options)
-    console.log(access_token)
-
     const options1 = {
       url: 'https://openapi.naver.com/v1/nid/me',
       method: 'GET',
@@ -117,27 +114,16 @@ export class SocialloginService {
       },
       json: true,
     };
-    try{
-      const userInfo = await rp(options1);
-    }
-    catch(e){
-      console.log('error!')
-      console.log(e)
-    }
     const userInfo = await rp(options1);
-    console.log(userInfo)
-
-    console.log('user info from naver using naver token',userInfo)
-    const naverId = userInfo.id;
-    const userNick = userInfo.name;
-    const email = userInfo.email;
-    let profileImage = userInfo.profile_image;
+    const naverId = userInfo.response.id;
+    const userNick = userInfo.response.name;
+    const email = userInfo.response.email;
+    let profileImage = userInfo.response.profile_image;
     if (!profileImage){
       profileImage = './public/profileImages/defaultImage.png';
     }
     const existUser = await this.userModel.findOne({ naverId }); 
-
-
+  
     if (!existUser) {
       // const from = 'kakao'; 나중에 네이버나 구글서비스 로그인 추가 할 거면 필요
       const user = new this.userModel({
