@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { HashtagSchema } from 'src/room/hashtag.model';
@@ -44,6 +48,14 @@ export class TodoListService {
 
   //Create Default TodoList with one Default Todo
   async createTodoList(userId) {
+    const todolists = await this.getAllTodoLists(userId);
+
+    if (todolists.length == 10) {
+      throw new BadRequestException(
+        '카테고리 갯수를 초과하셨습니다! 더 이상 만드실 수 없어요.',
+      );
+    }
+
     const newTodoList = new this.todoListModel({
       userId,
       title: 'default To-do List',
@@ -79,6 +91,14 @@ export class TodoListService {
   }
 
   async createTodo(todoListId) {
+    const todos = await this.getAllTodo(todoListId);
+
+    if (todos.length == 10) {
+      throw new BadRequestException(
+        '투두 갯수를 초과하셨습니다! 더 이상 만드실 수 없어요.',
+      );
+    }
+
     const newTodo = new this.todoModel({
       content: 'default To-do',
       status: false,
