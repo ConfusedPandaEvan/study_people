@@ -59,7 +59,9 @@ export class UsersController {
   @UseGuards(ControllerAuthGuard)
   @Delete('/:userId')
   async remove(@Param('userId') userId: string, @Req() request: RequestWithAuth) {
+    console.log('controller: ', userId)
     await this.usersService.remove(userId)
+    console.log('회원탈퇴가 성공적으로 되었습니다. ')
     return;
   }
 }
