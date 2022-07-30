@@ -9,6 +9,9 @@ export class User {
   kakaouserId: string;
 
   @Prop()
+  naverId: string
+
+  @Prop()
   userNick: string;
 
   @Prop()
@@ -19,6 +22,9 @@ export class User {
 
   @Prop()
   profileImage: string;
+
+  @Prop()
+  joinedRoomNum: { type: number, default: 0 }
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
