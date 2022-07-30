@@ -53,7 +53,5 @@ export class ControllerAuthGuard implements CanActivate{
         }catch{
             throw new ForbiddenException('Invalid authorization token')
         }
-
     }
-
 }
