@@ -9,12 +9,14 @@ import { Model } from 'mongoose';
 import { Hashtag } from './hashtag.model';
 import { Room } from './room.model';
 import * as fs from 'fs';
+import { User } from 'src/users/user.Schema';
 
 @Injectable()
 export class RoomService {
   constructor(
     @InjectModel('Room') private readonly roomModel: Model<Room>,
     @InjectModel('Hashtag') private readonly hashtagModel: Model<Hashtag>,
+    @InjectModel('User') private readonly userModel: Model<User>,
   ) {}
 
   async getAllRooms(sort) {
@@ -66,6 +68,8 @@ export class RoomService {
   async leaveRoom(roomId, userId) {
     const targetRoom = await this.findRoom(roomId);
 
+    
+    
     //When leaving, if the person is the only one in the room, delete room. If not, just remove the user from room
     if (targetRoom.users.length == 1) {
       this.deleteRoom(roomId, userId);
@@ -75,12 +79,17 @@ export class RoomService {
         { $pull: { users: userId }, $inc: { usersNum: -1 } },
       );
     }
+
+    await this.userModel.updateOne(
+      { _id: userId },
+      { $inc: { joinedRoomNum: -1 } },
+    );
   }
 
   // async enterRoom(roomId, userId, password) {
     async enterRoom(roomId, userId) {
     const targetRoom = await this.findRoom(roomId);
-
+    const user = await this.userModel.findById(userId)
     //Check if the room exists
     if (!targetRoom){
         throw new BadRequestException('존재하지 않는 방입니다.');
@@ -88,6 +97,10 @@ export class RoomService {
     //Blacklist Check
     if (targetRoom.blackList && targetRoom.blackList.includes(userId)) {
       throw new UnauthorizedException('당신은 방장한테 찍혀서 접근 못해요');
+    }
+
+    if (user.joinedRoomNum == 5 && !targetRoom.users.includes(userId)) {
+      throw new BadRequestException('최대 가입 가능한 방의 갯수는 5개입니다.');
     }
 
     //Password Check
@@ -105,6 +118,10 @@ export class RoomService {
       await this.roomModel.updateOne(
         { _id: roomId },
         { $push: { users: userId }, $inc: { usersNum: 1 } },
+      );
+      await this.userModel.updateOne(
+        { _id: userId },
+        { $inc: { joinedRoomNum: 1 } },
       );
     }
     return true;
@@ -187,6 +204,13 @@ export class RoomService {
 
   async createRoom(file, createRoomDto, userId) {
     //Default Image if image is not provided
+    
+    const user = await this.userModel.findById(userId);
+    if (user.joinedRoomNum == 5 ) {
+      throw new BadRequestException('최대 가입할수있는 가능한 방의 갯수는 5개입니다.');
+    }
+    
+    
     let filename = 'defaultImage.png';
     if (file) {
       filename = file.filename;

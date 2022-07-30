@@ -24,7 +24,7 @@ export class User {
   profileImage: string;
 
   @Prop({ type: Number, default: 0, })
-  joinedRoom: number
+  joinedRoomNum: number
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
