@@ -77,6 +77,7 @@ export class SocialloginService {
   }
 
   async naverLogin(@Query() query) {
+    console.log('here we go')
     const naver = {
       clientid: '9iq4Y1nFcUpuQ9_Tpmtb6',
       redirectUri: 'https://stupy.shop/naverlogin',
@@ -86,6 +87,7 @@ export class SocialloginService {
     };
 
     const { code } = query;
+    console.log('code is: ',code)
     const options = {
       url: 'https://kauth.kakao.com/oauth/token',
       method: 'POST',
