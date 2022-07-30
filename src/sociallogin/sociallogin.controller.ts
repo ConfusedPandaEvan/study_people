@@ -16,7 +16,7 @@ export class SocialloginController {
   @Get('naverlogin')
   @Redirect('http://stupy.co.kr/kakao/login', 301)
   async naverLogin(@Query() query: string) {
-    console.log('here we go!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2')
+    console.log('here we go!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1')
     const { token } = await this.SocialloginService.kakaoLoginMain(query);
     return { url: `http://stupy.co.kr/kakao/login?token=${token}` };
 

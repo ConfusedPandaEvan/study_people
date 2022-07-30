@@ -78,6 +78,9 @@ export class SocialloginService {
 
   async naverLogin(@Query() query) {
     console.log('here we go!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2')
+    console.log('query is: '
+      ,query
+    )
     const naver = {
       clientid: '9iq4Y1nFcUpuQ9_Tpmtb6',
       redirectUri: 'https://stupy.shop/naverlogin',
