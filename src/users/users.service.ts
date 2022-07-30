@@ -96,17 +96,17 @@ export class UsersService {
     return { message: `${id} user information successfully updated` };
   }
 
-  async remove(id: string) {
+  async remove(userId: string) {
     let deletingUser;
     try {
-      deletingUser = await this.userModel.findById(id).exec();
+      deletingUser = await this.userModel.findById(userId).exec();
     } catch (error) {
       throw new NotFoundException('Could Not Find User');
     }
 
-    await this.userModel.deleteOne({ _id: id }).exec();
+    await this.userModel.deleteOne({ _id: userId }).exec();
 
-    return { message: `${id} user information successfully deleted` };
+    return { message: `${userId} user information successfully deleted` };
   }
 
   async verifywithtoken(token: string): Promise<User> {

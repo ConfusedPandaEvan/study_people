@@ -6,6 +6,8 @@ import {
   Patch,
   Param,
   Delete,
+  Req,
+  UseGuards,
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
@@ -15,6 +17,8 @@ import { diskStorage } from 'multer';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { editFileName, imageFileFilter } from 'src/utils/file-uploading.utils';
+import { ControllerAuthGuard } from 'src/auth/controllerauth.guard';
+import { RequestWithAuth } from 'src/types';
 
 @Controller('api/users')
 export class UsersController {
@@ -52,9 +56,10 @@ export class UsersController {
   ) {
     return this.usersService.update(file, id, updateUserDto);
   }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @UseGuards(ControllerAuthGuard)
+  @Delete('/:userId')
+  async remove(@Param('userId') userId: string, @Req() request: RequestWithAuth) {
+    await this.usersService.remove(userId)
+    return;
   }
 }

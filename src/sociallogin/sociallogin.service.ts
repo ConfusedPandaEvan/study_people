@@ -60,6 +60,7 @@ export class SocialloginService {
         email,
         profileImage,
       });
+      console.log('새로운 유저가 회원가입을 하였습니다.! user: ', user)
 
       await this.userModel.create(user);
     }
