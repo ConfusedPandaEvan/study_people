@@ -273,7 +273,7 @@ export class MessageGateway {
 
   //data 에선 roomId 랑 targetId
   @SubscribeMessage('addblacklist')
-  async blacklist(@MessageBody() data , @ConnectedSocket() client: Socket){
+  async blacklist(@MessageBody() data , @ConnectedSocket() client: SocketWithAuth){
     const token = client.handshake.auth.token || client.handshake.headers['token']
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     const joineduserid = verifiedtoken.userId
@@ -317,7 +317,10 @@ export class MessageGateway {
         console.log(error); // Failure
     });
 
-
+    const index = this.allonlineuser.indexOf(data.targetId);
+        if (index > -1) { // only splice array when item is found
+          this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
+        }
 
     console.log('해당유저의 해당채팅방안에서의 채팅기록 삭제 완료')
     const targetuserinfo = this.users[data.roomId].filter(user=> user.userid === data.targetId)
