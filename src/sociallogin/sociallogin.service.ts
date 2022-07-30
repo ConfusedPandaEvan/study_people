@@ -76,23 +76,19 @@ export class SocialloginService {
     };
   }
 
-  async naverLogin(@Query() query) {
-    console.log('here we go!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!2')
-    console.log('query is: '
-      ,query
-    )
+  async naverLogin(query) {
     const naver = {
-      clientid: '9iq4Y1nFcUpuQ9_Tpmtb6',
+      clientid: 'iq4Y1nFcUpuQ9_Tpmtb6',
       redirectUri: 'https://stupy.shop/naverlogin',
       client_secret: 'upkjLQQL7d'
 
       // 수정 필요 redirectUri: 'http://13.125.58.110:3000/main',
     };
-
-    const { code } = query;
+    const { code } = query
+    const {state} =query
     console.log('code is: ',code)
     const options = {
-      url: 'https://kauth.kakao.com/oauth/token',
+      url: '	https://nid.naver.com/oauth2.0/token',
       method: 'POST',
       form: {
         grant_type: 'authorization_code',
@@ -100,6 +96,8 @@ export class SocialloginService {
         client_secret: naver.client_secret,
         // redirect_uri: naver.redirectUri,
         code: code,
+        state: state,
+
       },
       headers: {
         'content-type': 'application/x-www-form-urlencoded',
@@ -107,33 +105,33 @@ export class SocialloginService {
       json: true,
     };
     // const kakaotoken = await rp(options);
-    try {
-      const {access_token} = await rp(options)
-      console.log('token from naver: ',access_token)
-    } catch(e){
-      console.log(e)
-      console.log('above error occure while requesting token from naver')
-    }
-      const {access_token} = await rp(options)
-    
+    const {access_token} = await rp(options)
+    console.log(access_token)
 
     const options1 = {
       url: 'https://openapi.naver.com/v1/nid/me',
       method: 'GET',
       headers: {
         Authorization: `Bearer ${access_token}`,
-        'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
+        // 'Content-type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
       json: true,
     };
-
+    try{
+      const userInfo = await rp(options1);
+    }
+    catch(e){
+      console.log('error!')
+      console.log(e)
+    }
     const userInfo = await rp(options1);
+    console.log(userInfo)
 
     console.log('user info from naver using naver token',userInfo)
-    const naverId = userInfo.response.id;
-    const userNick = userInfo.response.name;
-    const email = userInfo.response.email;
-    let profileImage = userInfo.response.profile_image;
+    const naverId = userInfo.id;
+    const userNick = userInfo.name;
+    const email = userInfo.email;
+    let profileImage = userInfo.profile_image;
     if (!profileImage){
       profileImage = './public/profileImages/defaultImage.png';
     }

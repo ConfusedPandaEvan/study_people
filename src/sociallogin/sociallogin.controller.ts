@@ -1,4 +1,5 @@
-import { Controller, Get, Query, Redirect, Res } from '@nestjs/common';
+import { Body, Controller, Get, Query, Redirect, Res } from '@nestjs/common';
+import { query } from 'express';
 import { SocialloginService } from './sociallogin.service';
 
 @Controller('')
@@ -15,9 +16,14 @@ export class SocialloginController {
   }
   @Get('naverlogin')
   @Redirect('http://stupy.co.kr/kakao/login', 301)
-  async naverLogin(@Query() query: string) {
+  async naverLogin(@Query() query) {
     console.log('here we go!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1')
-    const { token } = await this.SocialloginService.kakaoLoginMain(query);
+    const {code} = query
+    const {state} = query
+    console.log(query)
+    console.log(code)
+    console.log(state)
+    const { token } = await this.SocialloginService.naverLogin(query);
     return { url: `http://stupy.co.kr/kakao/login?token=${token}` };
 
   }
