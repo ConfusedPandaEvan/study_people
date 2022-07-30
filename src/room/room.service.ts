@@ -81,6 +81,10 @@ export class RoomService {
     async enterRoom(roomId, userId) {
     const targetRoom = await this.findRoom(roomId);
 
+    //Check if the room exists
+    if (!targetRoom){
+        throw new BadRequestException('존재하지 않는 방입니다.');
+    }
     //Blacklist Check
     if (targetRoom.blackList && targetRoom.blackList.includes(userId)) {
       throw new UnauthorizedException('당신은 방장한테 찍혀서 접근 못해요');
