@@ -17,4 +17,4 @@ import { SocialloginService } from 'src/sociallogin/sociallogin.service';
   providers: [TodoListService, SocialloginService],
   exports: [TodoListService],
 })
-export class TodoListdModule {}
+export class TodoListModule {}
