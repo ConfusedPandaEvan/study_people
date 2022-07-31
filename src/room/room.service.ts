@@ -68,8 +68,6 @@ export class RoomService {
   async leaveRoom(roomId, userId) {
     const targetRoom = await this.findRoom(roomId);
 
-    
-    
     //When leaving, if the person is the only one in the room, delete room. If not, just remove the user from room
     if (targetRoom.users.length == 1) {
       this.deleteRoom(roomId, userId);
@@ -87,12 +85,12 @@ export class RoomService {
   }
 
   // async enterRoom(roomId, userId, password) {
-    async enterRoom(roomId, userId) {
+  async enterRoom(roomId, userId) {
     const targetRoom = await this.findRoom(roomId);
-    const user = await this.userModel.findById(userId)
+    const user = await this.userModel.findById(userId);
     //Check if the room exists
-    if (!targetRoom){
-        throw new BadRequestException('존재하지 않는 방입니다.');
+    if (!targetRoom) {
+      throw new BadRequestException('존재하지 않는 방입니다.');
     }
     //Blacklist Check
     if (targetRoom.blackList && targetRoom.blackList.includes(userId)) {
@@ -109,7 +107,10 @@ export class RoomService {
     // }
 
     //People number Check
-    if (targetRoom.users.length == targetRoom.maxPeople && !targetRoom.users.includes(userId)) {
+    if (
+      targetRoom.users.length == targetRoom.maxPeople &&
+      !targetRoom.users.includes(userId)
+    ) {
       throw new BadRequestException('이 방은 이미 만원입니다.');
     }
 
@@ -204,13 +205,14 @@ export class RoomService {
 
   async createRoom(file, createRoomDto, userId) {
     //Default Image if image is not provided
-    
+
     const user = await this.userModel.findById(userId);
-    if (user.joinedRoomNum == 5 ) {
-      throw new BadRequestException('최대 가입할수있는 가능한 방의 갯수는 5개입니다.');
+    if (user.joinedRoomNum == 5) {
+      throw new BadRequestException(
+        '최대 가입할수있는 가능한 방의 갯수는 5개입니다.',
+      );
     }
-    
-    
+
     let filename = 'defaultImage.png';
     if (file) {
       filename = file.filename;

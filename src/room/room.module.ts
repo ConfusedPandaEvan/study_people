@@ -1,11 +1,10 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { HashtagSchema } from './hashtag.model';
 import { RoomController } from './room.controller';
 import { RoomSchema } from './room.model';
 import { RoomService } from './room.service';
 import { UserSchema } from 'src/users/user.Schema';
-import { Authmiddleware } from 'src/middlewares/auth.middleware';
 import { SocialloginService } from 'src/sociallogin/sociallogin.service';
 import { RoomSearchService } from './roomSearch.service';
 
@@ -19,9 +18,4 @@ import { RoomSearchService } from './roomSearch.service';
   providers: [RoomService, SocialloginService, RoomSearchService],
   exports: [RoomService],
 })
-export class RoomModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(Authmiddleware).forRoutes(RoomController);
-  }
-}
-// export class RoomModule {}
+export class RoomModule {}

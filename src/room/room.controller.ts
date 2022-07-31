@@ -9,7 +9,6 @@ import {
   Post,
   Query,
   Req,
-  Response,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -19,16 +18,13 @@ import { editFileName, imageFileFilter } from 'src/utils/file-uploading.utils';
 import { CreateRoomDto } from './dto/create-room.dto';
 import { diskStorage } from 'multer';
 import { UpdateRoomDto } from './dto/update-room.dto';
-import { Room } from './room.model';
 import { RoomService } from './room.service';
-import { GetUser } from 'src/middlewares/get-user.decorator';
-import { User } from 'src/users/user.Schema';
 import { RemoveUserDto } from './dto/remove-user.dto';
-import { SortOrder } from 'mongoose';
 import { RoomSearchService } from './roomSearch.service';
 import { ControllerAuthGuard } from 'src/auth/controllerauth.guard';
 import { RequestWithAuth } from 'src/types';
 
+@UseGuards(ControllerAuthGuard)
 @Controller('room')
 export class RoomController {
   constructor(
@@ -37,6 +33,7 @@ export class RoomController {
   ) {}
 
   //This is only for dev purpose. This should be edited for Community Page Search
+  @UseGuards(ControllerAuthGuard)
   @Get()
   async getAllRooms(@Query('sort') sort: string) {
     const rooms = await this.roomService.getAllRooms(sort);
@@ -51,6 +48,7 @@ export class RoomController {
     return rooms;
   }
 
+  @UseGuards(ControllerAuthGuard)
   @Get('/search')
   async textSearch(
     @Query('text') textQuery: string,
@@ -120,6 +118,7 @@ export class RoomController {
     return null;
   }
 
+  @UseGuards(ControllerAuthGuard)
   @Get('/:roomId')
   async getRoomTitle(@Param('roomId') roomId: string) {
     const roomTitle = await this.roomService.getRoomTitle(roomId);
