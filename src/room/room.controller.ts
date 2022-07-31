@@ -33,12 +33,12 @@ export class RoomController {
   ) {}
 
   //This is only for dev purpose. This should be edited for Community Page Search
-  @UseGuards(ControllerAuthGuard)
-  @Get()
-  async getAllRooms(@Query('sort') sort: string) {
-    const rooms = await this.roomService.getAllRooms(sort);
-    return rooms;
-  }
+  // @UseGuards(ControllerAuthGuard)
+  // @Get()
+  // async getAllRooms(@Query('sort') sort: string) {
+  //   const rooms = await this.roomService.getAllRooms(sort);
+  //   return rooms;
+  // }
 
   @UseGuards(ControllerAuthGuard)
   @Get('/myrooms')
@@ -49,7 +49,7 @@ export class RoomController {
   }
 
   @UseGuards(ControllerAuthGuard)
-  @Get('/search')
+  @Get()
   async textSearch(
     @Query('text') textQuery: string,
     @Query('hashtag') hashtagQuery: string,
@@ -62,6 +62,9 @@ export class RoomController {
     }
     if (hashtagQuery) {
       rooms = await this.roomSearchService.hashtagSearch(hashtagQuery, sort);
+    }
+    if (!textQuery && !hashtagQuery) {
+      rooms = await this.roomService.getAllRooms(sort);
     }
     if (!rooms || rooms.length == 0) {
       throw new NotFoundException(

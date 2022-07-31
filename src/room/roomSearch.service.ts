@@ -35,6 +35,7 @@ export class RoomSearchService {
           ])
           .sort({ usersNum: -1 })
           .exec();
+        rooms = rooms.filter((room) => room.usersNum < room.maxPeople);
         break;
 
       case 'open':
