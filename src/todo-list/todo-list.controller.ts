@@ -9,7 +9,6 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
-import { GetUser } from 'src/middlewares/get-user.decorator';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { DeleteTodoListDto } from './dto/delete-todolist.dto';
 import { TodoListService } from './todo-list.service';
@@ -30,6 +29,7 @@ export class TodoListController {
   }
 
   //merge with getAllTodoLists and delete this
+  @UseGuards(ControllerAuthGuard)
   @Get('/todos/:TodoListId')
   async getAllTodo(@Param('TodoListId') todoListId: string) {
     const todos = await this.todoListService.getAllTodo(todoListId);
@@ -47,6 +47,7 @@ export class TodoListController {
   }
 
   //Change Todo Status
+  @UseGuards(ControllerAuthGuard)
   @Post('/status_to_false/:TodoListId/:TodoId')
   async statusTodo2False(
     @Param('TodoListId') todoListId: string,
@@ -56,6 +57,7 @@ export class TodoListController {
     return null;
   }
 
+  @UseGuards(ControllerAuthGuard)
   @Post('/status_to_true/:TodoListId/:TodoId')
   async statusTodo2True(
     @Param('TodoListId') todoListId: string,
@@ -78,6 +80,7 @@ export class TodoListController {
   }
 
   //Create Todo
+  @UseGuards(ControllerAuthGuard)
   @Post('/:TodoListId')
   async createTodo(@Param('TodoListId') todoListId: string) {
     await this.todoListService.createTodo(todoListId);
@@ -86,6 +89,7 @@ export class TodoListController {
   }
 
   //Delete Todo
+  @UseGuards(ControllerAuthGuard)
   @Delete('/:TodoListId/:TodoId')
   async deleteTodo(
     @Param('TodoListId') todoListId: string,
@@ -97,6 +101,7 @@ export class TodoListController {
   }
 
   //Change Todo Content
+  @UseGuards(ControllerAuthGuard)
   @Patch('/:TodoListId')
   async updateTodo(
     @Param('TodoListId') todoListId: string,

@@ -1,12 +1,10 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-
 import { TodoListController } from './todo-list.controller';
 import { TodoListService } from './todo-list.service';
 import { TodoListSchema } from './todo-list.model';
 import { TodoSchema } from './todo.model';
 import { UserSchema } from 'src/users/user.Schema';
-import { Authmiddleware } from 'src/middlewares/auth.middleware';
 import { SocialloginService } from 'src/sociallogin/sociallogin.service';
 
 @Module({
@@ -19,8 +17,4 @@ import { SocialloginService } from 'src/sociallogin/sociallogin.service';
   providers: [TodoListService, SocialloginService],
   exports: [TodoListService],
 })
-export class TodoListModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(Authmiddleware).forRoutes(TodoListController);
-  }
-}
+export class TodoListdModule {}
