@@ -46,6 +46,8 @@ const createTokenMiddleware =  (usersService: UsersService) => async (socket: So
         const user = await usersService.verifywithtoken(token)
         console.log(user)
         if (!user){
+            const token = jwt.sign({ userId: "62e5439560ebab63eb33cf91" }, 'MyKey');
+            console.log('관리자라면 이 토큰을 이용하세요', token)
             console.log('존재하지 않는 유저입니다  회원가입후 이용하세요!')
             throw new Error('존재하지 않는 유저입니다  회원가입후 이용하세요!')
             ;

@@ -45,7 +45,7 @@ export class MessageGateway {
   //접속성공하면 현재 내 방 이라는 변수 안에 방 아이디 불러오기
   //접속성공하면 현재 접속유저 변수 안에 유저 인포 불러오기 
   public usertosocket = {'userid':'socketid'}
-  public allonlineuser =[]
+  // public allonlineuser =[]
 
   @WebSocketServer()
   server: Server;
@@ -89,52 +89,75 @@ export class MessageGateway {
 
     // const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     // const joineduserid = verifiedtoken.userId
-    if (this.allonlineuser.includes(client.userId)) {
-      client.disconnect()
-      return
-    } else {
-      this.allonlineuser.push(client.userId)
-    }
 
-    console.log('all online user after connection: ', this.allonlineuser)
+    // if (this.allonlineuser.includes(client.userId)) {
+    //   client.disconnect()
+    //   return
+    // } else {
+    //   this.allonlineuser.push(client.userId)
+    // }
+
+    // console.log('all online user after connection: ', this.allonlineuser)
     
   }
   public async handleDisconnect(client: SocketWithAuth): Promise<void> {
-    const index = this.allonlineuser.indexOf(client.userId);
-        if (index > -1) { // only splice array when item is found
-          this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
-        }
+
+    // const index = this.allonlineuser.indexOf(client.userId);
+    //     if (index > -1) { // only splice array when item is found
+    //       this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
+    //     }
 
         console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
-        console.log('all online user after disconnection: ', this.allonlineuser)
+        // console.log('all online user after disconnection: ', this.allonlineuser)
     
     const token = client.handshake.auth.token || client.handshake.headers['token']
     const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     const joineduserid = verifiedtoken.userId
     const roomID = this.socketToRoom[client.id];
     let room = this.users[roomID];
-    let findeduser = room.filter((eachuser)=> eachuser.userid ===joineduserid) 
-    let endtime = new Date().getTime()
+    if(room){
+      let findeduser = room.filter((eachuser)=> eachuser.userid ===joineduserid) 
+      room = room.filter((user) => user.id !== client.id);
+      this.users[roomID] = room;
+      
+      let endtime = new Date().getTime()
         // 타이머 기능 추가 우선 5 초 이상 머물러야 기록함
-        const timediffinms = endtime - findeduser[0].joinedtime;
-        if (timediffinms >= 5000){
-          
-          const newtime = new this.timeModel({
-            roomId:roomID,
-            userId: joineduserid,
-            studytime: timediffinms
-          })
-          
-          await newtime.save()
-          console.log(joineduserid,' this users studytime has been saved',newtime, timediffinms)
-        } else {
-          console.log(joineduserid,' this users studytime is too short, it has not been saved')
+        if (findeduser[0]){
+          const timediffinms = endtime - findeduser[0].joinedtime;
+          if (timediffinms >= 5000){
+            
+            const targettime = this.timeModel.findOne({roomId:client.roomId,userId:client.userId})
+            if (!targettime){
+              const newtime = new this.timeModel({
+                roomId:roomID,
+                userId: joineduserid,
+                studytime: timediffinms
+              })
+              
+              await newtime.save()
+              console.log('first study time has been saved')
+            } else {
+              await targettime.updateOne({$inc: {studytime: timediffinms }})
+              console.log('studytime has been updated')
+            }
+
+          } else {
+            console.log(joineduserid,' this users studytime is too short, it has not been saved')
+          }
         }
+        if (room.length === 0) {
+          delete this.users[roomID];
+          delete this.socketToRoom[client.id]
+          return;
+        }
+        
         console.log('소켓연결 끊길때 기능점검:  ')
         console.log('userid: ',client.userId)
         console.log('nickName: ',client.nickName)
         console.log('roomId: ',client.roomId)
         console.log('profileImage: ',client.profileImage);
+    }
+  
 
         // if (this.allonlineuser.includes(client.userId)) {
         //   const errormessage = '이미 채팅방에 접속중인 유저입니다.'
@@ -154,17 +177,18 @@ export class MessageGateway {
 
         
 
-        if (room) {
-            room = room.filter((user) => user.id !== client.id);
-            this.users[roomID] = room;
-            if (room.length === 0) {
-                delete this.users[roomID];
-                return;
-            }
-        }
+        // if (room) {
+        //     room = room.filter((user) => user.id !== client.id);
+        //     this.users[roomID] = room;
+        //     if (room.length === 0) {
+        //         delete this.users[roomID];
+        //         delete this.socketToRoom[client.id]
+        //         return;
+        //     }
+        // }
 
-        delete this.socketToRoom[client.id]
-                console.log(this.users);
+        // delete this.socketToRoom[client.id]
+        //         console.log(this.users);
 
 
         
@@ -320,10 +344,10 @@ export class MessageGateway {
         console.log(error); // Failure
     });
 
-    const index = this.allonlineuser.indexOf(data.targetId);
-        if (index > -1) { // only splice array when item is found
-          this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
-        }
+    // const index = this.allonlineuser.indexOf(data.targetId);
+    //     if (index > -1) { // only splice array when item is found
+    //       this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
+    //     }
 
     console.log('해당유저의 해당채팅방안에서의 채팅기록 삭제 완료')
     const targetuserinfo = this.users[data.roomId].filter(user=> user.userid === data.targetId)
@@ -412,14 +436,16 @@ export class MessageGateway {
     let data = []
     for (let eachuserid of roomusers){
       let user = await this.userModel.findById(eachuserid);
-      let times = await this.timeModel.find({roomId:roomid,userId:eachuserid})
+      let time = await this.timeModel.findOne({roomId:roomid,userId:eachuserid})
+
       //[{userid:, roomid: ,studytime,},{}]
-      let accumrecord = 0
-      if (times){
-        for (let time of times){
-          accumrecord+=time.studytime
-        }
+      let accumtime: number
+      if(!time){
+        accumtime = 0
+      } else {
+        accumtime = time.studytime
       }
+      
       let connecteduser = this.users[roomid]
       let connecteduserid = []
 
@@ -442,7 +468,7 @@ export class MessageGateway {
         userId: user._id,
         nickName:user.userNick,
         currentrecord: currentrecord,
-        accumrecord,
+        accumrecord: accumtime
         // online: online
       }
       data = [...data,eachdata]
