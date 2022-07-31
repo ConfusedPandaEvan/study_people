@@ -25,7 +25,11 @@ export class TodoListService {
     let todoLists = await this.todoListModel.find({ userId: userId }).exec();
 
     if (todoLists.length == 0) {
-      await this.createTodoList(userId);
+      const newTodoList = new this.todoListModel({
+        userId,
+        title: 'default To-do List',
+      });
+      await newTodoList.save();
       todoLists = await this.todoListModel.find({ userId: userId }).exec();
     }
 
