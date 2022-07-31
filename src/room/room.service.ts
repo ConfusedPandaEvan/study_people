@@ -52,7 +52,10 @@ export class RoomService {
   }
 
   async getMyRooms(userId) {
-    const rooms = await this.roomModel.find({ users: userId }).exec();
+    let rooms = await this.roomModel.find({ users: userId }).exec();
+    if (rooms.length == 0) {
+      rooms = [];
+    }
     return rooms.map((roomL) => ({
       roomId: roomL._id,
       title: roomL.title,

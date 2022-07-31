@@ -135,21 +135,41 @@ export class TodoListService {
     }
     await updated.save();
 
+    const updatedTodos = [];
+    for (let i = 0; i < updated.todos.length; i++) {
+      const todo = updated.todos[i];
+      updatedTodos.push(todo.id);
+    }
+
     if (createTodoDto.todoItem) {
-      for (let i = 0; i < createTodoDto.todoItem.length; i++)
-        await this.todoListModel.updateOne(
-          { _id: todoListId },
-          {
-            $set: {
-              'todos.$[elem].content': createTodoDto.todoItem[i].content,
+      for (let i = 0; i < createTodoDto.todoItem.length; i++) {
+        if (updatedTodos.includes(createTodoDto.todoItem[i].id)) {
+          await this.todoListModel.updateOne(
+            { _id: todoListId },
+            {
+              $set: {
+                'todos.$[elem].content': createTodoDto.todoItem[i].content,
+              },
             },
-          },
-          {
-            arrayFilters: [
-              { $and: [{ 'elem._id': createTodoDto.todoItem[i].id }] },
-            ],
-          },
-        );
+            {
+              arrayFilters: [
+                { $and: [{ 'elem._id': createTodoDto.todoItem[i].id }] },
+              ],
+            },
+          );
+          const index = updatedTodos.indexOf(createTodoDto.todoItem[i].id);
+          // only splice array when item is found
+          if (index > -1) {
+            updatedTodos.splice(index, 1); // 2nd parameter means remove one item only
+          }
+        }
+      }
+    }
+    for (let i = 0; i < updatedTodos.length; i++) {
+      await this.todoListModel.updateOne(
+        { _id: todoListId },
+        { $pull: { todos: { _id: updatedTodos[i] } } },
+      );
     }
 
     return null;
