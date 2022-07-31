@@ -42,8 +42,6 @@ export class MessageGateway {
 
   users = { 'testroomid': [ { id: 'testsocketid', userid: 'test',joinedtime: 1000 }]}
   socketToRoom = {'testsocketid':'testroomid'} 
-  //접속성공하면 현재 내 방 이라는 변수 안에 방 아이디 불러오기
-  //접속성공하면 현재 접속유저 변수 안에 유저 인포 불러오기 
   public usertosocket = {'userid':'socketid'}
   // public allonlineuser =[]
 
@@ -68,15 +66,12 @@ export class MessageGateway {
   // @SubscribeMessage('disconnect')
   
   public handleConnection(client: SocketWithAuth): void {
-    
-    console.log('새로운 유저입장!!!!',`connection: ${client.id}`);
-    console.log('소켓연결 됬을때 기능점검')
+    console.log('새로운 소켓이 연결되었습니다.')
+    console.log('socketid: ', client.id)
     console.log('userid: ',client.userId)
     console.log('nickName: ',client.nickName)
     console.log('roomId: ',client.roomId)
     console.log('profileImage: ',client.profileImage);
-    const token = client.handshake.auth.token || client.handshake.headers['token']
-    
     // try {
     //   const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
     //   this.userModel.findOne({ _id: verifiedtoken.userId }).then((user) => {
@@ -107,7 +102,7 @@ export class MessageGateway {
     //       this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
     //     }
 
-        console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
+    console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
         // console.log('all online user after disconnection: ', this.allonlineuser)
     
     const token = client.handshake.auth.token || client.handshake.headers['token']
@@ -208,24 +203,42 @@ export class MessageGateway {
     // const room = await this.roomModel.findById(data.roomId)
     // console.log(room.users)
     // if(room.users.includes(data.userId)){
+    console.log('join_room 이벤트가 발생했습니다.')
+    console.log('socketid: ', client.id)
+    console.log('userid: ',client.userId)
+    console.log('nickName: ',client.nickName)
+    console.log('roomId: ',client.roomId)
+    console.log('profileImage: ',client.profileImage);
+
     let starttime = new Date().getTime()
     //방장인지 아닌지? true/false !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   
     let roomOwner = false
-  
+
+
   const thisroom = await this.roomModel.findById(data.roomId)
-  if(thisroom.users[0]===client.userId){
-    roomOwner = true
-    console.log('해당유저는 이 방의 방장입니다.')
+  if (thisroom){
+    if(thisroom.users[0]===client.userId){
+      roomOwner = true
+      console.log('해당유저는 이 방의 방장입니다.')
+    }
+
+
+
+
+  } else {
+    console.log('존재 하지 않는 방입니다.')
   }
+  
   //블랙리스트에 저장되어있으면 코드진행 X
-  if (thisroom.blackList && thisroom.blackList.includes(client.userId)) {
-    const errormessage = '블랙리스트라서 방에 입장할수없습니다'
-    client.emit('disconnectuser',errormessage)
-    console.log('블랙리스트라서 방에 입장할수없습니다. ')
-    return
-    // throw new ForbiddenException('blocked by the owner.(블랙리스트)')
-  }
+  // if (thisroom.blackList && thisroom.blackList.includes(client.userId)) {
+  //   const errormessage = '블랙리스트라서 방에 입장할수없습니다'
+  //   client.emit('disconnectuser',errormessage)
+  //   console.log('블랙리스트라서 방에 입장할수없습니다. ')
+  //   return
+  //   // throw new ForbiddenException('blocked by the owner.(블랙리스트)')
+  // }
+
   //방이 꽉 차고, 내 아이디가 룸 안에 저장 안되있으면 코드진행 X
 
 
@@ -412,26 +425,22 @@ export class MessageGateway {
     await newchat.save()
     console.log('the message has been saved to the DB: ',createChatDto.content,newchat)
     client.broadcast.to(createChatDto.roomId).emit('chatForOther', newchat);
-    // newchat 안에 usernick 담아서 줄것 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // return this.createMessage(createChatDto,client);
+
   }
 
   //타이머 토글을 켜고 각 유저의 공부시간을 받고싶을때(timertoggleon)
   @SubscribeMessage('timertoggleon')
   async timeinfo(@ConnectedSocket() client: Socket) {
-    const token = client.handshake.auth.token || client.handshake.headers['token']
-    const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
-    const joineduserid = verifiedtoken.userId
-
-    
-
     const roomid = this.socketToRoom[client.id]
 
     // 룸아이디에서 있는 유저들을 for 문을 돌린다. 그리고는 맵을 해준다. 
     // 프사 url, nickNAME(user가서 아이디로 또 찾아서 줘야함), 기록: 현재시간 - 접속시간 주면됨, 누적, 체팅 찾아서 더해서 주면됨.)
     console.log(roomid)
     const room = await this.roomModel.findById(roomid);
-    console.log(room)
+    if (!room){
+      console.log('존재하지 않는 방입니다.')
+      throw new Error('존재하지 않는 방입니다.')
+    }
     const roomusers = room.users
     let data = []
     for (let eachuserid of roomusers){

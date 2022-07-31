@@ -46,17 +46,20 @@ const createTokenMiddleware =  (usersService: UsersService) => async (socket: So
         const user = await usersService.verifywithtoken(token)
         console.log(user)
         if (!user){
-            const token = jwt.sign({ userId: "62e5439560ebab63eb33cf91" }, 'MyKey');
-            console.log('관리자라면 이 토큰을 이용하세요', token)
-            console.log('존재하지 않는 유저입니다  회원가입후 이용하세요!')
+            const token = jwt.sign({ userId: "62e64c886591c11573b38df1" }, 'MyKey');
+            console.log('존재하지 않는 유저입니다  회원가입후 이용하세요. 관리자라면 이 토큰을 이용하세요', token)
             throw new Error('존재하지 않는 유저입니다  회원가입후 이용하세요!')
             ;
         }
         socket.userId = userId
         socket.nickName = user.userNick
         socket.profileImage= user.profileImage;
-        socket.roomId= socket.handshake.auth.roomId || socket.handshake.auth.roomId || 'testtoom';
-        console.log(socket.roomId)
+        socket.roomId= socket.handshake.auth.roomId || socket.handshake.auth.roomId ;
+        if(!socket.roomId){
+            console.log('방을 정해주지 않았습니다!')
+            throw new Error('방을 정해주지 않았습니다!')
+        }
+        console.log('소켓미들웨어 통과')
         next();
     }catch{
         next(new Error('Forbidden'))

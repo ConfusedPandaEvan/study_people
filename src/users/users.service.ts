@@ -98,7 +98,6 @@ export class UsersService {
 
   async remove(userId: string) {
     let deletingUser;
-    console.log('service: ',userId)
     try {
       deletingUser = await this.userModel.findById(userId).exec();
     } catch (error) {

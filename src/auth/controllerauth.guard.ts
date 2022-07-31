@@ -36,7 +36,6 @@ export class ControllerAuthGuard implements CanActivate{
           }
 
         const verified = jwt.verify(tokenValue,'MyKey') as JwtPayload;
-        console.log('valid token: ', verified);
         const user = await this.userModel.findById(verified.
             userId)
         if (!user){
@@ -47,7 +46,6 @@ export class ControllerAuthGuard implements CanActivate{
         request.userId = verified.userId
         request.nickName = user.userNick//데이터베이스에서 찾아서 넣기;
         request.profileImage = user.profileImage
-
         return true
 
         }catch{

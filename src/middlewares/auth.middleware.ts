@@ -34,11 +34,11 @@ export class Authmiddleware implements NestMiddleware {
     }
     try {
       const token = jwt.verify(tokenValue, 'MyKey') as JwtPayload;
-      console.log('valid token: ', token);
       } catch (err) {
         console.log('로그인 후 이용하세요!(토큰검증에러)')
       throw new UnauthorizedException('로그인 후 이용하세요!(토큰검증에러)')
     }
+    console.log('컨트롤러 미들웨어 통과')
     next();
   }
 }
