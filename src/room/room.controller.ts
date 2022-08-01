@@ -90,13 +90,15 @@ export class RoomController {
   async enterRoom(
     @Param('roomId') roomId: string,
     @Req() request: RequestWithAuth,
-    @Body() password: string,
+    @Query('password') password: string,
   ) {
-    console.log('--------------------------REQUEST: ------------------------')
-    console.log(request)
-    console.log('--------------------------------------------------------------------------')
-    console.log('received data: ',password)
-    console.log('received data: ',request.body)
+    console.log('--------------------------REQUEST: ------------------------');
+    console.log(request);
+    console.log(
+      '--------------------------------------------------------------------------',
+    );
+    console.log('received data: ', password);
+    console.log('received data: ', request.body);
     const { userId } = request;
     // return await this.roomService.enterRoom(roomId, userId);
     return await this.roomService.enterRoom(roomId, userId, password);
@@ -110,7 +112,6 @@ export class RoomController {
   ) {
     const { userId } = request;
     return await this.roomService.beforesocket(roomId, userId);
-  
   }
 
   @UseGuards(ControllerAuthGuard)
