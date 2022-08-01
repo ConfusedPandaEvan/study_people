@@ -25,7 +25,7 @@ export class CreateRoomDto {
   @IsNotEmpty()
   @IsString()
   @MinLength(4)
-  @MaxLength(4)
+  @MaxLength(10)
   readonly password: string;
 
   // @IsString()
