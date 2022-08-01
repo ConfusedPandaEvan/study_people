@@ -93,6 +93,7 @@ export class RoomController {
     @Body() password: string,
   ) {
     console.log('received data: ',password)
+    console.log('received data: ',request.body)
     const { userId } = request;
     // return await this.roomService.enterRoom(roomId, userId);
     return await this.roomService.enterRoom(roomId, userId, password);
