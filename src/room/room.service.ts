@@ -106,12 +106,6 @@ export class RoomService {
 
     // Password Check
     if (targetRoom.password !== password) {
-
-      console.log('비밀번호가 맞지 않습니다.')
-      console.log('entererd pw: ')
-      console.log(password)
-      console.log('actual pw: ')
-      console.log(targetRoom.password)
       throw new UnauthorizedException('비밀번호 틀렸습니다.');
     }
 

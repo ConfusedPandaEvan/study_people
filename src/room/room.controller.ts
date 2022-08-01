@@ -92,13 +92,6 @@ export class RoomController {
     @Req() request: RequestWithAuth,
     @Query('password') password: string,
   ) {
-    console.log('--------------------------REQUEST: ------------------------');
-    console.log(request);
-    console.log(
-      '--------------------------------------------------------------------------',
-    );
-    console.log('received data: ', password);
-    console.log('received data: ', request.body);
     const { userId } = request;
     // return await this.roomService.enterRoom(roomId, userId);
     return await this.roomService.enterRoom(roomId, userId, password);
