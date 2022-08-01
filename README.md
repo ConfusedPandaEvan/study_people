@@ -1,5 +1,5 @@
 # 온라인으로 공부하고 싶다면? 👨‍Stupy
-![그림11](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F79592240-07bb-46b6-9f98-6fcb6f3a3fdd%2FApple_iPhone_11_Pro_Max_Screenshot_0.png?table=block&id=0a0e4f63-cd67-4dae-b8c1-db416954eec6&spaceId=3581a123-d9d2-459c-9b67-26607f5baaa6&width=2000&userId=48a7cfbc-3f1a-497d-bc7e-dfb16c1584b6&cache=v2)
+![그림11](https://blog.kakaocdn.net/dn/cCqYjw/btrII12IHL1/8kIz1BK1UT8eveJk997OM1/img.png)
 
 <br>
 
