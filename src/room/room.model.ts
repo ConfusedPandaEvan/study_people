@@ -11,7 +11,7 @@ export const RoomSchema = new mongoose.Schema({
   openKakao: { type: String, required: true },
   maxPeople: { type: Number, required: true },
   usersNum: { type: Number, required: true },
-  imageLocation: { type: String, required: true },
+  imageLocation: { type: String },
   blackList: { type: [String], default: undefined },
   createdAt: { type: Date, required: true },
   lastVisited: { type: Date, required: true },
