@@ -90,8 +90,9 @@ export class RoomController {
   async enterRoom(
     @Param('roomId') roomId: string,
     @Req() request: RequestWithAuth,
-    @Body('password') password: string,
+    @Body() password: string,
   ) {
+    console.log('received data: ',password)
     const { userId } = request;
     // return await this.roomService.enterRoom(roomId, userId);
     return await this.roomService.enterRoom(roomId, userId, password);

@@ -27,7 +27,6 @@ export class SocketIOAdapter extends IoAdapter{
             cors,
         }
         const usersService = this.app.get(UsersService)
-        console.log("sdasdas")
         const server: Server = super.createIOServer(port, optionsWithCORS)
         server.use(createTokenMiddleware(usersService))
         
