@@ -150,7 +150,6 @@ export class MessageGateway {
         console.log('userid: ',client.userId)
         console.log('nickName: ',client.nickName)
         console.log('roomId: ',client.roomId)
-        console.log('profileImage: ',client.profileImage);
     }
   
 
@@ -208,7 +207,6 @@ export class MessageGateway {
     console.log('userid: ',client.userId)
     console.log('nickName: ',client.nickName)
     console.log('roomId: ',client.roomId)
-    console.log('profileImage: ',client.profileImage);
 
     let starttime = new Date().getTime()
     //방장인지 아닌지? true/false !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
