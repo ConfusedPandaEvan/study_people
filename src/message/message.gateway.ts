@@ -43,7 +43,7 @@ export class MessageGateway {
   users = { 'testroomid': [ { id: 'testsocketid', userid: 'test',joinedtime: 1000 }]}
   socketToRoom = {'testsocketid':'testroomid'} 
   public usertosocket = {'userid':'socketid'}
-  // public allonlineuser =[]
+  public allonlineuser =[]
 
   @WebSocketServer()
   server: Server;
@@ -55,47 +55,24 @@ export class MessageGateway {
   private readonly messageService: MessageService){}
 
 
-  // public handleConnect(client: Socket): void {
-  //   console.log(client.id)
-  //   const token = client.handshake.auth.token
-  //   const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
-  //   const joineduserid = verifiedtoken.userId
-
-  // }
-
-  // @SubscribeMessage('disconnect')
-  
   public handleConnection(client: SocketWithAuth): void {
-    console.log('새로운 소켓이 연결되었습니다.')
+    console.log('------------------------------------------새로운 소켓이 연결되었습니다.-------------------------------------')
     console.log('socketid: ', client.id)
     console.log('userid: ',client.userId)
     console.log('nickName: ',client.nickName)
     console.log('roomId: ',client.roomId)
-    console.log('profileImage: ',client.profileImage);
-    // try {
-    //   const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
-    //   this.userModel.findOne({ _id: verifiedtoken.userId }).then((user) => {
-    //     console.log(verifiedtoken.userId,'유저의 검증된 토큰값:',verifiedtoken)
-    //   });
-    // } catch (err) {
-    //   console.log('Invalid credentials.(토큰검증에러)')
-    //   throw new UnauthorizedException('Invalid credentials.(토큰검증에러)');
-    // }
+    console.log('---------------------------------------------------------------------------------------------------------')
 
-    // const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
-    // const joineduserid = verifiedtoken.userId
-
-    // if (this.allonlineuser.includes(client.userId)) {
-    //   client.disconnect()
-    //   return
-    // } else {
-    //   this.allonlineuser.push(client.userId)
-    // }
-
-    // console.log('all online user after connection: ', this.allonlineuser)
-    
   }
   public async handleDisconnect(client: SocketWithAuth): Promise<void> {
+
+    console.log('------------------------------------------소켓연결이 끊겼습니다--------------------------------------------')
+    console.log('socketid: ', client.id)
+    console.log('userid: ',client.userId)
+    console.log('nickName: ',client.nickName)
+    console.log('roomId: ',client.roomId)
+    console.log('---------------------------------------------------------------------------------------------------------')
+
 
     // const index = this.allonlineuser.indexOf(client.userId);
     //     if (index > -1) { // only splice array when item is found
@@ -104,14 +81,11 @@ export class MessageGateway {
 
     console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
         // console.log('all online user after disconnection: ', this.allonlineuser)
-    
-    const token = client.handshake.auth.token || client.handshake.headers['token']
-    const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
-    const joineduserid = verifiedtoken.userId
+ 
     const roomID = this.socketToRoom[client.id];
     let room = this.users[roomID];
     if(room){
-      let findeduser = room.filter((eachuser)=> eachuser.userid ===joineduserid) 
+      let findeduser = room.filter((eachuser)=> eachuser.userid ===client.userId) 
       room = room.filter((user) => user.id !== client.id);
       this.users[roomID] = room;
       
@@ -125,7 +99,7 @@ export class MessageGateway {
             if (!targettime){
               const newtime = new this.timeModel({
                 roomId:roomID,
-                userId: joineduserid,
+                userId: client.userId,
                 studytime: timediffinms
               })
               
@@ -137,7 +111,7 @@ export class MessageGateway {
             }
 
           } else {
-            console.log(joineduserid,' this users studytime is too short, it has not been saved')
+            console.log(client.userId,' this users studytime is too short, it has not been saved')
           }
         }
         if (room.length === 0) {
@@ -192,8 +166,6 @@ export class MessageGateway {
   }
 
 
-
-  //join_room 으로 받는 데이터 {roomId: string}!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   @SubscribeMessage('join_room')
   async joinRoom(@MessageBody() data: joinroomDto, @ConnectedSocket() client: SocketWithAuth){
     // const token = client.handshake.auth.token || client.handshake.headers['token']
@@ -202,72 +174,27 @@ export class MessageGateway {
     // const room = await this.roomModel.findById(data.roomId)
     // console.log(room.users)
     // if(room.users.includes(data.userId)){
-    console.log('join_room 이벤트가 발생했습니다.')
+
+    console.log('-----------------------------join_room 이벤트가 발생했습니다--------------------------------------------')
     console.log('socketid: ', client.id)
     console.log('userid: ',client.userId)
     console.log('nickName: ',client.nickName)
     console.log('roomId: ',client.roomId)
+    console.log('---------------------------------------------------------------------------------------------------------')
 
-    let starttime = new Date().getTime()
-    //방장인지 아닌지? true/false !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  
+
+    let starttime = new Date().getTime()  
     let roomOwner = false
-
-
   const thisroom = await this.roomModel.findById(data.roomId)
   if (thisroom){
     if(thisroom.users[0]===client.userId){
       roomOwner = true
       console.log('해당유저는 이 방의 방장입니다.')
     }
-
-
-
-
   } else {
     console.log('존재 하지 않는 방입니다.')
   }
   
-  //블랙리스트에 저장되어있으면 코드진행 X
-  // if (thisroom.blackList && thisroom.blackList.includes(client.userId)) {
-  //   const errormessage = '블랙리스트라서 방에 입장할수없습니다'
-  //   client.emit('disconnectuser',errormessage)
-  //   console.log('블랙리스트라서 방에 입장할수없습니다. ')
-  //   return
-  //   // throw new ForbiddenException('blocked by the owner.(블랙리스트)')
-  // }
-
-  //방이 꽉 차고, 내 아이디가 룸 안에 저장 안되있으면 코드진행 X
-
-
-  if (thisroom.users.length === thisroom.maxPeople && !thisroom.users.includes(client.userId)){
-    //이코드가 작동 안하는거 같은데, return 을써보자
-    
-    const errormessage = '해당방이 정원 초과라서 입장 할 수 없습니다'
-    client.emit('disconnectuser',errormessage)
-    console.log('해당방이 정원 초과라서 입장 할 수 없습니다' )
-    return
-    // throw new WsException(
-    //   '해당방이 정원 초과라서 입장 할 수 없습니다 ~~~~~~~~~~~~',
-    // );
-  }
-
-  //방이 꽉 차지 않았고, 내 유저아이디가 방 안에 없으면 방안에 넣어주고 코드진행
-  if (thisroom.users.length < thisroom.maxPeople && !thisroom.users.includes(client.userId)){
-    await this.roomModel.updateOne(
-      { _id: data.roomId },
-      { $push: { users: client.userId }, $inc: { usersNum: 1 } },
-    );
-    console.log('유저의 아이디가 방에 성공적으로 저장됨')
-  }
-
-  //방이 꽉 차지 않았고, 내 유저 아이디가 방안에 있으면 그냥 코드진행. 
-  //방이 꽉 찼고,내 유저 아이디가 방 안에 가입되어있으면 코드진행
-
-  
-
-
-
   if (this.users[data.roomId]) {
     const length = this.users[data.roomId].length;
     if (length === 4) {

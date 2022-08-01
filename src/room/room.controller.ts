@@ -92,6 +92,9 @@ export class RoomController {
     @Req() request: RequestWithAuth,
     @Body() password: string,
   ) {
+    console.log('--------------------------REQUEST: ------------------------')
+    console.log(request)
+    console.log('--------------------------------------------------------------------------')
     console.log('received data: ',password)
     console.log('received data: ',request.body)
     const { userId } = request;
