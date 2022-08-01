@@ -90,11 +90,22 @@ export class RoomController {
   async enterRoom(
     @Param('roomId') roomId: string,
     @Req() request: RequestWithAuth,
-    // @Body('password') password: string,
+    @Body('password') password: string,
   ) {
     const { userId } = request;
-    return await this.roomService.enterRoom(roomId, userId);
-    // return await this.roomService.enterRoom(roomId, userId, password);
+    // return await this.roomService.enterRoom(roomId, userId);
+    return await this.roomService.enterRoom(roomId, userId, password);
+  }
+
+  @UseGuards(ControllerAuthGuard)
+  @Get('/room/socket/:roomId')
+  async beforesocket(
+    @Param('roomId') roomId: string,
+    @Req() request: RequestWithAuth,
+  ) {
+    const { userId } = request;
+    return await this.roomService.beforesocket(roomId, userId);
+  
   }
 
   @UseGuards(ControllerAuthGuard)

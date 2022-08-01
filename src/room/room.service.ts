@@ -87,8 +87,8 @@ export class RoomService {
     );
   }
 
-  // async enterRoom(roomId, userId, password) {
-  async enterRoom(roomId, userId) {
+  async enterRoom(roomId, userId, password) {
+  // async enterRoom(roomId, userId) {
     const targetRoom = await this.findRoom(roomId);
     const user = await this.userModel.findById(userId);
     //Check if the room exists
@@ -104,10 +104,10 @@ export class RoomService {
       throw new BadRequestException('최대 가입 가능한 방의 갯수는 5개입니다.');
     }
 
-    //Password Check
-    // if (targetRoom.password !== password) {
-    //   throw new UnauthorizedException('비밀번호 틀렸습니다.');
-    // }
+    // Password Check
+    if (targetRoom.password !== password) {
+      throw new UnauthorizedException('비밀번호 틀렸습니다.');
+    }
 
     //People number Check
     if (
@@ -130,7 +130,49 @@ export class RoomService {
     }
     return true;
   }
-
+  async beforesocket(roomId, userId) {
+    // async enterRoom(roomId, userId) {
+      const targetRoom = await this.findRoom(roomId);
+      const user = await this.userModel.findById(userId);
+      //Check if the room exists
+      if (!targetRoom) {
+        throw new BadRequestException('존재하지 않는 방입니다.');
+      }
+      //Blacklist Check
+      if (targetRoom.blackList && targetRoom.blackList.includes(userId)) {
+        throw new UnauthorizedException('당신은 방장한테 찍혀서 접근 못해요');
+      }
+  
+      if (user.joinedRoomNum == 5 && !targetRoom.users.includes(userId)) {
+        throw new BadRequestException('최대 가입 가능한 방의 갯수는 5개입니다.');
+      }
+  
+      // Password Check
+      // if (targetRoom.password !== password) {
+      //   throw new UnauthorizedException('비밀번호 틀렸습니다.');
+      // }
+  
+      //People number Check
+      if (
+        targetRoom.users.length == targetRoom.maxPeople &&
+        !targetRoom.users.includes(userId)
+      ) {
+        throw new BadRequestException('이 방은 이미 만원입니다.');
+      }
+  
+      //Only Add the userId if it does not exist
+      if (!targetRoom.users.includes(userId)) {
+        await this.roomModel.updateOne(
+          { _id: roomId },
+          { $push: { users: userId }, $inc: { usersNum: 1 } },
+        );
+        await this.userModel.updateOne(
+          { _id: userId },
+          { $inc: { joinedRoomNum: 1 } },
+        );
+      }
+      return true;
+    }
   async changeOwner(roomId, removeUserDto, userId) {
     const targetRoom = await this.findRoom(roomId);
     const target = removeUserDto.targetId;
