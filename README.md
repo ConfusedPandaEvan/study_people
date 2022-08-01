@@ -74,7 +74,6 @@
 <img src="https://img.shields.io/badge/Passport-v0.5.2-34E27A?logo=Passport&logoColor=white" />
 <img src="https://img.shields.io/badge/JsonWebToken-v8.5.1-8a8a8a?logo=JSON Web Tokens&logoColor=white" />
 <img src="https://img.shields.io/badge/Git hub-000000?logo=Github&logoColor=white" />
-<img src="https://img.shields.io/badge/nginx-v1.14.0-green?logo=nginx&logoColor=white" />
 <img src="https://img.shields.io/badge/PM2-000000?logo=PM2&logoColor=white" />
 <br>
 </p>
