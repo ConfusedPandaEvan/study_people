@@ -47,7 +47,7 @@ export class SocialloginService {
     const userNick = userInfo.kakao_account.profile.nickname;
     const email = userInfo.kakao_account.email;
     const existUser = await this.userModel.findOne({ kakaouserId });
-    let profileImage = './public/profileImages/defaultImage.png';
+    let profileImage = 'https://stupy.shop/profileImages/defaultImage.png';
     if (userInfo.kakao_account.profile.profile_image_url) {
       profileImage = userInfo.kakao_account.profile.profile_image_url;
     }
