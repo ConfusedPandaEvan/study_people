@@ -50,14 +50,16 @@
 #### 🔔 실시간 화상 및 채팅이 가능한 스터디 그룹
 #### 🔔 스터디 룸에서 자신이 공부한 시간 측정 및 경쟁 
 
-<img src="https://www.dorandorans.com/static/media/Web_01.29cbf948c7a423b343f6.png">
+<img src="[https://www.dorandorans.com/static/media/Web_01.29cbf948c7a423b343f6.png](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F125847d3-c961-4654-aa9f-fe83044fd983%2FApple_iPhone_11_Pro_Max_Screenshot_1.png?table=block&id=327d72eb-1406-46cc-b185-d9122868e9d6&spaceId=3581a123-d9d2-459c-9b67-26607f5baaa6&width=2000&userId=48a7cfbc-3f1a-497d-bc7e-dfb16c1584b6&cache=v2)">
+<img src="[https://www.dorandorans.com/static/media/Web_01.29cbf948c7a423b343f6.png](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F5964007a-cfd9-4898-9936-a3d615515a51%2FApple_iPhone_11_Pro_Max_Screenshot_3.png?table=block&id=f0dbd5d5-c30f-4c9d-9ef0-0a1ed10b8d27&spaceId=3581a123-d9d2-459c-9b67-26607f5baaa6&width=2000&userId=48a7cfbc-3f1a-497d-bc7e-dfb16c1584b6&cache=v2)">
+<img src="[https://www.dorandorans.com/static/media/Web_01.29cbf948c7a423b343f6.png](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2Fd35172a4-f4a6-4ae5-9243-e6a3e54ff62a%2FApple_iPhone_11_Pro_Max_Screenshot_2.png?table=block&id=0f33a11a-4b03-4178-9cf0-f02579858ea2&spaceId=3581a123-d9d2-459c-9b67-26607f5baaa6&width=2000&userId=48a7cfbc-3f1a-497d-bc7e-dfb16c1584b6&cache=v2)">
 
 <br>
 
 ## ✨ 아키텍쳐
 <br>
 
-![도란도란_최종아키텍처_피드백후](https://user-images.githubusercontent.com/100390926/171554080-49dc030c-a370-4bd6-b73d-cbd51faa8e5e.png)
+![도란도란_최종아키텍처_피드백후](https://blog.kakaocdn.net/dn/dGq0X9/btrIH7a2hMa/BrFHGtydDhBctqu3w8UVsk/img.png)
 
 <br>
 
