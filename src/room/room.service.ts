@@ -59,6 +59,7 @@ export class RoomService {
     return rooms.map((roomL) => ({
       roomId: roomL._id,
       title: roomL.title,
+      isMaster: roomL.users[0] == userId,
       usersNum: roomL.usersNum,
       maxPeople: roomL.maxPeople,
       content: roomL.content,
