@@ -283,6 +283,11 @@ export class RoomService {
 
     const result = await newRoom.save();
 
+    await this.userModel.updateOne(
+      { _id: userId },
+      { $inc: { joinedRoomNum: 1 } },
+    );
+
     //create hashtags based on new room
     for (let i = 0; i < newRoom.hashtags.length; i++) {
       const tag = newRoom.hashtags[i];
