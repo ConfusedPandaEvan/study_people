@@ -69,7 +69,9 @@ export class RoomSearchService {
       content: roomL.content,
       hashtags: roomL.hashtags,
       openKakao: roomL.openKakao,
-      image: 'https://stupy.shop/roomImages/' + roomL.imageLocation,
+      image: roomL.imageLocation
+        ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
+        : null,
     }));
   }
 
@@ -117,7 +119,9 @@ export class RoomSearchService {
         content: roomL.content,
         hashtags: roomL.hashtags,
         openKakao: roomL.openKakao,
-        image: 'https://stupy.shop/roomImages/' + roomL.imageLocation,
+        image: roomL.imageLocation
+          ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
+          : null,
       }));
     } catch (error) {
       throw new NotFoundException(

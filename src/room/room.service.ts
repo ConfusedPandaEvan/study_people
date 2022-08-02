@@ -47,7 +47,9 @@ export class RoomService {
       content: roomL.content,
       hashtags: roomL.hashtags,
       openKakao: roomL.openKakao,
-      image: 'https://stupy.shop/roomImages/' + roomL.imageLocation,
+      image: roomL.imageLocation
+        ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
+        : null,
     }));
   }
 
@@ -65,7 +67,9 @@ export class RoomService {
       content: roomL.content,
       hashtags: roomL.hashtags,
       openKakao: roomL.openKakao,
-      image: 'https://stupy.shop/roomImages/' + roomL.imageLocation,
+      image: roomL.imageLocation
+        ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
+        : null,
     }));
   }
 
@@ -98,7 +102,9 @@ export class RoomService {
     }
     //Blacklist Check
     if (targetRoom.blackList && targetRoom.blackList.includes(userId)) {
-      throw new UnauthorizedException('당신은 방장에 의해 강퇴당해서 방에 입장할 수 없습니다');
+      throw new UnauthorizedException(
+        '당신은 방장에 의해 강퇴당해서 방에 입장할 수 없습니다',
+      );
     }
 
     if (user.joinedRoomNum == 5 && !targetRoom.users.includes(userId)) {
@@ -133,11 +139,11 @@ export class RoomService {
   }
   async beforesocket(roomId, userId) {
     // async enterRoom(roomId, userId) {3
-    let targetRoom; 
+    let targetRoom;
     try {
-      targetRoom = await this.roomModel.findById(roomId)
-    } catch(e){
-      console.log(e)
+      targetRoom = await this.roomModel.findById(roomId);
+    } catch (e) {
+      console.log(e);
     }
 
     const user = await this.userModel.findById(userId);
@@ -147,7 +153,9 @@ export class RoomService {
     }
     //Blacklist Check
     if (targetRoom.blackList && targetRoom.blackList.includes(userId)) {
-      throw new UnauthorizedException('당신은 방장에 의해 강퇴당해서 방에 입장할 수 없습니다');
+      throw new UnauthorizedException(
+        '당신은 방장에 의해 강퇴당해서 방에 입장할 수 없습니다',
+      );
     }
 
     if (user.joinedRoomNum == 5 && !targetRoom.users.includes(userId)) {
@@ -162,13 +170,9 @@ export class RoomService {
       throw new BadRequestException('이 방은 이미 만원입니다.');
     }
 
-    if (
-      !targetRoom.users.includes(userId)
-    ) {
+    if (!targetRoom.users.includes(userId)) {
       throw new BadRequestException('이 방에 가입되어있지 않은 회원입니다.');
     }
-
-
 
     //Only Add the userId if it does not exist (이것들은 enterroomAPI 에서 처리)
     // if (!targetRoom.users.includes(userId)) {
@@ -268,9 +272,8 @@ export class RoomService {
       );
     }
 
-    let filename = '';
     if (file) {
-      filename = file.filename;
+      const filename = file.filename;
     }
 
     //change JSON Object to Array Object
@@ -291,7 +294,7 @@ export class RoomService {
       hashtags,
       users: userId,
       usersNum: 1,
-      imageLocation: filename,
+      imageLocation: __filename,
       createdAt: new Date(),
       lastVisited: new Date(),
     });
