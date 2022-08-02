@@ -84,36 +84,29 @@ export class MessageGateway {
  
     const roomID = this.socketToRoom[client.id];
     let room = this.users[roomID];
-    if(room){
-      let findeduser = room.filter((eachuser)=> eachuser.userid ===client.userId) 
-      room = room.filter((user) => user.id !== client.id);
-      this.users[roomID] = room;
-      
-      let endtime = new Date().getTime()
-        // 타이머 기능 추가 우선 5 초 이상 머물러야 기록함
-        if (findeduser[0]){
-          const timediffinms = endtime - findeduser[0].joinedtime;
-          if (timediffinms >= 5000){
-            
-            const targettime = this.timeModel.findOne({roomId:client.roomId,userId:client.userId})
-            if (!targettime){
-              const newtime = new this.timeModel({
-                roomId:roomID,
-                userId: client.userId,
-                studytime: timediffinms
-              })
-              
-              await newtime.save()
+    let findeduser = room.filter((eachuser)=> eachuser.userid ===client.userId) 
+    room = room.filter((user) => user.id !== client.id);
+    this.users[roomID] = room;
+    let endtime = new Date().getTime()
+    if (findeduser[0]){
+      const timediffinms = endtime - findeduser[0].joinedtime;
+      if (timediffinms >= 5000){
+        const targettime = this.timeModel.findOne({roomId:client.roomId,userId:client.userId})
+        if (!targettime){
+          const newtime = new this.timeModel({
+            roomId:roomID,
+            userId: client.userId,
+            studytime: timediffinms
+          })
+          await newtime.save()
               console.log('first study time has been saved')
-            } else {
-              await targettime.updateOne({$inc: {studytime: timediffinms }})
-              console.log('studytime has been updated')
-            }
-
-          } else {
-            console.log(client.userId,' this users studytime is too short, it has not been saved')
-          }
+        } else {
+          await targettime.updateOne({$inc: {studytime: timediffinms }})
+          console.log('studytime has been updated')
         }
+    }
+  }
+      
         if (room.length === 0) {
           delete this.users[roomID];
           delete this.socketToRoom[client.id]
@@ -124,8 +117,8 @@ export class MessageGateway {
         console.log('userid: ',client.userId)
         console.log('nickName: ',client.nickName)
         console.log('roomId: ',client.roomId)
-    }
-  
+        
+   
 
         // if (this.allonlineuser.includes(client.userId)) {
         //   const errormessage = '이미 채팅방에 접속중인 유저입니다.'
@@ -185,7 +178,7 @@ export class MessageGateway {
 
     let starttime = new Date().getTime()  
     let roomOwner = false
-  const thisroom = await this.roomModel.findById(data.roomId)
+  const thisroom = await this.roomModel.findById(client.roomId)
   if (thisroom){
     if(thisroom.users[0]===client.userId){
       roomOwner = true
