@@ -79,6 +79,7 @@ export class MessageGateway {
       client.handshake.auth.token = null
       client.handshake.headers['token'] = null
       console.log('---------------------------------------------------------------------------------------------------------')
+      throw new Error('비정상적인 소켓연결이 강제적으로 종료 되었습니다1')
       return
     }
     let checkuser = room.filter((eachuser)=> eachuser.id === client.id) 
@@ -91,6 +92,7 @@ export class MessageGateway {
       client.handshake.auth.token = null
       client.handshake.headers['token'] = null
       console.log('---------------------------------------------------------------------------------------------------------')
+      throw new Error('비정상적인 소켓연결이 강제적으로 종료 되었습니다2')
       return
     }
     let findeduser = room.filter((eachuser)=> eachuser.userid ===client.userId) 
@@ -220,6 +222,7 @@ export class MessageGateway {
       console.log('강퇴 발생')
       const errormessage = "이미 접속한 유저가 또 새로운방에 접속하려 합니다"
       this.server.to(client.id).emit('disconnectuser',errormessage)
+      throw Error('이미 접속한 유저가 또 새로운방에 접속하려 합니다')
       return
     }
 
@@ -239,6 +242,7 @@ export class MessageGateway {
       console.log('user_exit 발생')
       const errormessage = '존재하지 않는방에 들어오려고함'
       this.server.to(client.id).emit('disconnectuser',errormessage)
+      throw Error('존재하지 않는 방에 join_room 을 보냇습니다.')
       return
     
     }
