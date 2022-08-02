@@ -16,6 +16,7 @@ export const RoomSchema = new mongoose.Schema({
   createdAt: { type: Date, required: true },
   lastVisited: { type: Date, required: true },
   liveStatus: { type: Boolean, required: true, default: false },
+  totalStudyTime: { type: Number, default: 0 },
 });
 
 export interface Room extends mongoose.Document {
@@ -33,4 +34,5 @@ export interface Room extends mongoose.Document {
   createdAt: Date;
   lastVisited: Date;
   liveStatus: boolean;
+  totalStudyTime: number;
 }

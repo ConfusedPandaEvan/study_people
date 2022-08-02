@@ -175,7 +175,6 @@ export class MessageGateway {
         { _id: client.roomId },
         { $set: { liveStatus: false } },
       );
-
       return;
     }
     delete this.socketToRoom[client.id];
@@ -555,6 +554,8 @@ export class MessageGateway {
 
     client.emit('timeinfos', data);
     //data: [... {profilepic,nickName,currentrecord,accumrecord,online}]
+
+    console.log('here', data);
   }
 
   @SubscribeMessage('kicktoggleon')

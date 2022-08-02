@@ -495,4 +495,12 @@ export class RoomService {
     }
     return hashtag;
   }
+
+  // private async getRanks(): Promise<Room[]> {
+  //   const rooms = await this.getAllRooms('latest');
+
+  //   let sortedRooms = rooms.sort();
+
+  //   return sortedRooms;
+  // }
 }
