@@ -183,8 +183,13 @@ export class MessageGateway {
 
     let starttime = new Date().getTime()  
     let roomOwner = false
-  const thisroom = await this.roomModel.findById(client.roomId)
-  console.log(thisroom)
+    let thisroom;
+    try {
+      thisroom = await this.roomModel.findById(client.roomId)
+    } catch(e){
+      console.log(e)
+    }
+    console.log(thisroom)
     if (!thisroom){
       console.log('존재하지 않는 방에 join_room 을 보냇습니다.')
       this.server.to(client.roomId).emit('user_exit', {id: client.userId});
