@@ -29,17 +29,20 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  // @Get()
+  // findAll() {
+  //   return this.usersService.findAll();
+  // }
+
+  @UseGuards(ControllerAuthGuard)
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findOne(@Req() request: RequestWithAuth) {
+    const { userId } = request;
+    return this.usersService.findOne(userId);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
-  }
-
-  @Patch(':id')
+  @UseGuards(ControllerAuthGuard)
+  @Patch()
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -51,15 +54,20 @@ export class UsersController {
   )
   async update(
     @UploadedFile() file,
-    @Param('id') id: string,
+    @Req() request: RequestWithAuth,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.update(file, id, updateUserDto);
+    const { userId } = request;
+    return this.usersService.update(file, userId, updateUserDto);
   }
+
   @UseGuards(ControllerAuthGuard)
   @Delete('/:userId')
-  async remove(@Param('userId') userId: string, @Req() request: RequestWithAuth) {
-    await this.usersService.remove(userId)
+  async remove(
+    @Param('userId') userId: string,
+    @Req() request: RequestWithAuth,
+  ) {
+    await this.usersService.remove(userId);
     return;
   }
 }
