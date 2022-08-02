@@ -63,6 +63,8 @@ export class RoomService {
       title: roomL.title,
       isMaster: roomL.users[0] == userId,
       usersNum: roomL.usersNum,
+      users: roomL.users[0] == userId ? roomL.users : null,
+      password: roomL.users[0] == userId ? roomL.password : null,
       maxPeople: roomL.maxPeople,
       content: roomL.content,
       hashtags: roomL.hashtags,
