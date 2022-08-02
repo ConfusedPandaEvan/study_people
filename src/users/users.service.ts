@@ -53,10 +53,8 @@ export class UsersService {
 
     //if new image is provided, delete original image
     if (file) {
-      filename = './public/profileImages/' + file.filename;
-      if (
-        updatingUser.imageLocation != './public/profileImages/defaultImage.png'
-      ) {
+      filename = 'https://stupy.shop/profileImages/' + file.filename;
+      if (updatingUser.imageLocation != null) {
         await fs.unlink(
           `./public/profileImages/${updatingUser.imageLocation}`,
           (err) => {
@@ -103,6 +101,18 @@ export class UsersService {
     } catch (error) {
       throw new NotFoundException('Could Not Find User');
     }
+    // if (deletingUser.imageLocation != null) {
+    //   await fs.unlink(
+    //     `./public/profileImages/${deletingUser.imageLocation}`,
+    //     (err) => {
+    //       if (err) {
+    //         console.error(err);
+    //         return err;
+    //       }
+    //     },
+    //   );
+    // }
+
 
     await this.userModel.deleteOne({ _id: userId }).exec();
 
@@ -112,11 +122,11 @@ export class UsersService {
   async verifywithtoken(token: string): Promise<User> {
     let user;
     try {
-        const verified = jwt.verify(token, 'MyKey') as JwtPayload;
-        user = await this.userModel.findById(verified.userId);
-      } catch (error) {
-        throw new NotFoundException('Could Not Find User');
-      }
-      return user
+      const verified = jwt.verify(token, 'MyKey') as JwtPayload;
+      user = await this.userModel.findById(verified.userId);
+    } catch (error) {
+      throw new NotFoundException('Could Not Find User');
+    }
+    return user;
   }
 }
