@@ -103,7 +103,6 @@ export class RoomController {
     @Param('roomId') roomId: string,
     @Req() request: RequestWithAuth,
   ) {
-    console.log("!!!!!!!!!!!beforesocketcontroller")
     const { userId } = request;
     return await this.roomService.beforesocket(roomId, userId);
   }

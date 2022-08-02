@@ -132,13 +132,11 @@ export class RoomService {
     return true;
   }
   async beforesocket(roomId, userId) {
-    console.log('존재하지 않는 방입니다.!~!!!!1')
     // async enterRoom(roomId, userId) {
     const targetRoom = await this.roomModel.findById(roomId)
     const user = await this.userModel.findById(userId);
     //Check if the room exists
     if (!targetRoom) {
-      console.log('존재하지 않는 방입니다.!~!!!!2')
       throw new BadRequestException('존재하지 않는 방입니다.');
     }
     //Blacklist Check
