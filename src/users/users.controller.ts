@@ -41,7 +41,8 @@ export class UsersController {
     return this.usersService.findOne(userId);
   }
 
-  @Patch(':id')
+  @UseGuards(ControllerAuthGuard)
+  @Patch()
   @UseInterceptors(
     FileInterceptor('image', {
       storage: diskStorage({
@@ -53,11 +54,13 @@ export class UsersController {
   )
   async update(
     @UploadedFile() file,
-    @Param('id') id: string,
+    @Req() request: RequestWithAuth,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.usersService.update(file, id, updateUserDto);
+    const { userId } = request;
+    return this.usersService.update(file, userId, updateUserDto);
   }
+
   @UseGuards(ControllerAuthGuard)
   @Delete('/:userId')
   async remove(
