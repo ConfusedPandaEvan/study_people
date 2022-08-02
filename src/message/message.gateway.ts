@@ -217,12 +217,10 @@ export class MessageGateway {
 
     if (this.allonlineuser.includes(client.userId)){
       console.log("이미 접속한 유저가 또 새로운방에 접속하려 합니다. 연결을 끊습니다.")
-      client.disconnect()
-      this.server.to(client.roomId).emit('user_exit', {id: client.id});
-      console.log('강퇴 발생')
       const errormessage = "이미 접속한 유저가 또 새로운방에 접속하려 합니다"
+      this.server.to(client.roomId).emit('user_exit', {id: client.id});
+      console.log('user_exit 발생')
       this.server.to(client.id).emit('disconnectuser',errormessage)
-      throw Error('이미 접속한 유저가 또 새로운방에 접속하려 합니다')
       return
     }
 
@@ -242,7 +240,6 @@ export class MessageGateway {
       console.log('user_exit 발생')
       const errormessage = '존재하지 않는방에 들어오려고함'
       this.server.to(client.id).emit('disconnectuser',errormessage)
-      throw Error('존재하지 않는 방에 join_room 을 보냇습니다.')
       return
     
     }
