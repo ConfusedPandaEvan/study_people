@@ -421,7 +421,7 @@ export class RoomService {
 
         //If hashtag length is 1, delete hashtag from DB, else, remove roomId from hashtag.rooms
 
-        if (dbHashtag.rooms.length == 1) {
+        if (dbHashtag && dbHashtag.rooms.length == 1) {
           await this.hashtagModel.deleteOne({ _id: dbHashtag._id }).exec();
         } else {
           await this.hashtagModel.updateOne(
