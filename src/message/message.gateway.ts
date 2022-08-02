@@ -72,7 +72,17 @@ export class MessageGateway {
     let room = this.users[roomID];
     if (!room){
       
-      console.log('비정상적인 소켓연결이 강제적으로 종료 되었습니다.: ')
+      console.log('비정상적인 소켓연결이 강제적으로 종료 되었습니다1.: ')
+      console.log('userid: ',client.userId)
+      console.log('nickName: ',client.nickName)
+      console.log('roomId: ',client.roomId)
+      console.log('---------------------------------------------------------------------------------------------------------')
+      return
+    }
+    let checkuser = room.filter((eachuser)=> eachuser.id === client.id) 
+    if (!checkuser[0]){
+      
+      console.log('비정상적인 소켓연결이 강제적으로 종료 되었습니다2.: ')
       console.log('userid: ',client.userId)
       console.log('nickName: ',client.nickName)
       console.log('roomId: ',client.roomId)
@@ -139,7 +149,7 @@ export class MessageGateway {
         console.log('userid: ',client.userId)
         console.log('nickName: ',client.nickName)
         console.log('roomId: ',client.roomId)
-        console.log('퇴장 후 지금 서버에 연결된 소켓: ', this.allonlineuser)
+        console.log('퇴장 후 지금 서버에 연결된 유저: ', this.allonlineuser)
         console.log('---------------------------------------------------------------------------------------------------------')
         
    
@@ -198,11 +208,10 @@ export class MessageGateway {
 
     if (this.allonlineuser.includes(client.userId)){
       console.log("이미 접속한 유저가 또 새로운방에 접속하려 합니다. 연결을 끊습니다.")
-      throw new WsException(
-        {
-          status: 'error',
-          errorMessage: 'forbidden.(이미 접속한 유저가 또 새로운방에 접속하려 합니다)',
-        })
+      this.server.to(client.roomId).emit('user_exit', {id: client.id});
+      console.log('강퇴 발생')
+      const errormessage = "이미 접속한 유저가 또 새로운방에 접속하려 합니다"
+      this.server.to(client.id).emit('disconnectuser',errormessage)
     }
 
     let starttime = new Date().getTime()  
@@ -212,6 +221,7 @@ export class MessageGateway {
       thisroom = await this.roomModel.findById(client.roomId)
     } catch(e){
       console.log(e)
+      console.log('방을 찾을수 없습니다.')
     }
     console.log(thisroom)
     if (!thisroom){
@@ -222,15 +232,10 @@ export class MessageGateway {
       this.server.to(client.id).emit('disconnectuser',errormessage)
     
     }
-  
-  if (thisroom){
     if(thisroom.users[0]===client.userId){
       roomOwner = true
       console.log('해당유저는 이 방의 방장입니다.')
     }
-  } else {
-    console.log('존재 하지 않는 방입니다.')
-  }
   
   if (this.users[data.roomId]) {
     const length = this.users[data.roomId].length;
@@ -322,11 +327,13 @@ export class MessageGateway {
 
     /// 여기서 에러 처리 잘 해주자 에러남 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // 채팅 지우는 부분은
-    await this.chatModel.deleteMany({roomId:data.roomId, userId:data.targetId}).then(function(){
-      console.log("Data deleted"); // Success
-    }).catch(function(error){
-        console.log(error); // Failure
-    });
+    try{
+      await this.chatModel.deleteMany({roomId:data.roomId, userId:data.targetId})
+      console.log("Data deleted")
+    } catch(e){
+      console.log('삭제할 메세지가 없습니다')
+    }
+
 
     // const index = this.allonlineuser.indexOf(data.targetId);
     //     if (index > -1) { // only splice array when item is found
