@@ -155,12 +155,6 @@ export class TodoListService {
         }
       }
     }
-    for (let i = 0; i < updatedTodos.length; i++) {
-      await this.todoListModel.updateOne(
-        { _id: todoListId },
-        { $pull: { todos: { _id: updatedTodos[i] } } },
-      );
-    }
 
     return null;
   }
