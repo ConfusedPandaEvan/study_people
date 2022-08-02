@@ -74,7 +74,7 @@ const createTokenMiddleware =  (usersService: UsersService) => async (socket: So
         socket.userId = userId
         socket.nickName = user.userNick
         socket.profileImage= user.profileImage;
-        socket.roomId= socket.handshake.auth.roomId || socket.handshake.auth.roomId ;
+        socket.roomId= socket.handshake.auth.roomId || socket.handshake.headers['roomid'] ;
         if(!socket.roomId){
             console.log('방을 정해주지 않았습니다!')
             throw new Error('방을 정해주지 않았습니다!')

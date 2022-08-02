@@ -450,13 +450,15 @@ export class MessageGateway {
 
 
   @SubscribeMessage('redis-ping')
-  async redisping(@ConnectedSocket() client: SocketWithAuth) {
-    client.broadcast.to(client.roomId).emit('redis-pong', client.id)
+  async redisping(@ConnectedSocket() client: SocketWithAuth,@MessageBody() data: string) {
+    console.log('redis-ping',data)
+    client.broadcast.to(client.roomId).emit('redis-pong', client.nickName)
   }
 
   @SubscribeMessage('redis-pong')
-  async redispong(@ConnectedSocket() client: SocketWithAuth) {
-    client.broadcast.to(client.roomId).emit('redis-pong', client.id)
+  async redispong(@ConnectedSocket() client: SocketWithAuth,@MessageBody() data: string) {
+    console.log('redis-pong',data)
+    client.broadcast.to(client.roomId).emit('redis-pong', client.nickName)
   }
   
   // 채팅 내보내기
