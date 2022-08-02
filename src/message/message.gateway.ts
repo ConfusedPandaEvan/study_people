@@ -555,7 +555,14 @@ export class MessageGateway {
     client.emit('timeinfos', data);
     //data: [... {profilepic,nickName,currentrecord,accumrecord,online}]
 
-    console.log('here', data);
+    let alltime = 0;
+    for (let i = 0; i < data.length; i++) {
+      alltime += data[i].accumrecord;
+    }
+    await this.roomModel.updateOne(
+      { _id: client.roomId },
+      { $set: { totalStudyTime: alltime } },
+    );
   }
 
   @SubscribeMessage('kicktoggleon')
