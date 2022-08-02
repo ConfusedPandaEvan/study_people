@@ -420,15 +420,17 @@ export class RoomService {
         const dbHashtag = await this.findHashtag(tag);
 
         //If hashtag length is 1, delete hashtag from DB, else, remove roomId from hashtag.rooms
-
-        if (dbHashtag && dbHashtag.rooms.length == 1) {
-          await this.hashtagModel.deleteOne({ _id: dbHashtag._id }).exec();
-        } else {
-          await this.hashtagModel.updateOne(
-            { _id: dbHashtag._id },
-            { $pull: { rooms: roomId } },
-          );
+        if (dbHashtag) {
+          if (dbHashtag.rooms.length == 1) {
+            await this.hashtagModel.deleteOne({ _id: dbHashtag._id }).exec();
+          } else {
+            await this.hashtagModel.updateOne(
+              { _id: dbHashtag._id },
+              { $pull: { rooms: roomId } },
+            );
+          }
         }
+        console.log(typeof updateRoomDto.hashtag, updateRoomDto.hashtag);
       }
 
       //change JSON Object to Array Object
