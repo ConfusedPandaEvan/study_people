@@ -76,6 +76,8 @@ export class MessageGateway {
       console.log('userid: ',client.userId)
       console.log('nickName: ',client.nickName)
       console.log('roomId: ',client.roomId)
+      client.handshake.auth.token = null
+      client.handshake.headers['token'] = null
       console.log('---------------------------------------------------------------------------------------------------------')
       return
     }
@@ -86,6 +88,8 @@ export class MessageGateway {
       console.log('userid: ',client.userId)
       console.log('nickName: ',client.nickName)
       console.log('roomId: ',client.roomId)
+      client.handshake.auth.token = null
+      client.handshake.headers['token'] = null
       console.log('---------------------------------------------------------------------------------------------------------')
       return
     }
@@ -133,6 +137,8 @@ export class MessageGateway {
           console.log('nickName: ',client.nickName)
           console.log('roomId: ',client.roomId)
           console.log('퇴장 후 지금 서버에 연결된 소켓: ', this.allonlineuser)
+          client.handshake.auth.token = null
+          client.handshake.headers['token'] = null
           console.log('---------------------------------------------------------------------------------------------------------')
           return;
         }
@@ -150,6 +156,8 @@ export class MessageGateway {
         console.log('nickName: ',client.nickName)
         console.log('roomId: ',client.roomId)
         console.log('퇴장 후 지금 서버에 연결된 유저: ', this.allonlineuser)
+        client.handshake.auth.token = null
+        client.handshake.headers['token'] = null
         console.log('---------------------------------------------------------------------------------------------------------')
         
    
