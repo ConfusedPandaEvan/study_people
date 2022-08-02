@@ -184,6 +184,7 @@ export class MessageGateway {
     let starttime = new Date().getTime()  
     let roomOwner = false
   const thisroom = await this.roomModel.findById(client.roomId)
+  console.log(thisroom)
     if (!thisroom){
       console.log('존재하지 않는 방에 join_room 을 보냇습니다.')
       throw new Error('존재하지 않는 방에 join_room 을 보냇습니다.')
@@ -243,11 +244,9 @@ export class MessageGateway {
   //data 에선 roomId 랑 targetId
   @SubscribeMessage('addblacklist')
   async blacklist(@MessageBody() data , @ConnectedSocket() client: SocketWithAuth){
-    const token = client.handshake.auth.token || client.handshake.headers['token']
-    const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
-    const joineduserid = verifiedtoken.userId
+
     const thisroom = await this.roomModel.findById(data.roomId)
-    if (thisroom.users[0] !== joineduserid) {
+    if (thisroom.users[0] !== client.userId) {
       throw new WsException(
         {
           status: 'error',
