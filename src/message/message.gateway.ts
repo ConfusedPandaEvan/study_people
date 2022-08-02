@@ -82,7 +82,7 @@ export class MessageGateway {
       return
     }
     let checkuser = room.filter((eachuser)=> eachuser.id === client.id) 
-    if (!checkuser[0]){
+    if (!checkuser[0] || !checkuser){
       
       console.log('비정상적인 소켓연결이 강제적으로 종료 되었습니다2.: ')
       console.log('userid: ',client.userId)
@@ -131,18 +131,18 @@ export class MessageGateway {
             if (index > -1) { // only splice array when item is found
               this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
             }
-
+            
           console.log('방에 마지막 남은사람 소켓연결 끊김:  ')
           console.log('userid: ',client.userId)
           console.log('nickName: ',client.nickName)
           console.log('roomId: ',client.roomId)
-          console.log('퇴장 후 지금 서버에 연결된 소켓: ', this.allonlineuser)
+          console.log('퇴장 후 지금 서버에 연결된 유저: ', this.allonlineuser)
           client.handshake.auth.token = null
           client.handshake.headers['token'] = null
           console.log('---------------------------------------------------------------------------------------------------------')
           return;
         }
-        
+        delete this.socketToRoom[client.id]
         const index = this.allonlineuser.indexOf(client.userId);
         if (index > -1) { // only splice array when item is found
           this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
@@ -212,10 +212,10 @@ export class MessageGateway {
     console.log('userid: ',client.userId)
     console.log('nickName: ',client.nickName)
     console.log('roomId: ',client.roomId)
-    console.log('---------------------------------------------------------------------------------------------------------')
 
     if (this.allonlineuser.includes(client.userId)){
       console.log("이미 접속한 유저가 또 새로운방에 접속하려 합니다. 연결을 끊습니다.")
+      client.disconnect()
       this.server.to(client.roomId).emit('user_exit', {id: client.id});
       console.log('강퇴 발생')
       const errormessage = "이미 접속한 유저가 또 새로운방에 접속하려 합니다"

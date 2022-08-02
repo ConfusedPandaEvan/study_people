@@ -98,7 +98,7 @@ export class RoomService {
     }
     //Blacklist Check
     if (targetRoom.blackList && targetRoom.blackList.includes(userId)) {
-      throw new UnauthorizedException('당신은 방장한테 찍혀서 접근 못해요');
+      throw new UnauthorizedException('당신은 방장에 의해 강퇴당해서 방에 입장할 수 없습니다');
     }
 
     if (user.joinedRoomNum == 5 && !targetRoom.users.includes(userId)) {
@@ -147,7 +147,7 @@ export class RoomService {
     }
     //Blacklist Check
     if (targetRoom.blackList && targetRoom.blackList.includes(userId)) {
-      throw new UnauthorizedException('당신은 방장한테 찍혀서 접근 못해요');
+      throw new UnauthorizedException('당신은 방장에 의해 강퇴당해서 방에 입장할 수 없습니다');
     }
 
     if (user.joinedRoomNum == 5 && !targetRoom.users.includes(userId)) {
