@@ -98,11 +98,12 @@ export class RoomController {
   }
 
   @UseGuards(ControllerAuthGuard)
-  @Get('/room/socket/:roomId')
+  @Get('/socket/:roomId')
   async beforesocket(
     @Param('roomId') roomId: string,
     @Req() request: RequestWithAuth,
   ) {
+    console.log("!!!!!!!!!!!beforesocketcontroller")
     const { userId } = request;
     return await this.roomService.beforesocket(roomId, userId);
   }
