@@ -15,6 +15,7 @@ export const RoomSchema = new mongoose.Schema({
   blackList: { type: [String], default: undefined },
   createdAt: { type: Date, required: true },
   lastVisited: { type: Date, required: true },
+  liveStatus: { type: Boolean, required: true, default: false },
 });
 
 export interface Room extends mongoose.Document {
@@ -31,4 +32,5 @@ export interface Room extends mongoose.Document {
   blackList: Array<string>;
   createdAt: Date;
   lastVisited: Date;
+  liveStatus: boolean;
 }
