@@ -29,14 +29,16 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
+  // @Get()
+  // findAll() {
+  //   return this.usersService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  @UseGuards(ControllerAuthGuard)
+  @Get()
+  findOne(@Req() request: RequestWithAuth) {
+    const { userId } = request;
+    return this.usersService.findOne(userId);
   }
 
   @Patch(':id')
@@ -58,8 +60,11 @@ export class UsersController {
   }
   @UseGuards(ControllerAuthGuard)
   @Delete('/:userId')
-  async remove(@Param('userId') userId: string, @Req() request: RequestWithAuth) {
-    await this.usersService.remove(userId)
+  async remove(
+    @Param('userId') userId: string,
+    @Req() request: RequestWithAuth,
+  ) {
+    await this.usersService.remove(userId);
     return;
   }
 }
