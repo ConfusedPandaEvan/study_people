@@ -84,6 +84,9 @@ export class MessageGateway {
  
     const roomID = this.socketToRoom[client.id];
     let room = this.users[roomID];
+    if (!room){
+      return
+    }
     let findeduser = room.filter((eachuser)=> eachuser.userid ===client.userId) 
     console.log('findeduser: ',findeduser)
     room = room.filter((user) => user.id !== client.id);
@@ -115,6 +118,11 @@ export class MessageGateway {
         if (room.length === 0) {
           delete this.users[roomID];
           delete this.socketToRoom[client.id]
+          console.log('소켓연결 끊길때 기능점검:  ')
+          console.log('userid: ',client.userId)
+          console.log('nickName: ',client.nickName)
+          console.log('roomId: ',client.roomId)
+          
           return;
         }
         
