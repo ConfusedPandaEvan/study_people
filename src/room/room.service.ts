@@ -137,6 +137,7 @@ export class RoomService {
     const user = await this.userModel.findById(userId);
     //Check if the room exists
     if (!targetRoom) {
+      console.log('존재하지 않는 방입니다.!~!!!!')
       throw new BadRequestException('존재하지 않는 방입니다.');
     }
     //Blacklist Check

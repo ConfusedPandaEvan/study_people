@@ -91,13 +91,15 @@ export class MessageGateway {
     this.users[roomID] = room;
     let endtime = new Date().getTime()
     console.log('findeduser[0]: ', findeduser[0])
+    
     if (findeduser[0]){
       const timediffinms = endtime - findeduser[0].joinedtime;
       if (timediffinms >= 5000){
-        const targettime = this.timeModel.findOne({roomId:client.roomId,userId:client.userId})
+        const targettime = await this.timeModel.findOne({roomId:client.roomId,userId:client.userId})
+        console.log('targettime: ',targettime)
         if (!targettime){
           const newtime = new this.timeModel({
-            roomId:roomID,
+            roomId:client.roomId,
             userId: client.userId,
             studytime: timediffinms
           })
