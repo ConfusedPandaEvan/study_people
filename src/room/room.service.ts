@@ -274,8 +274,10 @@ export class RoomService {
       );
     }
 
+    let filename = null;
+
     if (file) {
-      const filename = file.filename;
+      filename = file.filename;
     }
 
     //change JSON Object to Array Object
@@ -296,7 +298,7 @@ export class RoomService {
       hashtags,
       users: userId,
       usersNum: 1,
-      imageLocation: __filename,
+      imageLocation: filename,
       createdAt: new Date(),
       lastVisited: new Date(),
     });
