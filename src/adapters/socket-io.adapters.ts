@@ -4,18 +4,33 @@ import { ServerOptions,Server } from "socket.io";
 import { SocketWithAuth } from "src/types";
 import * as jwt from 'jsonwebtoken';
 import { UsersService } from 'src/users/users.service'
+import { createAdapter } from "@socket.io/redis-adapter";
+import { createClient } from 'redis';
 
 interface JwtPayload {
     userId: string;
   }
 
 export class SocketIOAdapter extends IoAdapter{
+    private adapterConstructor: ReturnType<typeof createAdapter>;
     constructor( private app: INestApplicationContext){
         super(app);
     }
 
+    async connectToRedis(): Promise<void> {
+        const pubClient = createClient({ url: `redis://15.164.165.111:6379`});
+        const subClient = pubClient.duplicate();
+    
+        await Promise.all([pubClient.connect(), subClient.connect()]);
+    
+        this.adapterConstructor = createAdapter(pubClient, subClient);
+      }
+
     createIOServer(port: number, options?: ServerOptions) {
         // const clientPort = parseInt(this.configService.get('CLIENT_PORT'))
+
+        
+
         const cors = {
             origin:["http://stupy.co.kr","https://stupy.co.kr",'http://localhost:3000','https://localhost:3000'],
             methods: ["GET","POST"],
@@ -26,9 +41,15 @@ export class SocketIOAdapter extends IoAdapter{
             ...options,
             cors,
         }
+
         const usersService = this.app.get(UsersService)
+        console.log('1')
         const server: Server = super.createIOServer(port, optionsWithCORS)
+        console.log('2')
+        server.adapter(this.adapterConstructor)
+        console.log('3')
         server.use(createTokenMiddleware(usersService))
+        
         
         return server
     }

@@ -447,6 +447,17 @@ export class MessageGateway {
     client.emit('userInfos', data);
     //data: [... {profilepic,nickName,userId}] 방장이면 맨 위에
   }
+
+
+  @SubscribeMessage('redis-ping')
+  async redisping(@ConnectedSocket() client: SocketWithAuth) {
+    client.broadcast.to(client.roomId).emit('redis-pong', client.id)
+  }
+
+  @SubscribeMessage('redis-pong')
+  async redispong(@ConnectedSocket() client: SocketWithAuth) {
+    client.broadcast.to(client.roomId).emit('redis-pong', client.id)
+  }
   
   // 채팅 내보내기
   @SubscribeMessage('findAllMessage')

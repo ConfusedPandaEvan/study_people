@@ -21,6 +21,7 @@ async function bootstrap() {
   app.enableCors();
   const socketIoAdapter = new SocketIOAdapter(app)
   // await socketIoAdapter.connectToRedis();
+  await socketIoAdapter.connectToRedis();
   app.useWebSocketAdapter(socketIoAdapter)
   await app.init();
 

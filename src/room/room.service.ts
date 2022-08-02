@@ -133,7 +133,7 @@ export class RoomService {
   }
   async beforesocket(roomId, userId) {
     // async enterRoom(roomId, userId) {
-    const targetRoom = await this.findRoom(roomId);
+    const targetRoom = await this.roomModel.findById(roomId)
     const user = await this.userModel.findById(userId);
     //Check if the room exists
     if (!targetRoom) {
