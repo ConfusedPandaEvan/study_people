@@ -555,6 +555,7 @@ export class MessageGateway {
     client.emit('timeinfos', data);
     //data: [... {profilepic,nickName,currentrecord,accumrecord,online}]
 
+    //방 전체 시간 업데이트
     let alltime = 0;
     for (let i = 0; i < data.length; i++) {
       alltime += data[i].accumrecord;

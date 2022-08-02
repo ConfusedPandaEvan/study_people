@@ -38,6 +38,7 @@ export class RoomService {
         rooms = await this.roomModel.find().exec();
         break;
     }
+    const rankOfRooms = await this.getRanks();
 
     return rooms.map((roomL) => ({
       roomId: roomL._id,
@@ -47,6 +48,7 @@ export class RoomService {
       content: roomL.content,
       hashtags: roomL.hashtags,
       openKakao: roomL.openKakao,
+      rank: rankOfRooms.indexOf(roomL._id) + 1,
       isOn: roomL.liveStatus,
       image: roomL.imageLocation
         ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
@@ -496,11 +498,8 @@ export class RoomService {
     return hashtag;
   }
 
-  // private async getRanks(): Promise<Room[]> {
-  //   const rooms = await this.getAllRooms('latest');
-
-  //   let sortedRooms = rooms.sort();
-
-  //   return sortedRooms;
-  // }
+  private async getRanks(): Promise<Room[]> {
+    const rooms = await this.roomModel.find().sort({ totalStudyTime: -1 });
+    return rooms;
+  }
 }
