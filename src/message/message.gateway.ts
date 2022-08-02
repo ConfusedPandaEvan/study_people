@@ -320,6 +320,11 @@ export class MessageGateway {
           { _id: data.roomId },
           { $push: { blackList: data.targetId } },
         );
+
+        await this.userModel.updateOne(
+          { _id: data.targetId },
+          { $inc: { joinedRoomNum: -1 } },
+        );
       } catch (error) {
         console.log(error);
         throw new WsException(
