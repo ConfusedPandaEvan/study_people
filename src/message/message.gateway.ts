@@ -85,9 +85,12 @@ export class MessageGateway {
     const roomID = this.socketToRoom[client.id];
     let room = this.users[roomID];
     let findeduser = room.filter((eachuser)=> eachuser.userid ===client.userId) 
+    console.log('findeduser: ',findeduser)
     room = room.filter((user) => user.id !== client.id);
+    console.log('room',room)
     this.users[roomID] = room;
     let endtime = new Date().getTime()
+    console.log('findeduser[0]: ', findeduser[0])
     if (findeduser[0]){
       const timediffinms = endtime - findeduser[0].joinedtime;
       if (timediffinms >= 5000){
@@ -179,6 +182,12 @@ export class MessageGateway {
     let starttime = new Date().getTime()  
     let roomOwner = false
   const thisroom = await this.roomModel.findById(client.roomId)
+    if (!thisroom){
+      console.log('존재하지 않는 방에 join_room 을 보냇습니다.')
+      throw new Error('존재하지 않는 방에 join_room 을 보냇습니다.')
+      
+    }
+  
   if (thisroom){
     if(thisroom.users[0]===client.userId){
       roomOwner = true
