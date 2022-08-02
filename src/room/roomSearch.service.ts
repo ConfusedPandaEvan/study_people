@@ -61,6 +61,7 @@ export class RoomSearchService {
         break;
     }
 
+    const rankOfRooms = await this.getRanks();
     return rooms.map((roomL) => ({
       roomId: roomL._id,
       title: roomL.title,
@@ -69,6 +70,7 @@ export class RoomSearchService {
       content: roomL.content,
       hashtags: roomL.hashtags,
       openKakao: roomL.openKakao,
+      rank: rankOfRooms.indexOf(roomL._id.toString()) + 1,
       isOn: roomL.liveStatus,
       image: roomL.imageLocation
         ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
@@ -112,6 +114,7 @@ export class RoomSearchService {
           break;
       }
 
+      const rankOfRooms = await this.getRanks();
       return rooms.map((roomL) => ({
         roomId: roomL._id,
         title: roomL.title,
@@ -120,6 +123,7 @@ export class RoomSearchService {
         content: roomL.content,
         hashtags: roomL.hashtags,
         openKakao: roomL.openKakao,
+        rank: rankOfRooms.indexOf(roomL._id.toString()) + 1,
         isOn: roomL.liveStatus,
         image: roomL.imageLocation
           ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
@@ -130,5 +134,17 @@ export class RoomSearchService {
         'No room was found. Try searching with different Query',
       );
     }
+  }
+
+  private async getRanks(): Promise<string[]> {
+    const rooms = await this.roomModel.find().sort({ totalStudyTime: -1 });
+    const roomIdList = rooms.map((roomL) => ({
+      roomId: roomL._id,
+    }));
+    const result = [];
+    for (let i = 0; i < roomIdList.length; i++) {
+      result.push(roomIdList[i].roomId.toString());
+    }
+    return result;
   }
 }
