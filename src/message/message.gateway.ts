@@ -67,18 +67,6 @@ export class MessageGateway {
   }
   public async handleDisconnect(client: SocketWithAuth): Promise<void> {
     console.log('---------------------------------------------disconnect---------------------------------------------------------')
-   
-
-
-    // const index = this.allonlineuser.indexOf(client.userId);
-    //     if (index > -1) { // only splice array when item is found
-    //       this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
-    //     }
-
-    // console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`)
-
-
-        // console.log('all online user after disconnection: ', this.allonlineuser)
  
     const roomID = this.socketToRoom[client.id];
     let room = this.users[roomID];
@@ -411,13 +399,11 @@ export class MessageGateway {
 
   //타이머 토글을 켜고 각 유저의 공부시간을 받고싶을때(timertoggleon)
   @SubscribeMessage('timertoggleon')
-  async timeinfo(@ConnectedSocket() client: Socket) {
-    const roomid = this.socketToRoom[client.id]
-
+  async timeinfo(@ConnectedSocket() client: SocketWithAuth) {
     // 룸아이디에서 있는 유저들을 for 문을 돌린다. 그리고는 맵을 해준다. 
     // 프사 url, nickNAME(user가서 아이디로 또 찾아서 줘야함), 기록: 현재시간 - 접속시간 주면됨, 누적, 체팅 찾아서 더해서 주면됨.)
-    console.log(roomid)
-    const room = await this.roomModel.findById(roomid);
+    console.log(client.roomId)
+    const room = await this.roomModel.findById(client.roomId);
     if (!room){
       console.log('존재하지 않는 방입니다.')
       throw new Error('존재하지 않는 방입니다.')
@@ -426,7 +412,7 @@ export class MessageGateway {
     let data = []
     for (let eachuserid of roomusers){
       let user = await this.userModel.findById(eachuserid);
-      let time = await this.timeModel.findOne({roomId:roomid,userId:eachuserid})
+      let time = await this.timeModel.findOne({roomId:client.roomId,userId:eachuserid})
 
       //[{userid:, roomid: ,studytime,},{}]
       let accumtime: number
@@ -436,7 +422,7 @@ export class MessageGateway {
         accumtime = time.studytime
       }
       
-      let connecteduser = this.users[roomid]
+      let connecteduser = this.users[client.roomId]
       let connecteduserid = []
 
       for (let eachuser of connecteduser){
@@ -449,7 +435,7 @@ export class MessageGateway {
       let currentrecord = 0
       let timeNow = new Date().getTime()
       if (connecteduserid.includes(eachuserid)){
-        const findeduser = this.users[roomid].filter((eachuser)=>eachuser.userid === eachuserid)
+        const findeduser = this.users[client.roomId].filter((eachuser)=>eachuser.userid === eachuserid)
         currentrecord = timeNow - findeduser[0].joinedtime
       }
 
