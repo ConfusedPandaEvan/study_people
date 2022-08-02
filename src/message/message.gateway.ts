@@ -319,8 +319,10 @@ export class MessageGateway {
 
     console.log('해당유저 데이터 베이스에서 삭제후 블랙리스트 추가 완료')
 
+
+    /// 여기서 에러 처리 잘 해주자 에러남 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // 채팅 지우는 부분은
-    this.chatModel.deleteMany({roomId:data.roomId, userId:data.targetId}).then(function(){
+    await this.chatModel.deleteMany({roomId:data.roomId, userId:data.targetId}).then(function(){
       console.log("Data deleted"); // Success
     }).catch(function(error){
         console.log(error); // Failure
