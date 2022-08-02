@@ -220,6 +220,7 @@ export class MessageGateway {
       console.log('강퇴 발생')
       const errormessage = "이미 접속한 유저가 또 새로운방에 접속하려 합니다"
       this.server.to(client.id).emit('disconnectuser',errormessage)
+      return
     }
 
     let starttime = new Date().getTime()  
@@ -238,6 +239,7 @@ export class MessageGateway {
       console.log('user_exit 발생')
       const errormessage = '존재하지 않는방에 들어오려고함'
       this.server.to(client.id).emit('disconnectuser',errormessage)
+      return
     
     }
     if(thisroom.users[0]===client.userId){
