@@ -71,18 +71,8 @@ export class TodoListService {
     return result.id as string;
   }
 
-  async deleteTodoList(deleteTodoListDto) {
-    const TodoListsArray = deleteTodoListDto.targetTodoList
-      .toString()
-      .replace(/\[|\]/g, '')
-      .replace(/\s/g, '')
-      .split(',');
-
-    for (let i = 0; i < TodoListsArray.length; i++) {
-      const target = TodoListsArray[i];
-      await this.todoListModel.deleteOne({ _id: target }).exec();
-    }
-
+  async deleteTodoList(todoListId) {
+    await this.todoListModel.deleteOne({ _id: todoListId }).exec();
     return null;
   }
 

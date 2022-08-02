@@ -69,12 +69,12 @@ export class TodoListController {
 
   //Delete Todo-List and corresponding Todos
   @UseGuards(ControllerAuthGuard)
-  @Delete('')
+  @Delete('/:TodoListId')
   async deleteTodoList(
-    @Body() deleteTodoListDto: DeleteTodoListDto,
+    @Param('TodoListId') todoListId: string,
     @Req() request: RequestWithAuth,
   ) {
-    await this.todoListService.deleteTodoList(deleteTodoListDto);
+    await this.todoListService.deleteTodoList(todoListId);
     const todolists = this.getAllTodoLists(request);
     return todolists;
   }
