@@ -156,17 +156,25 @@ export class RoomService {
       throw new BadRequestException('이 방은 이미 만원입니다.');
     }
 
-    //Only Add the userId if it does not exist
-    if (!targetRoom.users.includes(userId)) {
-      await this.roomModel.updateOne(
-        { _id: roomId },
-        { $push: { users: userId }, $inc: { usersNum: 1 } },
-      );
-      await this.userModel.updateOne(
-        { _id: userId },
-        { $inc: { joinedRoomNum: 1 } },
-      );
+    if (
+      !targetRoom.users.includes(userId)
+    ) {
+      throw new BadRequestException('이 방에 가입되어있지 않은 회원입니다.');
     }
+
+
+
+    //Only Add the userId if it does not exist (이것들은 enterroomAPI 에서 처리)
+    // if (!targetRoom.users.includes(userId)) {
+    //   await this.roomModel.updateOne(
+    //     { _id: roomId },
+    //     { $push: { users: userId }, $inc: { usersNum: 1 } },
+    //   );
+    //   await this.userModel.updateOne(
+    //     { _id: userId },
+    //     { $inc: { joinedRoomNum: 1 } },
+    //   );
+    // }
     return true;
   }
   async changeOwner(roomId, removeUserDto, userId) {

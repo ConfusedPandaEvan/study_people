@@ -17,6 +17,7 @@ import { User } from 'src/users/user.Schema';
 import { Time } from 'src/times/time.Schema';
 import * as jwt from 'jsonwebtoken';
 import { SocketWithAuth } from 'src/types';
+import { disconnect } from 'process';
 interface JwtPayload {
   userId: string;
 }
@@ -65,13 +66,8 @@ export class MessageGateway {
 
   }
   public async handleDisconnect(client: SocketWithAuth): Promise<void> {
-
-    console.log('------------------------------------------소켓연결이 끊겼습니다--------------------------------------------')
-    console.log('socketid: ', client.id)
-    console.log('userid: ',client.userId)
-    console.log('nickName: ',client.nickName)
-    console.log('roomId: ',client.roomId)
-    console.log('---------------------------------------------------------------------------------------------------------')
+    console.log('---------------------------------------------disconnect---------------------------------------------------------')
+   
 
 
     // const index = this.allonlineuser.indexOf(client.userId);
@@ -79,12 +75,20 @@ export class MessageGateway {
     //       this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
     //     }
 
-    console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`);
+    // console.log(`[${this.socketToRoom[client.id]}]: ${client.id} exit`)
+
+
         // console.log('all online user after disconnection: ', this.allonlineuser)
  
     const roomID = this.socketToRoom[client.id];
     let room = this.users[roomID];
     if (!room){
+      
+      console.log('비정상적인 소켓연결이 강제적으로 종료 되었습니다.: ')
+      console.log('userid: ',client.userId)
+      console.log('nickName: ',client.nickName)
+      console.log('roomId: ',client.roomId)
+      console.log('---------------------------------------------------------------------------------------------------------')
       return
     }
     let findeduser = room.filter((eachuser)=> eachuser.userid ===client.userId) 
@@ -114,22 +118,41 @@ export class MessageGateway {
         }
     }
   }
-      
+
+
         if (room.length === 0) {
           delete this.users[roomID];
           delete this.socketToRoom[client.id]
-          console.log('소켓연결 끊길때 기능점검:  ')
+          const i = this.allonlineuser.indexOf(client.userId);
+
+          const index = this.allonlineuser.indexOf(client.userId);
+            if (index > -1) { // only splice array when item is found
+              this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
+            }
+
+          console.log('방에 마지막 남은사람 소켓연결 끊김:  ')
           console.log('userid: ',client.userId)
           console.log('nickName: ',client.nickName)
           console.log('roomId: ',client.roomId)
-          
+          console.log('퇴장 후 지금 서버에 연결된 소켓: ', this.allonlineuser)
+          console.log('---------------------------------------------------------------------------------------------------------')
           return;
         }
         
-        console.log('소켓연결 끊길때 기능점검:  ')
+        const index = this.allonlineuser.indexOf(client.userId);
+        if (index > -1) { // only splice array when item is found
+          this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
+        }
+
+
+
+        console.log('소켓연결이 정상적으로 끊겼습니다')
+        console.log('socketid: ', client.id)
         console.log('userid: ',client.userId)
         console.log('nickName: ',client.nickName)
         console.log('roomId: ',client.roomId)
+        console.log('퇴장 후 지금 서버에 연결된 소켓: ', this.allonlineuser)
+        console.log('---------------------------------------------------------------------------------------------------------')
         
    
 
@@ -141,12 +164,9 @@ export class MessageGateway {
         //   return
         // }
 
-        // const index = this.allonlineuser.indexOf(client.userId);
-        // if (index > -1) { // only splice array when item is found
-        //   this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
-        // }
+        
 
-        // console.log('퇴장 후 지금 서버에 연결된 소켓: ', this.allonlineuser)
+        
   
 
         
@@ -188,6 +208,14 @@ export class MessageGateway {
     console.log('roomId: ',client.roomId)
     console.log('---------------------------------------------------------------------------------------------------------')
 
+    if (this.allonlineuser.includes(client.userId)){
+      console.log("이미 접속한 유저가 또 새로운방에 접속하려 합니다. 연결을 끊습니다.")
+      throw new WsException(
+        {
+          status: 'error',
+          errorMessage: 'forbidden.(이미 접속한 유저가 또 새로운방에 접속하려 합니다)',
+        })
+    }
 
     let starttime = new Date().getTime()  
     let roomOwner = false
@@ -237,11 +265,20 @@ export class MessageGateway {
 
   client.join(data.roomId);
   console.log(`: userId :${client.id} has entered roomID: [${this.socketToRoom[client.id]}]`);
+  this.allonlineuser.push(client.userId);
+  console.log('현제 접속중인 모든 유저: ', this.allonlineuser)
 
   const usersInThisRoom = this.users[data.roomId].filter(user => user.id !== client.id);
   console.log('alluser in the room rightnow',this.users[data.roomId]);
   console.log('userinthisroom (not including oneself)',usersInThisRoom);
   
+  console.log('join_room 이벤트가 성공적으로 끝났습니다.')
+    console.log('socketid: ', client.id)
+    console.log('userid: ',client.userId)
+    console.log('nickName: ',client.nickName)
+    console.log('roomId: ',client.roomId)
+    console.log('---------------------------------------------------------------------------------------------------------')
+
   
 
   // const timestarted = this.starttime
