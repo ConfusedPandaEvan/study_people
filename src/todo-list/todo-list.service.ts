@@ -27,7 +27,7 @@ export class TodoListService {
     if (todoLists.length == 0) {
       const newTodoList = new this.todoListModel({
         userId,
-        title: 'default To-do List',
+        title: '새로운 리스트',
       });
       await newTodoList.save();
       todoLists = await this.todoListModel.find({ userId: userId }).exec();
@@ -62,7 +62,7 @@ export class TodoListService {
 
     const newTodoList = new this.todoListModel({
       userId,
-      title: 'default To-do List',
+      title: '새로운 리스트',
     });
     const result = await newTodoList.save();
 
@@ -94,7 +94,7 @@ export class TodoListService {
     }
 
     const newTodo = new this.todoModel({
-      content: 'default To-do',
+      content: '새로운 투두',
       status: false,
       createdAt: new Date(),
     });
