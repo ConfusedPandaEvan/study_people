@@ -23,8 +23,8 @@ export class User {
   @Prop()
   profileImage: string;
 
-  @Prop({ type: Number, default: 0, })
-  joinedRoomNum: number
+  @Prop({ type: [String], default: [], })
+  joinedRoom: string[]
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

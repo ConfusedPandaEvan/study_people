@@ -94,7 +94,7 @@ export class RoomService {
 
     await this.userModel.updateOne(
       { _id: userId },
-      { $inc: { joinedRoomNum: -1 } },
+      { $pull: { joinedRoom: roomId } },
     );
   }
 
@@ -113,7 +113,7 @@ export class RoomService {
       );
     }
 
-    if (user.joinedRoomNum == 5 && !targetRoom.users.includes(userId)) {
+    if (user.joinedRoom.length == 5 && !targetRoom.users.includes(userId)) {
       throw new BadRequestException('최대 가입 가능한 방의 갯수는 5개입니다.');
     }
 
@@ -138,7 +138,7 @@ export class RoomService {
       );
       await this.userModel.updateOne(
         { _id: userId },
-        { $inc: { joinedRoomNum: 1 } },
+        { $push: { joinedRoom: roomId } },
       );
     }
     return true;
@@ -164,7 +164,7 @@ export class RoomService {
       );
     }
 
-    if (user.joinedRoomNum == 5 && !targetRoom.users.includes(userId)) {
+    if (user.joinedRoom.length == 5 && !targetRoom.users.includes(userId)) {
       throw new BadRequestException('최대 가입 가능한 방의 갯수는 5개입니다.');
     }
 
@@ -272,7 +272,7 @@ export class RoomService {
     //Default Image if image is not provided
 
     const user = await this.userModel.findById(userId);
-    if (user.joinedRoomNum == 5) {
+    if (user.joinedRoom.length == 5) {
       throw new BadRequestException(
         '최대 가입할수있는 가능한 방의 갯수는 5개입니다.',
       );
@@ -308,10 +308,10 @@ export class RoomService {
     });
 
     const result = await newRoom.save();
-
+    const roomid = result._id as string
     await this.userModel.updateOne(
       { _id: userId },
-      { $inc: { joinedRoomNum: 1 } },
+      { $push: { joinedRoom: roomid } },
     );
 
     //create hashtags based on new room

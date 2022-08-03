@@ -368,7 +368,7 @@ export class MessageGateway {
 
         await this.userModel.updateOne(
           { _id: data.targetId },
-          { $inc: { joinedRoomNum: -1 } },
+          { $push: { joinedRoom: data.roomId } },
         );
       } catch (error) {
         console.log(error);
