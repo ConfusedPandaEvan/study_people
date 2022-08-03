@@ -9,14 +9,17 @@ import { Model } from 'mongoose';
 import { Hashtag } from './hashtag.model';
 import { Room } from './room.model';
 import * as fs from 'fs';
+import { Chat } from 'src/chats/chat.Schema';
 import { User } from 'src/users/user.Schema';
-
+import { Time } from 'src/times/time.Schema';
 @Injectable()
 export class RoomService {
   constructor(
     @InjectModel('Room') private readonly roomModel: Model<Room>,
     @InjectModel('Hashtag') private readonly hashtagModel: Model<Hashtag>,
     @InjectModel('User') private readonly userModel: Model<User>,
+    @InjectModel('Chat') private readonly chatModel: Model<Chat>,
+    @InjectModel('Time') private readonly timeModel: Model<Time>,
   ) {}
 
   async getAllRooms(sort) {
@@ -366,6 +369,24 @@ export class RoomService {
         );
       }
     }
+    try {
+      await this.chatModel.deleteMany({
+        roomId: roomId,
+      });
+      console.log('Chat Data deleted');
+    } catch (e) {
+      console.log('삭제할 메세지가 없습니다');
+    }
+
+    try {
+      await this.timeModel.deleteMany({
+        roomId: roomId,
+      });
+      console.log('Time Data deleted');
+    } catch (e) {
+      console.log('삭제할 시간정보가 없습니다');
+    }
+
 
     //delete the room from db
     await this.roomModel.deleteOne({ _id: roomId }).exec();
