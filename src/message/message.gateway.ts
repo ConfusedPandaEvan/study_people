@@ -405,9 +405,26 @@ export class MessageGateway {
     const targetuserinfo = this.users[data.roomId].filter(
       (user) => user.userid === data.targetId,
     );
+
+    const targetuser = await this.userModel.findById(data.targetId)
+    const content = `님이 방장에 의해 강퇴 당했습니다.`
+    const newchat = new this.chatModel({
+      roomId:data.roomId,
+      content:content,
+      userId: targetuser,
+      createdAt: new Date(),
+    });
+    await newchat.save();
+    console.log(
+      'the message has been saved to the DB: ',
+      content,
+      newchat,
+    );
+    this.server.to(data.roomID).emit('chatForOther', newchat);
     const targetsocketid = targetuserinfo[0].id;
     //클라이언트에서 disconnect처리 해주어야 될수도 있음
     const errormessage = '방장에 의해 강퇴당했습니다.';
+
     this.server.to(data.roomID).emit('user_exit', { id: targetsocketid });
     console.log('강퇴 발생');
     this.server.to(targetsocketid).emit('disconnectuser', errormessage);
@@ -468,12 +485,10 @@ export class MessageGateway {
   @SubscribeMessage('MessageFromClient')
   async createMessage(
     @MessageBody() createChatDto: CreateChatDto,
-    @ConnectedSocket() client: Socket,
+    @ConnectedSocket() client: SocketWithAuth,
   ) {
-    const token =
-      client.handshake.auth.token || client.handshake.headers['token'];
-    const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
-    const joineduserid = verifiedtoken.userId;
+
+    const joineduserid = client.userId;
 
     const user = await this.userModel.findOne({ _id: joineduserid });
     const newchat = new this.chatModel({
