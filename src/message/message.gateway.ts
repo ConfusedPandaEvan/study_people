@@ -407,7 +407,7 @@ export class MessageGateway {
     );
 
     const targetuser = await this.userModel.findById(data.targetId)
-    const content = `님이 방장에 의해 강퇴 당했습니다.`
+    const content = '님이 방장에 의해 강퇴 당했습니다.'
     const newchat = new this.chatModel({
       roomId:data.roomId,
       content:content,
