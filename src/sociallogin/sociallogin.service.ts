@@ -14,7 +14,7 @@ export class SocialloginService {
       redirectUri: 'https://stupy.shop/main',
       // 수정 필요 redirectUri: 'http://13.125.58.110:3000/main',
     };
-
+    let newuser = 'false'
     const { code } = query;
     const options = {
       url: 'https://kauth.kakao.com/oauth/token',
@@ -63,6 +63,7 @@ export class SocialloginService {
       console.log('새로운 유저가 카카오를 통해 회원가입을 하였습니다.! user: ', user)
 
       await this.userModel.create(user);
+      newuser = 'true'
     }
     const loginUser = await this.userModel.findOne({ kakaouserId });
     const userId = loginUser.id as string;
@@ -70,6 +71,7 @@ export class SocialloginService {
 
     return {
       token,
+      newuser,
       userId,
       userNick,
       msg: '카카오 로그인 완료.',
@@ -84,6 +86,7 @@ export class SocialloginService {
 
       // 수정 필요 redirectUri: 'http://13.125.58.110:3000/main',
     };
+    let newuser = 'false'
     const { code } = query
     const {state} =query
     const options = {
@@ -133,6 +136,7 @@ export class SocialloginService {
         profileImage,
       });
       console.log('새로운 유저가 네이버를 통해 회원가입을 하였습니다.! user: ', user)
+      newuser = 'true'
 
       await this.userModel.create(user);
     }
@@ -142,6 +146,7 @@ export class SocialloginService {
 
     return {
       token,
+      newuser,
       userId,
       userNick,
       msg: '네이버 로그인 완료 .'
