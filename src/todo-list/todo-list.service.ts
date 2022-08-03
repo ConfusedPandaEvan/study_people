@@ -27,7 +27,8 @@ export class TodoListService {
     if (todoLists.length == 0) {
       const newTodoList = new this.todoListModel({
         userId,
-        title: '새로운 리스트',
+        title: '오늘 할 일',
+        todos: [new this.todoModel({ content: '방 청소하기' })],
       });
       await newTodoList.save();
       todoLists = await this.todoListModel.find({ userId: userId }).exec();
