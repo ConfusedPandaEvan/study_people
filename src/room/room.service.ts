@@ -53,7 +53,9 @@ export class RoomService {
       openKakao: roomL.openKakao,
       rank: rankOfRooms.indexOf(roomL._id.toString()) + 1,
       isOn: roomL.liveStatus,
-      image: roomL.imageLocation.length ? roomL.imageLocation : null,
+      image: roomL.imageLocation.length
+        ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
+        : null,
     }));
   }
 
@@ -74,7 +76,9 @@ export class RoomService {
       hashtags: roomL.hashtags,
       openKakao: roomL.openKakao,
       isOn: roomL.liveStatus,
-      image: roomL.imageLocation.length ? roomL.imageLocation : null,
+      image: roomL.imageLocation.length
+        ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
+        : null,
     }));
   }
 
@@ -418,7 +422,7 @@ export class RoomService {
     //if new image is provided, delete original image
     if (file) {
       filename = file.filename;
-      if (targetRoom.imageLocation.length) {
+      if (targetRoom.imageLocation.length != 0) {
         await fs.unlink(
           `./public/roomImages/${targetRoom.imageLocation}`,
           (err) => {
