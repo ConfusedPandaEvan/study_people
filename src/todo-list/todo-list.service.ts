@@ -28,7 +28,13 @@ export class TodoListService {
       const newTodoList = new this.todoListModel({
         userId,
         title: '오늘 할 일',
-        todos: [new this.todoModel({ content: '방 청소하기' })],
+        todos: [
+          new this.todoModel({
+            content: '방 청소하기',
+            status: false,
+            createdAt: new Date(),
+          }),
+        ],
       });
       await newTodoList.save();
       todoLists = await this.todoListModel.find({ userId: userId }).exec();
