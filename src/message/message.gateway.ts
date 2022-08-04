@@ -158,6 +158,21 @@ export class MessageGateway {
         // only splice array when item is found
         this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
       }
+      const user = await this.userModel.findById(client.userId)
+      const content = '님이 접속을 종료하셨습니다.📢📢📢📢'
+      const newchat = new this.chatModel({
+        roomId:client.roomId,
+        content:content,
+        userId: user,
+        createdAt: new Date(),
+      });
+      await newchat.save();
+      console.log(
+        'the message has been saved to the DB: ',
+        content,
+        newchat,
+      );
+      client.broadcast.to(client.roomId).emit('chatForOther', newchat);
 
       console.log('방에 마지막 남은사람 소켓연결 끊김:  ');
       console.log('userid: ', client.userId);
@@ -183,6 +198,22 @@ export class MessageGateway {
       // only splice array when item is found
       this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
     }
+
+    const user = await this.userModel.findById(client.userId)
+      const content = '님이 접속을 종료하셨습니다.📢📢📢📢'
+      const newchat = new this.chatModel({
+        roomId:client.roomId,
+        content:content,
+        userId: user,
+        createdAt: new Date(),
+      });
+      await newchat.save();
+      console.log(
+        'the message has been saved to the DB: ',
+        content,
+        newchat,
+      );
+    client.broadcast.to(client.roomId).emit('chatForOther', newchat);
 
     console.log('소켓연결이 정상적으로 끊겼습니다');
     console.log('socketid: ', client.id);
@@ -323,6 +354,18 @@ export class MessageGateway {
       '---------------------------------------------------------------------------------------------------------',
     );
 
+    const user = await this.userModel.findById(client.userId)
+    const content = '님이 방장에 입장하셨습니다.📢📢📢📢'
+    const newchat = new this.chatModel({
+      roomId:data.roomId,
+      content:content,
+      userId: user,
+      createdAt: new Date(),
+    });
+    await newchat.save();
+    
+    client.broadcast.to(data.roomId).emit('chatForOther', newchat);
+    
     // const timestarted = this.starttime
     // populate 과 execute를 사용하면 objectID 를 참조하여 JOIN 처럼 사용가능
     const chatInThisRoom = await this.chatModel.find({ roomId: data.roomId });
@@ -331,6 +374,8 @@ export class MessageGateway {
       chatInThisRoom,
       roomOwner,
     };
+
+
     this.server.sockets.to(client.id).emit('all_users', datatoclient);
     // datatoclient.chatInThisRoom.userId.userNick 안에 닉네임이 들어가게씀 줘라 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -407,7 +452,7 @@ export class MessageGateway {
     );
 
     const targetuser = await this.userModel.findById(data.targetId)
-    const content = '님이 방장에 의해 강퇴 당했습니다.'
+    const content = '님이 방장에 의해 강퇴 당했습니다.📢📢📢📢'
     const newchat = new this.chatModel({
       roomId:data.roomId,
       content:content,
