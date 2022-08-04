@@ -29,6 +29,7 @@ import { Time } from 'src/times/time.Schema';
 import * as jwt from 'jsonwebtoken';
 import { SocketWithAuth } from 'src/types';
 import { disconnect } from 'process';
+import { RedisAdapter } from '@socket.io/redis-adapter';
 interface JwtPayload {
   userId: string;
 }
@@ -69,7 +70,26 @@ export class MessageGateway {
     private readonly messageService: MessageService,
   ) {}
 
-  public handleConnection(client: SocketWithAuth): void {
+  public async handleConnection(client: SocketWithAuth): Promise<void> {
+    // const sockets = await this.server.of('/').adapter.sockets(new Set());
+    // console.log(sockets); // a Set containing all the connected socket ids
+    // const rooms = await (this.server.of('/').adapter as RedisAdapter).allRooms();
+    // console.log(rooms); // a Set containing all rooms (across every node)
+    // for (let socket of sockets){
+    //   if (socket === client.id){
+    //     continue;
+    //   }
+    //   console.log('+++',socket, '+++')
+    //   const socketsinroom = await this.server.in(socket).fetchSockets();
+    //   console.log(socketsinroom[0].)
+    // }
+    
+    // const socketsinroom = await this.server.in('L3Q3g11dy7FtF4bdAABz').fetchSockets();
+    // console.log(socketsinroom[0])
+    // console.log('-----------------------------------------')
+    // const mysocket = await this.server.fetchSockets();
+    // console.log(mysocket)
+    
     console.log(
       '------------------------------------------새로운 소켓이 연결되었습니다.-------------------------------------',
     );
@@ -159,7 +179,7 @@ export class MessageGateway {
         this.allonlineuser.splice(index, 1); // 2nd parameter means remove one item only
       }
       const user = await this.userModel.findById(client.userId)
-      const content = '님이 접속을 종료하셨습니다.📢'
+      const content = '님이 접속을 종료하셨습니다.🔈'
       const newchat = new this.chatModel({
         roomId:client.roomId,
         content:content,
@@ -200,7 +220,7 @@ export class MessageGateway {
     }
 
     const user = await this.userModel.findById(client.userId)
-      const content = '님이 접속을 종료하셨습니다.📢'
+      const content = '님이 접속을 종료하셨습니다.🔈'
       const newchat = new this.chatModel({
         roomId:client.roomId,
         content:content,
@@ -257,13 +277,6 @@ export class MessageGateway {
     @MessageBody() data: joinroomDto,
     @ConnectedSocket() client: SocketWithAuth,
   ) {
-    // const token = client.handshake.auth.token || client.handshake.headers['token']
-    // const verifiedtoken = jwt.verify(token, 'MyKey') as JwtPayload;
-    // const joineduserid = verifiedtoken.userId
-    // const room = await this.roomModel.findById(data.roomId)
-    // console.log(room.users)
-    // if(room.users.includes(data.userId)){
-
     console.log(
       '-----------------------------join_room 이벤트가 발생했습니다--------------------------------------------',
     );
@@ -355,7 +368,7 @@ export class MessageGateway {
     );
 
     const user = await this.userModel.findById(client.userId)
-    const content = '님이 방에 입장하셨습니다.📢'
+    const content = '님이 방에 입장하셨습니다.🔈'
     const newchat = new this.chatModel({
       roomId:data.roomId,
       content:content,
@@ -452,7 +465,7 @@ export class MessageGateway {
     );
 
     const targetuser = await this.userModel.findById(data.targetId)
-    const content = '님이 방장에 의해 강퇴 당했습니다.📢'
+    const content = '님이 방장에 의해 강퇴 당했습니다.🔈'
     const newchat = new this.chatModel({
       roomId:data.roomId,
       content:content,
@@ -554,9 +567,6 @@ export class MessageGateway {
   //타이머 토글을 켜고 각 유저의 공부시간을 받고싶을때(timertoggleon)
   @SubscribeMessage('timertoggleon')
   async timeinfo(@ConnectedSocket() client: SocketWithAuth) {
-    // 룸아이디에서 있는 유저들을 for 문을 돌린다. 그리고는 맵을 해준다.
-    // 프사 url, nickNAME(user가서 아이디로 또 찾아서 줘야함), 기록: 현재시간 - 접속시간 주면됨, 누적, 체팅 찾아서 더해서 주면됨.)
-    console.log(client.roomId);
     const room = await this.roomModel.findById(client.roomId);
     if (!room) {
       console.log('존재하지 않는 방입니다.');
@@ -691,17 +701,4 @@ export class MessageGateway {
     return this.messageService.remove(id);
   }
 
-  ///private functions: migrate to message.service
-  // private async findRoom(id: string): Promise<Room> {
-  //   let room;
-  //   try {
-  //     room = await this.roomModel.findById(id).exec();
-  //   } catch (error) {
-  //     throw new NotFoundException('Could Not Find Room');
-  //   }
-  //   if (!room) {
-  //     throw new NotFoundException('Could Not Find Room');
-  //   }
-  //   return room;
-  // }
 }

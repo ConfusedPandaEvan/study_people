@@ -45,10 +45,13 @@ export class SocketIOAdapter extends IoAdapter{
         const usersService = this.app.get(UsersService)
         console.log('1')
         const server: Server = super.createIOServer(port, optionsWithCORS)
+        
         console.log('2')
         server.adapter(this.adapterConstructor)
         console.log('3')
+
         server.use(createTokenMiddleware(usersService))
+        
         
         
         return server
@@ -75,6 +78,7 @@ const createTokenMiddleware =  (usersService: UsersService) => async (socket: So
         socket.nickName = user.userNick
         socket.profileImage= user.profileImage;
         socket.roomId= socket.handshake.auth.roomId || socket.handshake.headers['roomid'] ;
+        socket.data = {testid: 'testid'}
         if(!socket.roomId){
             console.log('방을 정해주지 않았습니다!')
             throw new Error('방을 정해주지 않았습니다!')
