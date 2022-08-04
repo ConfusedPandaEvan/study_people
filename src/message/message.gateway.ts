@@ -79,6 +79,7 @@ export class MessageGateway {
       this.server.to(client.id).emit('user_exit', { id: client.id });
       console.log('user_exit 발생');
       this.server.to(client.id).emit('disconnectuser', errormessage);
+      client.disconnect()
       return;
     }
     // const sockets = await this.server.of('/').adapter.sockets(new Set());
@@ -137,7 +138,7 @@ export class MessageGateway {
       console.log(
         '---------------------------------------------------------------------------------------------------------',
       );
-      throw new Error('비정상적인 소켓연결이 강제적으로 종료 되었습니다1');
+      // throw new Error('비정상적인 소켓연결이 강제적으로 종료 되었습니다1');
       return;
     }
     let checkuser = room.filter((eachuser) => eachuser.id === client.id);
@@ -151,7 +152,7 @@ export class MessageGateway {
       console.log(
         '---------------------------------------------------------------------------------------------------------',
       );
-      throw new Error('비정상적인 소켓연결이 강제적으로 종료 되었습니다2');
+      // throw new Error('비정상적인 소켓연결이 강제적으로 종료 되었습니다2');
       return;
     }
     let findeduser = room.filter(
