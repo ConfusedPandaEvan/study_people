@@ -71,17 +71,17 @@ export class MessageGateway {
   ) {}
 
   public async handleConnection(client: SocketWithAuth): Promise<void> {
-    if (this.allonlineuser.includes(client.userId)) {
-      console.log(
-        '이미 접속한 유저가 또 새로운방에 접속하려 합니다. 연결을 끊습니다.',
-      );
-      const errormessage = '이미 접속한 유저가 또 새로운방에 접속하려 합니다';
-      this.server.to(client.id).emit('user_exit', { id: client.id });
-      console.log('user_exit 발생');
-      this.server.to(client.id).emit('disconnectuser', errormessage);
-      client.disconnect()
-      return;
-    }
+    // if (this.allonlineuser.includes(client.userId)) {
+    //   console.log(
+    //     '이미 접속한 유저가 또 새로운방에 접속하려 합니다. 연결을 끊습니다.',
+    //   );
+    //   const errormessage = '이미 접속한 유저가 또 새로운방에 접속하려 합니다';
+    //   this.server.to(client.id).emit('user_exit', { id: client.id });
+    //   console.log('user_exit 발생');
+    //   this.server.to(client.id).emit('disconnectuser', errormessage);
+    //   client.disconnect()
+    //   return;
+    // }
     // const sockets = await this.server.of('/').adapter.sockets(new Set());
     // console.log(sockets); // a Set containing all the connected socket ids
     // const rooms = await (this.server.of('/').adapter as RedisAdapter).allRooms();
@@ -100,7 +100,7 @@ export class MessageGateway {
     //   //매번 0 번째 인덱스는 아닐 수 있다. 
     //   console.log(socketsinroom[0].data)
     // }
-    //
+    
 
 
     // console.log('-------------------------------------1-------------------------------------------------------')
