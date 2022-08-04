@@ -421,6 +421,7 @@ export class MessageGateway {
       newchat,
     );
     client.broadcast.to(data.roomId).emit('chatForOther', newchat);
+    client.emit('chatForOther', newchat);
     const targetsocketid = targetuserinfo[0].id;
     //클라이언트에서 disconnect처리 해주어야 될수도 있음
     const errormessage = '방장에 의해 강퇴당했습니다.';
