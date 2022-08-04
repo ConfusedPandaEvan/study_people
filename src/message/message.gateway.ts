@@ -71,14 +71,23 @@ export class MessageGateway {
   ) {}
 
   public async handleConnection(client: SocketWithAuth): Promise<void> {
-    
+    if (this.allonlineuser.includes(client.userId)) {
+      console.log(
+        '이미 접속한 유저가 또 새로운방에 접속하려 합니다. 연결을 끊습니다.',
+      );
+      const errormessage = '이미 접속한 유저가 또 새로운방에 접속하려 합니다';
+      this.server.to(client.id).emit('user_exit', { id: client.id });
+      console.log('user_exit 발생');
+      this.server.to(client.id).emit('disconnectuser', errormessage);
+      return;
+    }
     // const sockets = await this.server.of('/').adapter.sockets(new Set());
     // console.log(sockets); // a Set containing all the connected socket ids
     // const rooms = await (this.server.of('/').adapter as RedisAdapter).allRooms();
     // console.log(rooms); // a Set containing all rooms (across every node)
     // console.log('-------------------------------------0-------------------------------------------------------')
     
-    // redis로부터 방안에있는 socketid 들과 for 문을 통해 그안에있는 정보를 빼올 수있는코드
+    // redis로부터 방안에(혹은 서버 전체에) 있는 socketid 들과 for 문을 통해 그안에있는 정보를 빼올 수있는코드
     // const sockets = await this.server.of('/').adapter.sockets(new Set());
     // console.log(sockets);
     // for (let socket of sockets){
@@ -88,9 +97,9 @@ export class MessageGateway {
     //   console.log('+++',socket, '+++')
     //   const socketsinroom = await this.server.in(socket).fetchSockets();
     //   //매번 0 번째 인덱스는 아닐 수 있다. 
-    //   console.log(socketsinroom[0].data.testid)
+    //   console.log(socketsinroom[0].data)
     // }
-    // //
+    //
 
 
     // console.log('-------------------------------------1-------------------------------------------------------')
