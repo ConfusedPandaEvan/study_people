@@ -71,22 +71,32 @@ export class MessageGateway {
   ) {}
 
   public async handleConnection(client: SocketWithAuth): Promise<void> {
+    
     // const sockets = await this.server.of('/').adapter.sockets(new Set());
     // console.log(sockets); // a Set containing all the connected socket ids
     // const rooms = await (this.server.of('/').adapter as RedisAdapter).allRooms();
     // console.log(rooms); // a Set containing all rooms (across every node)
+    // console.log('-------------------------------------0-------------------------------------------------------')
+    
+    // redis로부터 방안에있는 socketid 들과 for 문을 통해 그안에있는 정보를 빼올 수있는코드
+    // const sockets = await this.server.of('/').adapter.sockets(new Set());
+    // console.log(sockets);
     // for (let socket of sockets){
     //   if (socket === client.id){
     //     continue;
     //   }
     //   console.log('+++',socket, '+++')
     //   const socketsinroom = await this.server.in(socket).fetchSockets();
-    //   console.log(socketsinroom[0].)
+    //   //매번 0 번째 인덱스는 아닐 수 있다. 
+    //   console.log(socketsinroom[0].data.testid)
     // }
-    
-    // const socketsinroom = await this.server.in('L3Q3g11dy7FtF4bdAABz').fetchSockets();
-    // console.log(socketsinroom[0])
-    // console.log('-----------------------------------------')
+    // //
+
+
+    // console.log('-------------------------------------1-------------------------------------------------------')
+    // const socketsinroom = await this.server.in('m5PaLu0Deij0NLOiAAAP').fetchSockets();
+    // console.log(socketsinroom[0].data)
+    // console.log('--------------------------------------2-------------------------------------------------------')
     // const mysocket = await this.server.fetchSockets();
     // console.log(mysocket)
     
