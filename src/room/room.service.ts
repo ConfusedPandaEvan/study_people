@@ -53,7 +53,7 @@ export class RoomService {
       openKakao: roomL.openKakao,
       rank: rankOfRooms.indexOf(roomL._id.toString()) + 1,
       isOn: roomL.liveStatus,
-      image: roomL.imageLocation ? roomL.imageLocation : null,
+      image: roomL.imageLocation.length ? roomL.imageLocation : null,
     }));
   }
 
@@ -74,7 +74,7 @@ export class RoomService {
       hashtags: roomL.hashtags,
       openKakao: roomL.openKakao,
       isOn: roomL.liveStatus,
-      image: roomL.imageLocation ? roomL.imageLocation : null,
+      image: roomL.imageLocation.length ? roomL.imageLocation : null,
     }));
   }
 
@@ -277,7 +277,7 @@ export class RoomService {
       );
     }
 
-    let filename = null;
+    let filename = '';
 
     if (file) {
       filename = file.filename;
@@ -387,7 +387,7 @@ export class RoomService {
     await this.roomModel.deleteOne({ _id: roomId }).exec();
 
     //delete image from local storage
-    if (targetRoom.imageLocation) {
+    if (targetRoom.imageLocation.length) {
       await fs.unlink(
         `./public/roomImages/${targetRoom.imageLocation}`,
         (err) => {
@@ -418,7 +418,7 @@ export class RoomService {
     //if new image is provided, delete original image
     if (file) {
       filename = file.filename;
-      if (targetRoom.imageLocation) {
+      if (targetRoom.imageLocation.length) {
         await fs.unlink(
           `./public/roomImages/${targetRoom.imageLocation}`,
           (err) => {

@@ -72,7 +72,7 @@ export class RoomSearchService {
       openKakao: roomL.openKakao,
       rank: rankOfRooms.indexOf(roomL._id.toString()) + 1,
       isOn: roomL.liveStatus,
-      image: roomL.imageLocation ? roomL.imageLocation : null,
+      image: roomL.imageLocation.length ? roomL.imageLocation : null,
     }));
   }
 
@@ -123,7 +123,7 @@ export class RoomSearchService {
         openKakao: roomL.openKakao,
         rank: rankOfRooms.indexOf(roomL._id.toString()) + 1,
         isOn: roomL.liveStatus,
-        image: roomL.imageLocation ? roomL.imageLocation : null,
+        image: roomL.imageLocation.length ? roomL.imageLocation : null,
       }));
     } catch (error) {
       throw new NotFoundException(
