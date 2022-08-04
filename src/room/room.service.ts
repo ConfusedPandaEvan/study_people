@@ -387,7 +387,7 @@ export class RoomService {
     await this.roomModel.deleteOne({ _id: roomId }).exec();
 
     //delete image from local storage
-    if (targetRoom.imageLocation != '') {
+    if (targetRoom.imageLocation) {
       await fs.unlink(
         `./public/roomImages/${targetRoom.imageLocation}`,
         (err) => {
@@ -418,7 +418,7 @@ export class RoomService {
     //if new image is provided, delete original image
     if (file) {
       filename = file.filename;
-      if (targetRoom.imageLocation != '') {
+      if (targetRoom.imageLocation) {
         await fs.unlink(
           `./public/roomImages/${targetRoom.imageLocation}`,
           (err) => {
