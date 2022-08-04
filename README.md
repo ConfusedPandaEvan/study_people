@@ -27,7 +27,7 @@
  `정렬 기능` `목업 디자인` 
 
 #### 김준호
-<br/>
+
 `AWS ECS` `EC2 Redis-Server` 
 <br/>
 `타이머 기능` `채팅기능` `화상채팅기능` `소켓관리` `Redis-Adaptor` 
