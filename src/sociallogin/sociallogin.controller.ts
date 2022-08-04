@@ -11,14 +11,12 @@ export class SocialloginController {
   // @Redirect('http://localhost:3000/kakao/login', 301)
   async kakaoLoginMain(@Query() query: string) {
     const { token, newuser } = await this.SocialloginService.kakaoLoginMain(
-      query,
+      query
     );
-    // return {
-    //   url: `http://stupy.co.kr/kakao/login?token=${token}&newuser=${newuser}`,
-    // };
     return {
-      url: `http://localhost:3000/kakao/login?token=${token}&newuser=${newuser}`,
+      url: `http://stupy.co.kr/kakao/login?token=${token}&newuser=${newuser}`,
     };
+    
   }
   @Get('naverlogin')
   @Redirect('http://stupy.co.kr/kakao/login', 301)
