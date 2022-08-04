@@ -53,9 +53,7 @@ export class RoomService {
       openKakao: roomL.openKakao,
       rank: rankOfRooms.indexOf(roomL._id.toString()) + 1,
       isOn: roomL.liveStatus,
-      image: roomL.imageLocation
-        ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
-        : null,
+      image: roomL.imageLocation ? roomL.imageLocation : null,
     }));
   }
 
@@ -76,9 +74,7 @@ export class RoomService {
       hashtags: roomL.hashtags,
       openKakao: roomL.openKakao,
       isOn: roomL.liveStatus,
-      image: roomL.imageLocation
-        ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
-        : null,
+      image: roomL.imageLocation ? roomL.imageLocation : null,
     }));
   }
 
@@ -311,7 +307,7 @@ export class RoomService {
     });
 
     const result = await newRoom.save();
-    const roomid = result._id as string
+    const roomid = result._id as string;
     await this.userModel.updateOne(
       { _id: userId },
       { $push: { joinedRoom: roomid } },
@@ -386,7 +382,6 @@ export class RoomService {
     } catch (e) {
       console.log('삭제할 시간정보가 없습니다');
     }
-
 
     //delete the room from db
     await this.roomModel.deleteOne({ _id: roomId }).exec();

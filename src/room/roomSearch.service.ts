@@ -72,9 +72,7 @@ export class RoomSearchService {
       openKakao: roomL.openKakao,
       rank: rankOfRooms.indexOf(roomL._id.toString()) + 1,
       isOn: roomL.liveStatus,
-      image: roomL.imageLocation
-        ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
-        : null,
+      image: roomL.imageLocation ? roomL.imageLocation : null,
     }));
   }
 
@@ -125,9 +123,7 @@ export class RoomSearchService {
         openKakao: roomL.openKakao,
         rank: rankOfRooms.indexOf(roomL._id.toString()) + 1,
         isOn: roomL.liveStatus,
-        image: roomL.imageLocation
-          ? 'https://stupy.shop/roomImages/' + roomL.imageLocation
-          : null,
+        image: roomL.imageLocation ? roomL.imageLocation : null,
       }));
     } catch (error) {
       throw new NotFoundException(
