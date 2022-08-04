@@ -86,57 +86,57 @@ export class MessageGateway {
     // console.log(sockets); // a Set containing all the connected socket ids
     
     
-   //redis로부터 방안에 있는 socketid 들 받는법
-   const socketinroom = await this.server.in('62ebc62d9b4bdca4c36cdcf4').allSockets();
-   console.log(socketinroom)
-   //
+  //  //redis로부터 방안에 있는 socketid 들 받는법
+  //  const socketinroom = await this.server.in('62ebc62d9b4bdca4c36cdcf4').allSockets();
+  //  console.log(socketinroom)
+  //  //
 
 
 
-    console.log(
-      '-------------------------------------------------------------------------------',
-    );
+  //   console.log(
+  //     '-------------------------------------------------------------------------------',
+  //   );
 
-    // redis로 부터 현재 active한 방id 전부 받는법 
-    const rooms = await (this.server.of('/').adapter as RedisAdapter).allRooms();
-    const actualrooms = []
-    for (let actualroom of rooms){
-      if (actualroom.length < 24){
-        continue
-      }
-      actualrooms.push(actualroom)
-    }
-    console.log(actualrooms); // list Set containing all rooms (across every node)
-    //
+  //   // redis로 부터 현재 active한 방id 전부 받는법 
+  //   const rooms = await (this.server.of('/').adapter as RedisAdapter).allRooms();
+  //   const actualrooms = []
+  //   for (let actualroom of rooms){
+  //     if (actualroom.length < 24){
+  //       continue
+  //     }
+  //     actualrooms.push(actualroom)
+  //   }
+  //   console.log(actualrooms); // list Set containing all rooms (across every node)
+  //   //
 
-    console.log('-------------------------------------0-------------------------------------------------------')
+  //   console.log('-------------------------------------0-------------------------------------------------------')
     
     
-    // redis로부터 방안에(혹은 서버 전체에),(자기자신제외) 있는 socketid 들과 for 문을 통해 그안에있는 정보를 빼올 수있는코드
-    // 전체의 redis server 의경우
-    // const sockets = await this.server.of('/').adapter.sockets(new Set());
-    const sockets = await this.server.in('62ebc62d9b4bdca4c36cdcf4').allSockets()
-    console.log(sockets);
-    for (let socket of sockets){
-      if (socket === client.id){
-        continue;
-      }
-      console.log('+++',socket, '+++')
-      const socketsinroom = await this.server.in(socket).fetchSockets();
-      //매번 0 번째 인덱스는 아닐 수 있다. 
-      console.log(socketsinroom[0].data)
-      // {
-      //   userId: '62ebb2e973a2b3e7657a8156',
-      //   nickName: '김준호',
-      //   profileImage: 'https://ssl.pstatic.net/static/pwe/address/img_profile.png',
-      //   roomId: '62ebc62d9b4bdca4c36cdcf4'
-      //   joinedtime: 125431525
-      // }
-    }
+  //   // redis로부터 방안에(혹은 서버 전체에),(자기자신제외) 있는 socketid 들과 for 문을 통해 그안에있는 정보를 빼올 수있는코드
+  //   // 전체의 redis server 의경우
+  //   // const sockets = await this.server.of('/').adapter.sockets(new Set());
+  //   const sockets = await this.server.in('62ebc62d9b4bdca4c36cdcf4').allSockets()
+  //   console.log(sockets);
+  //   for (let socket of sockets){
+  //     if (socket === client.id){
+  //       continue;
+  //     }
+  //     console.log('+++',socket, '+++')
+  //     const socketsinroom = await this.server.in(socket).fetchSockets();
+  //     //매번 0 번째 인덱스는 아닐 수 있다. 
+  //     console.log(socketsinroom[0].data)
+  //     // {
+  //     //   userId: '62ebb2e973a2b3e7657a8156',
+  //     //   nickName: '김준호',
+  //     //   profileImage: 'https://ssl.pstatic.net/static/pwe/address/img_profile.png',
+  //     //   roomId: '62ebc62d9b4bdca4c36cdcf4'
+  //     //   joinedtime: 125431525
+  //     // }
+  //   }
     
-    console.log(
-      '-------------------------------------------------------------------------------',
-    );
+  //   console.log(
+  //     '-------------------------------------------------------------------------------',
+  //   );
 
     
 
